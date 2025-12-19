@@ -4,20 +4,72 @@
 <div class="max-w-2xl mx-auto space-y-4" wire:poll.5s="markRead">
     <div class="card bg-base-100 border">
         <div class="card-body">
-            @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u->id !== $me->id))
+            @php
+                $others = $conversation->participants
+                    ->pluck('user')
+                    ->filter(fn ($u) => $u && $u->id !== $me->id)
+                    ->values();
+
+                $other = $others->first();
+                $avatarUsers = $others->take(3);
+            @endphp
 
             <div class="flex items-center justify-between gap-4">
-                <div class="min-w-0">
-                    <div class="text-xl font-semibold truncate">
+                <div class="flex items-start gap-3 min-w-0">
+                    <div class="shrink-0 pt-0.5">
                         @if ($conversation->is_group)
-                            {{ $conversation->title ?? 'Group' }}
+                            <div class="avatar-group -space-x-3">
+                                @foreach ($avatarUsers as $u)
+                                    <div class="avatar">
+                                        <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                                            @if ($u->avatar_url)
+                                                <img src="{{ $u->avatar_url }}" alt="" />
+                                            @else
+                                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                                    {{ mb_strtoupper(mb_substr($u->name ?? $u->username ?? 'U', 0, 1)) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                @if ($others->count() > $avatarUsers->count())
+                                    <div class="avatar placeholder">
+                                        <div class="w-10 rounded-full border border-base-200 bg-base-200 text-xs font-semibold">
+                                            +{{ $others->count() - $avatarUsers->count() }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         @else
-                            {{ $others->first()?->name ?? 'Conversation' }}
-                            <span class="opacity-60 font-normal">&#64;{{ $others->first()?->username }}</span>
+                            <div class="avatar">
+                                <div class="w-12 rounded-full border border-base-200 bg-base-100">
+                                    @if ($other?->avatar_url)
+                                        <img src="{{ $other->avatar_url }}" alt="" />
+                                    @else
+                                        <div class="bg-base-200 grid place-items-center h-full w-full text-lg font-semibold">
+                                            {{ mb_strtoupper(mb_substr($other?->name ?? $other?->username ?? 'U', 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
                         @endif
                     </div>
-                    <div class="text-sm opacity-70 truncate">
-                        {{ $conversation->is_group ? $others->pluck('username')->map(fn ($u) => '@'.$u)->join(', ') : 'Direct message' }}
+
+                    <div class="min-w-0">
+                        <div class="text-xl font-semibold truncate">
+                            @if ($conversation->is_group)
+                                {{ $conversation->title ?? 'Group' }}
+                            @else
+                                {{ $other?->name ?? 'Conversation' }}
+                                @if ($other?->username)
+                                    <span class="opacity-60 font-normal">&#64;{{ $other->username }}</span>
+                                @endif
+                            @endif
+                        </div>
+                        <div class="text-sm opacity-70 truncate">
+                            {{ $conversation->is_group ? $others->pluck('username')->filter()->map(fn ($u) => '@'.$u)->join(', ') : 'Direct message' }}
+                        </div>
                     </div>
                 </div>
 
