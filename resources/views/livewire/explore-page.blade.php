@@ -136,28 +136,28 @@
                     </div>
                 </div>
 
-	                <div class="card bg-base-100 border">
-	                    <div class="card-body">
-	                        <div class="font-semibold">Trending keywords (24h)</div>
-	                        <div class="space-y-2 pt-2">
-	                            @forelse ($this->trendingKeywords as $row)
-	                                <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
-	                                    <div class="min-w-0">
-	                                        <div class="font-medium truncate">{{ $row['keyword'] }}</div>
-	                                    </div>
-	                                    <div class="text-right shrink-0 tabular-nums">
-	                                        <div class="text-sm opacity-60">{{ $row['count'] }}</div>
-	                                        @if ((int) ($row['recent_count'] ?? 0) > 0)
-	                                            <div class="text-xs opacity-60">{{ (int) $row['recent_count'] }} last hour</div>
-	                                        @endif
-	                                    </div>
-	                                </a>
-	                            @empty
-	                                <div class="opacity-70 text-sm">No keywords yet.</div>
-	                            @endforelse
-	                        </div>
-	                    </div>
-	                </div>
+                    <div class="card bg-base-100 border">
+                        <div class="card-body">
+                            <div class="font-semibold">Trending keywords (24h)</div>
+                            <div class="space-y-2 pt-2">
+                                @forelse ($this->trendingKeywords as $row)
+                                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                                        <div class="min-w-0">
+                                            <div class="font-medium truncate">{{ $row['keyword'] }}</div>
+                                        </div>
+                                        <div class="text-right shrink-0 tabular-nums">
+                                            <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                                            @if ((int) ($row['recent_count'] ?? 0) > 0)
+                                                <div class="text-xs opacity-60">{{ (int) $row['recent_count'] }} last hour</div>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="opacity-70 text-sm">No keywords yet.</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
             @else
                 @if ($tab === 'news')
                     <div class="card bg-base-100 border">

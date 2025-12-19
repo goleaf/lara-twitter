@@ -131,24 +131,24 @@
             </div>
         </div>
 
-	        <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Followers also follow</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->alsoFollowedAccounts as $row)
-	                        <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
-	                            <div class="min-w-0">
-	                                <div class="font-medium truncate">{{ $row->name }}</div>
-	                                <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
-	                            </div>
-	                            <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
-	                        </a>
-	                    @empty
-	                        <div class="opacity-70 text-sm">Not enough data yet.</div>
-	                    @endforelse
-	                </div>
-	            </div>
-	        </div>
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Followers also follow</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->alsoFollowedAccounts as $row)
+                            <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
+                                <div class="min-w-0">
+                                    <div class="font-medium truncate">{{ $row->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
+                            </a>
+                        @empty
+                            <div class="opacity-70 text-sm">Not enough data yet.</div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div class="card bg-base-100 border">
@@ -280,30 +280,30 @@
             </div>
         </div>
 
-	        <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->topPosts as $post)
-	                        <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('posts.show', $post) }}" wire:navigate>
-	                            <div class="min-w-0">
-	                                <div class="font-medium truncate">{{ $post->body }}</div>
-	                                <div class="text-xs opacity-60">
-	                                    {{ $post->analytics_impressions }} impressions ·
-	                                    {{ $post->analytics_engagements }} engagements ·
-	                                    {{ number_format($post->analytics_engagement_rate * 100, 1) }}% ·
-	                                    {{ $post->analytics_link_clicks }} links ·
-	                                    {{ $post->analytics_profile_clicks }} profile ·
-	                                    {{ $post->analytics_media_views }} media
-	                                </div>
-	                            </div>
-	                            <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
-	                        </a>
-	                    @empty
-	                        <div class="opacity-70 text-sm">No impressions yet.</div>
-	                    @endforelse
-	                </div>
-	            </div>
-	        </div>
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->topPosts as $post)
+                            <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('posts.show', $post) }}" wire:navigate>
+                                <div class="min-w-0">
+                                    <div class="font-medium truncate">{{ $post->body }}</div>
+                                    <div class="text-xs opacity-60">
+                                        {{ $post->analytics_impressions }} impressions ·
+                                        {{ $post->analytics_engagements }} engagements ·
+                                        {{ number_format($post->analytics_engagement_rate * 100, 1) }}% ·
+                                        {{ $post->analytics_link_clicks }} links ·
+                                        {{ $post->analytics_profile_clicks }} profile ·
+                                        {{ $post->analytics_media_views }} media
+                                    </div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
+                            </a>
+                        @empty
+                            <div class="opacity-70 text-sm">No impressions yet.</div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
     @endif
 </div>
