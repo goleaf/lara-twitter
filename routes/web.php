@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsExportController;
 use App\Http\Controllers\LinkRedirectController;
 use App\Livewire\AnalyticsPage;
 use App\Livewire\BookmarksPage;
@@ -71,6 +72,7 @@ Route::get('moments/{moment}', MomentPage::class)->name('moments.show');
 Route::view('profile', 'profile')->middleware(['auth'])->name('profile');
 
 Route::middleware('auth')->group(function () {
+    Route::get('analytics/export', AnalyticsExportController::class)->name('analytics.export');
     Route::get('analytics', AnalyticsPage::class)->name('analytics');
     Route::get('notifications', NotificationsPage::class)->name('notifications');
     Route::get('bookmarks', BookmarksPage::class)->name('bookmarks');
