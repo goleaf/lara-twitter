@@ -21,7 +21,7 @@
                         @continue
                     @endif
 
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
+                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="avatar">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
