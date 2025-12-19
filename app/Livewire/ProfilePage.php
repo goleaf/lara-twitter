@@ -6,6 +6,7 @@ use App\Models\Block;
 use App\Models\Mute;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\UserFollowed;
 use App\Services\AnalyticsService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -42,6 +43,10 @@ class ProfilePage extends Component
             Auth::user()->following()->detach($this->user->id);
         } else {
             Auth::user()->following()->attach($this->user->id);
+
+            if ($this->user->wantsNotification('follows') && $this->user->allowsNotificationFrom(Auth::user())) {
+                $this->user->notify(new UserFollowed(follower: Auth::user()));
+            }
         }
 
         $this->user->loadCount(['followers', 'following']);

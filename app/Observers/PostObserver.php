@@ -86,6 +86,10 @@ class PostObserver
                     continue;
                 }
 
+                if (! $user->allowsNotificationFrom($post->user)) {
+                    continue;
+                }
+
                 $user->notify(new PostMentioned(
                     post: $post,
                     mentionedBy: $post->user,
@@ -101,6 +105,10 @@ class PostObserver
             if ($original && $original->user_id !== $post->user_id) {
                 if ($original->user->wantsNotification('reposts')) {
                     $post->loadMissing('user');
+
+                    if (! $original->user->allowsNotificationFrom($post->user)) {
+                        return;
+                    }
 
                     $kind = $post->body === '' ? 'retweet' : 'quote';
 
@@ -139,6 +147,10 @@ class PostObserver
         }
 
         if (! $original->user->wantsNotification('replies')) {
+            return;
+        }
+
+        if (! $original->user->allowsNotificationFrom($post->user)) {
             return;
         }
 

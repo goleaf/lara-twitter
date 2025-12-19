@@ -21,10 +21,13 @@ class LikeObserver
             return;
         }
 
+        if (! $postAuthor->allowsNotificationFrom($like->user)) {
+            return;
+        }
+
         $postAuthor->notify(new PostLiked(
             post: $like->post,
             likedBy: $like->user,
         ));
     }
 }
-

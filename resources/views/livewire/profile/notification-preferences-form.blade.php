@@ -10,6 +10,12 @@ new class extends Component
     public bool $reposts = true;
     public bool $replies = true;
     public bool $mentions = true;
+    public bool $follows = true;
+    public bool $dms = true;
+
+    public bool $quality_filter = false;
+    public bool $only_following = false;
+    public bool $only_verified = false;
 
     public function mount(): void
     {
@@ -20,6 +26,12 @@ new class extends Component
         $this->reposts = (bool) ($settings['reposts'] ?? true);
         $this->replies = (bool) ($settings['replies'] ?? true);
         $this->mentions = (bool) ($settings['mentions'] ?? true);
+        $this->follows = (bool) ($settings['follows'] ?? true);
+        $this->dms = (bool) ($settings['dms'] ?? true);
+
+        $this->quality_filter = (bool) ($settings['quality_filter'] ?? false);
+        $this->only_following = (bool) ($settings['only_following'] ?? false);
+        $this->only_verified = (bool) ($settings['only_verified'] ?? false);
     }
 
     public function save(): void
@@ -32,6 +44,11 @@ new class extends Component
             'reposts' => (bool) ($validated['reposts'] ?? false),
             'replies' => (bool) ($validated['replies'] ?? false),
             'mentions' => (bool) ($validated['mentions'] ?? false),
+            'follows' => (bool) ($validated['follows'] ?? false),
+            'dms' => (bool) ($validated['dms'] ?? false),
+            'quality_filter' => (bool) ($validated['quality_filter'] ?? false),
+            'only_following' => (bool) ($validated['only_following'] ?? false),
+            'only_verified' => (bool) ($validated['only_verified'] ?? false),
         ];
         $user->save();
 
@@ -71,6 +88,33 @@ new class extends Component
             <span class="text-sm">{{ __('Mentions') }}</span>
         </label>
 
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="follows" />
+            <span class="text-sm">{{ __('New followers') }}</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="dms" />
+            <span class="text-sm">{{ __('Direct messages') }}</span>
+        </label>
+
+        <div class="divider my-2"></div>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="quality_filter" />
+            <span class="text-sm">{{ __('Quality filter (requires avatar + verified email)') }}</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_following" />
+            <span class="text-sm">{{ __('Only notify from accounts you follow') }}</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_verified" />
+            <span class="text-sm">{{ __('Only notify from verified accounts') }}</span>
+        </label>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
@@ -80,4 +124,3 @@ new class extends Component
         </div>
     </form>
 </section>
-

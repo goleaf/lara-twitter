@@ -6,6 +6,8 @@ use App\Http\Requests\Messages\StoreMessageRequest;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\Message;
+use App\Models\User;
+use App\Notifications\MessageReceived;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -155,6 +157,32 @@ class ConversationPage extends Component
         $this->resetPage();
 
         $this->conversation->touch();
+
+        $recipients = User::query()
+            ->whereIn('id', $otherIds)
+            ->get()
+            ->filter(fn (User $u) => ! $u->isBlockedEitherWay(Auth::user()));
+
+        foreach ($recipients as $recipient) {
+            $participant = $this->conversation->participantFor($recipient);
+            if ($participant?->is_request) {
+                continue;
+            }
+
+            if (! $recipient->wantsNotification('dms')) {
+                continue;
+            }
+
+            if (! $recipient->allowsNotificationFrom(Auth::user())) {
+                continue;
+            }
+
+            $recipient->notify(new MessageReceived(
+                conversation: $this->conversation,
+                message: $message,
+                sender: Auth::user(),
+            ));
+        }
 
         $this->markRead();
     }

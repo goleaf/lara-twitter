@@ -13,6 +13,11 @@ class UpdateNotificationPreferencesRequest extends FormRequest
             'reposts' => ['boolean'],
             'replies' => ['boolean'],
             'mentions' => ['boolean'],
+            'follows' => ['boolean'],
+            'dms' => ['boolean'],
+            'quality_filter' => ['boolean'],
+            'only_following' => ['boolean'],
+            'only_verified' => ['boolean'],
         ];
     }
 
@@ -26,4 +31,3 @@ class UpdateNotificationPreferencesRequest extends FormRequest
         return self::rulesFor();
     }
 }
-

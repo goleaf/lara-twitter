@@ -5,6 +5,15 @@
                 <div class="text-xl font-semibold">Notifications</div>
                 <button wire:click="markAllRead" class="btn btn-ghost btn-sm">Mark all as read</button>
             </div>
+
+            <div class="tabs tabs-boxed mt-4">
+                <button type="button" class="tab {{ $tab === 'all' ? 'tab-active' : '' }}" wire:click="$set('tab', 'all')">
+                    All
+                </button>
+                <button type="button" class="tab {{ $tab === 'verified' ? 'tab-active' : '' }}" wire:click="$set('tab', 'verified')">
+                    Verified
+                </button>
+            </div>
         </div>
     </div>
 
@@ -15,11 +24,27 @@
             @php($isUnread = is_null($notification->read_at))
 
             @php($postId = $data['post_id'] ?? $data['original_post_id'] ?? null)
+            @php($conversationId = $data['conversation_id'] ?? null)
+            @php($profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null)
+
+            @php($href = '#')
+            @php($navigate = false)
+
+            @if ($type === 'message_received' && $conversationId)
+                @php($href = route('messages.show', $conversationId))
+                @php($navigate = true)
+            @elseif ($type === 'user_followed' && $profileUsername)
+                @php($href = route('profile.show', ['user' => $profileUsername]))
+                @php($navigate = true)
+            @elseif ($postId)
+                @php($href = route('posts.show', $postId))
+                @php($navigate = true)
+            @endif
 
             <a
                 class="card bg-base-100 border hover:border-base-300 transition {{ $isUnread ? 'border-primary/40' : '' }}"
-                href="{{ $postId ? route('posts.show', $postId) : '#' }}"
-                @if ($postId) wire:navigate @endif
+                href="{{ $href }}"
+                @if ($navigate) wire:navigate @endif
             >
                 <div class="card-body py-4">
                     <div class="flex items-start justify-between gap-4">
@@ -34,6 +59,10 @@
                                     &#64;{{ $data['replier_username'] ?? 'someone' }} replied to your post
                                 @elseif ($type === 'post_mentioned')
                                     &#64;{{ $data['mentioned_by_username'] ?? 'someone' }} mentioned you
+                                @elseif ($type === 'user_followed')
+                                    &#64;{{ $data['follower_username'] ?? 'someone' }} followed you
+                                @elseif ($type === 'message_received')
+                                    &#64;{{ $data['sender_username'] ?? 'someone' }} sent you a message
                                 @else
                                     Notification
                                 @endif
