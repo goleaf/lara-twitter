@@ -49,6 +49,7 @@ class HashtagPage extends Component
         $query = Post::query()
             ->whereHas('hashtags', fn ($q) => $q->where('tag', $this->tag))
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',

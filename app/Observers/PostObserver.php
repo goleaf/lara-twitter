@@ -18,6 +18,27 @@ class PostObserver
     {
     }
 
+    public function saving(Post $post): void
+    {
+        // If the post starts with "@username", treat it as reply-like (limited visibility), like Twitter.
+        // ".@username" is treated as a normal post.
+        if ($post->reply_to_id) {
+            $post->is_reply_like = false;
+
+            return;
+        }
+
+        $body = ltrim((string) $post->body);
+
+        if (preg_match('/^\\.@[A-Za-z0-9_]{1,30}\\b/', $body)) {
+            $post->is_reply_like = false;
+
+            return;
+        }
+
+        $post->is_reply_like = (bool) preg_match('/^@[A-Za-z0-9_]{1,30}\\b/', $body);
+    }
+
     public function saved(Post $post): void
     {
         $existingMentionedUserIds = Mention::query()

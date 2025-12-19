@@ -73,7 +73,7 @@ class TimelinePage extends Component
             ->withCount(['likes', 'reposts', 'replies']);
 
         if (! $this->showReplies()) {
-            $query->whereNull('reply_to_id');
+            $query->whereNull('reply_to_id')->where('is_reply_like', false);
         }
 
         if (! $this->showRetweets()) {

@@ -22,8 +22,16 @@ class Post extends Model
         'reply_to_id',
         'repost_of_id',
         'reply_policy',
+        'is_reply_like',
         'body',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_reply_like' => 'boolean',
+        ];
+    }
 
     public static function replyPolicies(): array
     {

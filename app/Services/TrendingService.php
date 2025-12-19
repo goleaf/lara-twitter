@@ -19,6 +19,7 @@ class TrendingService
             ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
             ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
             ->whereNull('posts.reply_to_id')
+            ->where('posts.is_reply_like', false)
             ->where('posts.created_at', '>=', $since)
             ->groupBy('hashtags.id');
 
@@ -40,6 +41,7 @@ class TrendingService
 
         $posts = Post::query()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->where('created_at', '>=', $since)
             ->latest()
             ->limit(500)
@@ -94,4 +96,3 @@ class TrendingService
             ->all();
     }
 }
-

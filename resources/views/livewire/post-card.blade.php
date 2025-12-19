@@ -1,4 +1,5 @@
 @php($primary = $this->primaryPost())
+@php($replyingTo = $this->replyingToUsername())
 
 <div class="card bg-base-100 border">
     <div class="card-body gap-2">
@@ -7,6 +8,15 @@
                 Retweeted by
                 <a class="link link-hover" href="{{ route('profile.show', ['user' => $post->user->username]) }}" wire:navigate>
                     &#64;{{ $post->user->username }}
+                </a>
+            </div>
+        @endif
+
+        @if ($replyingTo)
+            <div class="text-sm opacity-70">
+                Replying to
+                <a class="link link-hover" href="{{ route('profile.show', ['user' => $replyingTo]) }}" wire:navigate>
+                    &#64;{{ $replyingTo }}
                 </a>
             </div>
         @endif

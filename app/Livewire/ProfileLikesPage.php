@@ -24,6 +24,7 @@ class ProfileLikesPage extends Component
             ->likedPosts()
             ->getQuery()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',
@@ -39,4 +40,3 @@ class ProfileLikesPage extends Component
         return view('livewire.profile-likes-page')->layout('layouts.app');
     }
 }
-

@@ -109,6 +109,7 @@ class ProfilePage extends Component
         return Post::query()
             ->where('user_id', $this->user->id)
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',

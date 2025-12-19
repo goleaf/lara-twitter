@@ -160,6 +160,23 @@ class PostCard extends Component
         return app(\App\Services\PostBodyRenderer::class)->render($this->post->body);
     }
 
+    public function replyingToUsername(): ?string
+    {
+        $post = $this->primaryPost();
+
+        if (! $post->is_reply_like) {
+            return null;
+        }
+
+        $body = ltrim((string) $post->body);
+
+        if (preg_match('/^@([A-Za-z0-9_]{1,30})\\b/', $body, $m)) {
+            return mb_strtolower($m[1]);
+        }
+
+        return null;
+    }
+
     public function bodyHtml(): HtmlString
     {
         return app(\App\Services\PostBodyRenderer::class)->render($this->primaryPost()->body);

@@ -327,6 +327,7 @@ class SearchPage extends Component
 
         $query = Post::query()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',

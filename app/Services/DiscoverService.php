@@ -68,6 +68,7 @@ class DiscoverService
 
         $query = Post::query()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->where('created_at', '>=', now()->subDays(7))
             ->with([
                 'user',

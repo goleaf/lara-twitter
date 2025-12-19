@@ -22,6 +22,7 @@ class BookmarksPage extends Component
             ->bookmarkedPosts()
             ->getQuery()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',
@@ -37,4 +38,3 @@ class BookmarksPage extends Component
         return view('livewire.bookmarks-page')->layout('layouts.app');
     }
 }
-

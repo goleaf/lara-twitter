@@ -75,6 +75,7 @@ class ListPage extends Component
 
         return Post::query()
             ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
             ->whereIn('user_id', $memberIds)
             ->with([
                 'user',
@@ -91,4 +92,3 @@ class ListPage extends Component
         return view('livewire.list-page')->layout('layouts.app');
     }
 }
-

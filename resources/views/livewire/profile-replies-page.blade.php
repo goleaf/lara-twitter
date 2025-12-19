@@ -38,12 +38,16 @@
 
     <div class="space-y-3">
         @foreach ($this->posts as $post)
-            <div class="opacity-70 text-sm">
-                Replying to
-                <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
-                    &#64;{{ $post->replyTo->user->username }}
-                </a>
-            </div>
+            @if ($post->reply_to_id && $post->replyTo)
+                <div class="opacity-70 text-sm">
+                    Replying to
+                    <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
+                        &#64;{{ $post->replyTo->user->username }}
+                    </a>
+                </div>
+            @elseif ($post->is_reply_like)
+                <div class="opacity-70 text-sm">Reply-like post</div>
+            @endif
             <livewire:post-card :post="$post" :key="$post->id" />
         @endforeach
     </div>
@@ -52,4 +56,3 @@
         {{ $this->posts->links() }}
     </div>
 </div>
-

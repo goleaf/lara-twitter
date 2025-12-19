@@ -27,7 +27,9 @@ class ProfileRepliesPage extends Component
     {
         return Post::query()
             ->where('user_id', $this->user->id)
-            ->whereNotNull('reply_to_id')
+            ->where(function ($q) {
+                $q->whereNotNull('reply_to_id')->orWhere('is_reply_like', true);
+            })
             ->with([
                 'user',
                 'images',
@@ -44,4 +46,3 @@ class ProfileRepliesPage extends Component
         return view('livewire.profile-replies-page')->layout('layouts.app');
     }
 }
-
