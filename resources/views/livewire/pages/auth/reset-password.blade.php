@@ -65,12 +65,22 @@ new #[Layout('layouts.app')] class extends Component
     }
 }; ?>
 
-<div class="max-w-md mx-auto">
-    <div class="card bg-base-100 border">
-        <div class="card-body">
-            <h1 class="text-xl font-semibold">Choose a new password</h1>
+<div class="max-w-md mx-auto space-y-4">
+    <div class="text-center">
+        <a class="inline-flex items-center gap-3" href="{{ route('timeline') }}" wire:navigate>
+            <x-brand-mark class="h-11 w-11" />
+            <span class="text-xl font-bold tracking-tight">{{ config('app.name', 'MiniTwitter') }}</span>
+        </a>
+    </div>
 
-            <form wire:submit="resetPassword" class="space-y-4 mt-2">
+    <div class="card bg-base-100">
+        <div class="card-body space-y-4">
+            <div class="space-y-1">
+                <h1 class="text-xl font-semibold">Choose a new password</h1>
+                <div class="text-sm opacity-70">Make it long and unique.</div>
+            </div>
+
+            <form wire:submit="resetPassword" class="space-y-4">
                 <div>
                     <x-input-label for="email" :value="__('Email')" />
                     <x-text-input wire:model="email" id="email" class="block mt-1 w-full input-sm" type="email" name="email" required autofocus autocomplete="username" />

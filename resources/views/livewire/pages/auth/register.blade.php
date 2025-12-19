@@ -33,10 +33,20 @@ new #[Layout('layouts.app')] class extends Component
     }
 }; ?>
 
-<div class="max-w-md mx-auto">
-    <div class="card bg-base-100 border">
-        <div class="card-body">
-            <h1 class="text-xl font-semibold">Create account</h1>
+<div class="max-w-md mx-auto space-y-4">
+    <div class="text-center">
+        <a class="inline-flex items-center gap-3" href="{{ route('timeline') }}" wire:navigate>
+            <x-brand-mark class="h-11 w-11" />
+            <span class="text-xl font-bold tracking-tight">{{ config('app.name', 'MiniTwitter') }}</span>
+        </a>
+    </div>
+
+    <div class="card bg-base-100">
+        <div class="card-body space-y-4">
+            <div class="space-y-1">
+                <h1 class="text-xl font-semibold">Create account</h1>
+                <div class="text-sm opacity-70">Join the conversation.</div>
+            </div>
 
             <form wire:submit="register" class="space-y-4">
                 <div>

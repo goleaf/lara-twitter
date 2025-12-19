@@ -35,22 +35,30 @@ new #[Layout('layouts.app')] class extends Component
     }
 }; ?>
 
-<div class="max-w-md mx-auto">
-    <div class="card bg-base-100 border">
-        <div class="card-body">
-            <h1 class="text-xl font-semibold">Verify your email</h1>
+<div class="max-w-md mx-auto space-y-4">
+    <div class="text-center">
+        <a class="inline-flex items-center gap-3" href="{{ route('timeline') }}" wire:navigate>
+            <x-brand-mark class="h-11 w-11" />
+            <span class="text-xl font-bold tracking-tight">{{ config('app.name', 'MiniTwitter') }}</span>
+        </a>
+    </div>
 
-            <p class="text-sm opacity-70">
-                {{ __('Check your inbox for a verification link. If you didn’t get it, resend below.') }}
-            </p>
+    <div class="card bg-base-100">
+        <div class="card-body space-y-4">
+            <div class="space-y-1">
+                <h1 class="text-xl font-semibold">Verify your email</h1>
+                <p class="text-sm opacity-70">
+                    {{ __('Check your inbox for a verification link. If you didn’t get it, resend below.') }}
+                </p>
+            </div>
 
             @if (session('status') == 'verification-link-sent')
-                <div class="alert alert-success mt-4">
+                <div class="alert alert-success">
                     <span>{{ __('A new verification link has been sent to your email address.') }}</span>
                 </div>
             @endif
 
-            <div class="mt-4 flex items-center justify-between">
+            <div class="flex items-center justify-between">
                 <x-primary-button wire:click="sendVerification">
                     {{ __('Resend Verification Email') }}
                 </x-primary-button>
