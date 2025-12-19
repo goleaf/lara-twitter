@@ -62,11 +62,11 @@ new #[Layout('layouts.app')] class extends Component
             @endif
 
             <div class="flex items-center justify-between">
-                <x-primary-button wire:click="sendVerification">
+                <x-primary-button wire:click="sendVerification" wire:loading.attr="disabled" wire:target="sendVerification">
                     {{ __('Resend Verification Email') }}
                 </x-primary-button>
 
-                <button wire:click="logout" type="button" class="btn btn-ghost btn-sm">
+                <button wire:click="logout" type="button" class="btn btn-ghost btn-sm" wire:loading.attr="disabled" wire:target="logout">
                     {{ __('Log Out') }}
                 </button>
             </div>

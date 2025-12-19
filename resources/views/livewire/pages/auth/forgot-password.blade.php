@@ -66,7 +66,7 @@ new #[Layout('layouts.app')] class extends Component
                         {{ __('Back to login') }}
                     </a>
 
-                    <x-primary-button>
+                    <x-primary-button wire:loading.attr="disabled" wire:target="sendPasswordResetLink">
                         {{ __('Email Password Reset Link') }}
                     </x-primary-button>
                 </div>

@@ -54,7 +54,7 @@ new #[Layout('layouts.app')] class extends Component
                     <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
                 </div>
 
-                <label for="remember" class="inline-flex items-center gap-2">
+                <label for="remember" class="flex items-center gap-3 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
                     <input wire:model="form.remember" id="remember" type="checkbox" class="checkbox checkbox-sm" name="remember">
                     <span class="text-sm opacity-70">{{ __('Remember me') }}</span>
                 </label>
@@ -66,7 +66,7 @@ new #[Layout('layouts.app')] class extends Component
                         </a>
                     @endif
 
-                    <x-primary-button>
+                    <x-primary-button wire:loading.attr="disabled" wire:target="login">
                         {{ __('Log in') }}
                     </x-primary-button>
                 </div>

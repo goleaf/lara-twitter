@@ -84,7 +84,7 @@ new #[Layout('layouts.app')] class extends Component
                         {{ __('Already registered?') }}
                     </a>
 
-                    <x-primary-button>
+                    <x-primary-button wire:loading.attr="disabled" wire:target="register">
                         {{ __('Register') }}
                     </x-primary-button>
                 </div>

@@ -100,7 +100,7 @@ new #[Layout('layouts.app')] class extends Component
                 </div>
 
                 <div class="flex justify-end">
-                    <x-primary-button>
+                    <x-primary-button wire:loading.attr="disabled" wire:target="resetPassword">
                         {{ __('Reset Password') }}
                     </x-primary-button>
                 </div>

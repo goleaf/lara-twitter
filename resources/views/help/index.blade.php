@@ -11,37 +11,53 @@
                 <div class="font-semibold">Topics</div>
 
                 <div class="space-y-1 pt-2">
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.blocking') }}" wire:navigate>
-                        <div class="font-medium">Block</div>
-                        <div class="text-sm opacity-60">Cut off an account</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.blocking') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Block</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Cut off an account</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.mute') }}" wire:navigate>
-                        <div class="font-medium">Mute</div>
-                        <div class="text-sm opacity-60">Hide without blocking</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.mute') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Mute</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Hide without blocking</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.direct-messages') }}" wire:navigate>
-                        <div class="font-medium">Direct Messages</div>
-                        <div class="text-sm opacity-60">Private chats</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.direct-messages') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Direct Messages</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Private chats</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.replies') }}" wire:navigate>
-                        <div class="font-medium">Replies</div>
-                        <div class="text-sm opacity-60">Threads and conversations</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.replies') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Replies</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Threads and conversations</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.likes') }}" wire:navigate>
-                        <div class="font-medium">Likes</div>
-                        <div class="text-sm opacity-60">Heart reactions</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.likes') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Likes</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Heart reactions</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.mentions') }}" wire:navigate>
-                        <div class="font-medium">Mentions</div>
-                        <div class="text-sm opacity-60">Tag and notify accounts</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.mentions') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Mentions</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Tag and notify accounts</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.hashtags') }}" wire:navigate>
-                        <div class="font-medium">Hashtags</div>
-                        <div class="text-sm opacity-60">How #tags work</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.hashtags') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Hashtags</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">How #tags work</div>
                     </a>
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.profile') }}" wire:navigate>
-                        <div class="font-medium">Profile</div>
-                        <div class="text-sm opacity-60">Your public page</div>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('help.profile') }}" wire:navigate>
+                        <div class="min-w-0">
+                            <div class="font-medium">Profile</div>
+                        </div>
+                        <div class="text-sm opacity-60 shrink-0">Your public page</div>
                     </a>
                 </div>
             </div>
