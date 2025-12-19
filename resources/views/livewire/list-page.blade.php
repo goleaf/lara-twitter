@@ -61,20 +61,57 @@
 
             @auth
                 @if (auth()->id() === $list->owner_id)
-                    <div class="divider">Manage members</div>
+                    <div class="rounded-box border border-base-200 bg-base-200/40 p-4 space-y-3">
+                        <div class="space-y-1">
+                            <div class="font-semibold">Manage members</div>
+                            <div class="text-sm opacity-70">Add or remove people by username.</div>
+                        </div>
 
-                    <form wire:submit="addMember" class="flex flex-col sm:flex-row gap-2">
-                        <input class="input input-bordered input-sm w-full" placeholder="@username" wire:model="member_username" />
-                        <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
-                    </form>
-                    <x-input-error class="mt-2" :messages="$errors->get('member_username')" />
-
-                    <div class="flex flex-wrap gap-2 pt-2">
-                        @foreach ($this->members as $member)
-                            <button type="button" class="badge badge-sm badge-neutral" wire:click="removeMember({{ $member->id }})">
-                                Remove &#64;{{ $member->username }}
+                        <form wire:submit="addMember" class="join w-full sm:max-w-md">
+                            <input
+                                class="input input-bordered input-sm join-item w-full"
+                                placeholder="@username"
+                                wire:model="member_username"
+                            />
+                            <button type="submit" class="btn btn-primary btn-sm join-item" wire:loading.attr="disabled" wire:target="addMember">
+                                Add
                             </button>
-                        @endforeach
+                        </form>
+                        <x-input-error class="mt-2" :messages="$errors->get('member_username')" />
+
+                        <div class="space-y-2">
+                            @foreach ($this->members as $member)
+                                <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2">
+                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
+                                        <div class="avatar shrink-0">
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($member->avatar_url)
+                                                    <img src="{{ $member->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                                @else
+                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                        {{ mb_strtoupper(mb_substr($member->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <div class="font-semibold truncate">
+                                                {{ $member->name }}
+                                                @if ($member->is_verified)
+                                                    <x-verified-icon class="ms-1 align-middle" />
+                                                @endif
+                                            </div>
+                                            <div class="text-xs opacity-60 truncate">&#64;{{ $member->username }}</div>
+                                        </div>
+                                    </a>
+
+                                    <button type="button" class="btn btn-ghost btn-xs text-error" wire:click="removeMember({{ $member->id }})">
+                                        Remove
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @endif
             @endauth

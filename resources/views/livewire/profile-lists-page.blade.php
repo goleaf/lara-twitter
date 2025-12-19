@@ -13,9 +13,14 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-                <div class="space-y-2">
+            <div class="flex items-center justify-between gap-3">
+                <div class="font-semibold">Public lists</div>
+                <span class="badge badge-outline badge-sm">{{ $this->lists->total() }}</span>
+            </div>
+
+            <div class="space-y-2 pt-2">
                 @forelse ($this->lists as $list)
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('lists.show', $list) }}" wire:navigate>
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('lists.show', $list) }}" wire:navigate>
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">

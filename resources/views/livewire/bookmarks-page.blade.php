@@ -5,6 +5,7 @@
                 <div class="flex items-center gap-2">
                     <div class="text-xl font-semibold">Bookmarks</div>
                     <span class="badge badge-outline badge-sm">Private</span>
+                    <span class="badge badge-ghost badge-sm">{{ $this->bookmarks->total() }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                     @if ($this->bookmarks->total())
@@ -48,7 +49,12 @@
         @empty
             <div class="card bg-base-100 border">
                 <div class="card-body">
-                    <div class="opacity-70">No bookmarks yet.</div>
+                    <div class="flex items-center gap-3">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 2a2 2 0 0 0-2 2v18l8-4 8 4V4a2 2 0 0 0-2-2H6Z" />
+                        </svg>
+                        <div class="opacity-70">No bookmarks yet.</div>
+                    </div>
                 </div>
             </div>
         @endforelse
