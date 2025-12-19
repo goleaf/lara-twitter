@@ -42,7 +42,10 @@ class HashtagPage extends Component
 
     public function getHashtagProperty(): ?Hashtag
     {
-        return Hashtag::query()->where('tag', $this->tag)->first();
+        return Hashtag::query()
+            ->where('tag', $this->tag)
+            ->withCount('posts')
+            ->first();
     }
 
     public function getPostsProperty()
