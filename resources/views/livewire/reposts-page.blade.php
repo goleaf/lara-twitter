@@ -81,8 +81,8 @@
                             <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
                         </a>
                     @empty
-                        <div class="alert">
-                            <span class="opacity-70">No retweets yet.</span>
+                        <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
+                            <div class="text-sm opacity-70">No retweets yet.</div>
                         </div>
                     @endforelse
                 </div>
