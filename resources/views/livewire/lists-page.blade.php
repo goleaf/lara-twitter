@@ -77,7 +77,9 @@
                         <div class="text-sm opacity-60 shrink-0">View</div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">No subscriptions yet.</div>
+                    <x-empty-state>
+                        No subscriptions yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
@@ -122,7 +124,9 @@
                         <div class="text-sm opacity-60 shrink-0">View</div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">No lists yet.</div>
+                    <x-empty-state>
+                        No lists yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
@@ -167,7 +171,9 @@
                         <div class="text-sm opacity-60 shrink-0">View</div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">You’re not a member of any lists.</div>
+                    <x-empty-state>
+                        You’re not a member of any lists.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>

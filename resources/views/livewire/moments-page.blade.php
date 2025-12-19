@@ -108,7 +108,9 @@
                             <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No moments yet.</div>
+                        <x-empty-state>
+                            No moments yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -160,7 +162,9 @@
                         <div class="text-sm opacity-60 shrink-0">View</div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">No public moments yet.</div>
+                    <x-empty-state>
+                        No public moments yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
