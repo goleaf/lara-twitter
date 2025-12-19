@@ -189,15 +189,11 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div class="mt-3 alert alert-warning">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9.401 3.003a3 3 0 0 1 5.198 0l7.355 12.747A3 3 0 0 1 19.355 20H4.645a3 3 0 0 1-2.599-4.25L9.401 3.003ZM12 8.25a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                    </svg>
-                    <div class="min-w-0">
-                        <div class="text-sm font-semibold">{{ __('Your email address is unverified.') }}</div>
+                <x-callout type="warning" class="mt-3" :title="__('Your email address is unverified.')">
+                    <div class="space-y-2">
                         <button
                             wire:click.prevent="sendVerification"
-                            class="link link-primary text-sm"
+                            class="link link-primary"
                             wire:loading.attr="disabled"
                             wire:target="sendVerification"
                         >
@@ -205,14 +201,12 @@ new class extends Component
                         </button>
 
                         @if (session('status') === 'verification-link-sent')
-                            <div class="mt-2">
-                                <span class="badge badge-success badge-sm">
-                                    {{ __('A new verification link has been sent to your email address.') }}
-                                </span>
-                            </div>
+                            <span class="badge badge-success badge-sm">
+                                {{ __('A new verification link has been sent to your email address.') }}
+                            </span>
                         @endif
                     </div>
-                </div>
+                </x-callout>
             @endif
         </div>
 
