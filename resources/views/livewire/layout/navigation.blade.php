@@ -16,9 +16,9 @@ new class extends Component
     }
 }; ?>
 
-<nav x-data="{ open: false }" class="bg-base-100 border-b border-base-200">
+<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-base-200 bg-base-100/90 backdrop-blur supports-[backdrop-filter]:bg-base-100/70 shadow-sm">
     <!-- Primary Navigation Menu -->
-    <div class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="navbar max-w-7xl w-full mx-auto px-4">
         <div class="flex-1 gap-2">
             <a class="btn btn-ghost btn-square" href="{{ route('dashboard') }}" wire:navigate aria-label="{{ config('app.name', 'MiniTwitter') }}">
                 <x-application-logo class="h-7 w-auto fill-current" />
@@ -75,7 +75,7 @@ new class extends Component
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div id="responsive-menu" :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-base-200">
+    <div id="responsive-menu" :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-base-200 bg-base-100/80 supports-[backdrop-filter]:bg-base-100/60 backdrop-blur">
         <div class="p-3 flex flex-col gap-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
