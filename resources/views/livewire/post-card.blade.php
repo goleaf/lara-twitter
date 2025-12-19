@@ -120,7 +120,7 @@
             </div>
         @endif
 
-        <div class="flex items-center gap-2 pt-2">
+        <div class="flex flex-wrap items-center gap-2 pt-2">
             <button
                 wire:click="toggleLike"
                 class="btn btn-ghost btn-sm {{ $this->hasLiked() ? 'text-error' : '' }}"
@@ -166,8 +166,51 @@
                 Quote
             </button>
 
-            <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Reply</a>
+            @auth
+                <button wire:click="toggleReplyComposer" class="btn btn-ghost btn-sm">
+                    {{ $isReplying ? 'Cancel' : 'Reply' }}
+                </button>
+            @else
+                <button class="btn btn-ghost btn-sm" disabled>Reply</button>
+            @endauth
+
+            <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Thread</a>
         </div>
+
+        @if ($replyError)
+            <div class="pt-2 text-error text-sm">{{ $replyError }}</div>
+        @endif
+
+        @if ($isReplying || $showThread)
+            <div class="pt-3 space-y-3 pl-6 border-l border-base-300">
+                @if ($isReplying)
+                    <div class="card bg-base-200 border">
+                        <div class="card-body gap-3">
+                            <div class="font-semibold">Reply</div>
+                            <livewire:reply-composer :post="$primary" :key="'inline-reply-composer-'.$post->id" />
+                        </div>
+                    </div>
+                @endif
+
+                @if ($showThread)
+                    @php($threadReplies = $this->threadReplies)
+                    @if ($threadReplies->isNotEmpty())
+                        @foreach ($threadReplies as $reply)
+                            <livewire:post-card :post="$reply" :key="'thread-reply-'.$post->id.'-'.$reply->id" />
+                        @endforeach
+                    @else
+                        <div class="text-sm opacity-60">No replies yet.</div>
+                    @endif
+
+                    <div class="flex items-center justify-between gap-2">
+                        <a class="link link-primary text-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>
+                            View full thread
+                        </a>
+                        <button type="button" wire:click="hideThread" class="btn btn-ghost btn-xs">Hide</button>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         @if ($isQuoting)
             <div class="pt-3">
