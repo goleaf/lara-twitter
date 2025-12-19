@@ -80,7 +80,7 @@ class ExploreTest extends TestCase
 
         $response = $this->actingAs($viewer)->get(route('explore'));
 
-        $response->assertOk()->assertSee('Recommended accounts')->assertSee('bob');
+        $response->assertOk()->assertSee('Discover people')->assertSee('bob');
     }
 
     public function test_recommended_accounts_falls_back_to_popular_users_when_no_mutuals(): void
@@ -90,7 +90,7 @@ class ExploreTest extends TestCase
 
         $response = $this->actingAs($viewer)->get(route('explore'));
 
-        $response->assertOk()->assertSee('Recommended accounts')->assertSee('alice');
+        $response->assertOk()->assertSee('Discover people')->assertSee('alice');
     }
 
     public function test_explore_news_tab_shows_top_stories_from_public_moments(): void
