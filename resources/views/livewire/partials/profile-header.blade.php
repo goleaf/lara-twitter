@@ -11,7 +11,7 @@
         <div class="-mt-12 flex items-end justify-between gap-4">
             <div class="flex items-end gap-3">
                 <div class="avatar">
-                    <div class="w-20 rounded-full border border-base-200 bg-base-100 ring-4 ring-white shadow-sm">
+                    <div class="w-20 rounded-full border border-base-200 bg-base-100 ring-4 ring-base-100 shadow-sm">
                         @if ($user->avatar_url)
                             <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
                         @else
@@ -33,39 +33,39 @@
                 </div>
             </div>
 
-            @auth
-                @if (auth()->id() !== $user->id)
-                    <div class="flex flex-wrap items-center justify-end gap-2">
-                        <a class="btn btn-outline btn-sm" href="{{ route('messages.new', ['user' => $user]) }}" wire:navigate>Message</a>
-                        <button wire:click="toggleFollow" class="btn btn-sm {{ $this->isFollowing ? 'btn-outline' : 'btn-primary' }}">
-                            {{ $this->isFollowing ? 'Unfollow' : 'Follow' }}
-                        </button>
-
-                        <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="btn btn-ghost btn-sm">More</div>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border">
-                                <li>
-                                    <livewire:report-button
-                                        :reportable-type="\App\Models\User::class"
-                                        :reportable-id="$user->id"
+	            @auth
+	                @if (auth()->id() !== $user->id)
+	                    <div class="flex flex-wrap items-center justify-end gap-2">
+	                        <a class="btn btn-outline btn-sm" href="{{ route('messages.new', ['user' => $user]) }}" wire:navigate>Message</a>
+	                        <button wire:click="toggleFollow" wire:loading.attr="disabled" wire:target="toggleFollow" class="btn btn-sm {{ $this->isFollowing ? 'btn-outline' : 'btn-primary' }}">
+	                            {{ $this->isFollowing ? 'Unfollow' : 'Follow' }}
+	                        </button>
+	
+	                        <div class="dropdown dropdown-end">
+	                            <div tabindex="0" role="button" class="btn btn-ghost btn-sm">More</div>
+	                            <ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-52 p-2">
+	                                <li>
+	                                    <livewire:report-button
+	                                        :reportable-type="\App\Models\User::class"
+	                                        :reportable-id="$user->id"
                                         label="Report"
                                         button-class="btn btn-ghost btn-sm justify-start w-full"
                                         :show-notice="false"
                                         :key="'report-user-'.$user->id"
-                                    />
-                                </li>
-                                <li>
-                                    <button type="button" wire:click="toggleMute">
-                                        {{ $this->isMuted ? 'Unmute' : 'Mute' }}
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="button" wire:click="toggleBlock" class="text-error">
-                                        {{ $this->hasBlocked ? 'Unblock' : 'Block' }}
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+	                                    />
+	                                </li>
+	                                <li>
+	                                    <button type="button" wire:click="toggleMute" wire:loading.attr="disabled" wire:target="toggleMute" class="btn btn-ghost btn-sm justify-start w-full">
+	                                        {{ $this->isMuted ? 'Unmute' : 'Mute' }}
+	                                    </button>
+	                                </li>
+	                                <li>
+	                                    <button type="button" wire:click="toggleBlock" wire:loading.attr="disabled" wire:target="toggleBlock" class="btn btn-ghost btn-sm justify-start w-full text-error">
+	                                        {{ $this->hasBlocked ? 'Unblock' : 'Block' }}
+	                                    </button>
+	                                </li>
+	                            </ul>
+	                        </div>
                     </div>
                 @else
                     <a class="btn btn-outline btn-sm" href="{{ route('profile') }}" wire:navigate>Edit profile</a>
