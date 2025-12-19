@@ -8,11 +8,13 @@ new class extends Component
 {
     public string $dm_policy = 'everyone';
     public bool $dm_allow_requests = true;
+    public bool $dm_read_receipts = true;
 
     public function mount(): void
     {
         $this->dm_policy = Auth::user()->dm_policy ?? 'everyone';
         $this->dm_allow_requests = (bool) (Auth::user()->dm_allow_requests ?? true);
+        $this->dm_read_receipts = (bool) (Auth::user()->dm_read_receipts ?? true);
     }
 
     public function save(): void
@@ -51,10 +53,18 @@ new class extends Component
         </div>
         <x-input-error class="mt-2" :messages="$errors->get('dm_allow_requests')" />
 
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <div class="font-medium text-gray-900">Read receipts</div>
+                <div class="text-sm text-gray-600">If disabled, others won’t see when you’ve read their messages.</div>
+            </div>
+            <input type="checkbox" class="toggle" wire:model="dm_read_receipts" />
+        </div>
+        <x-input-error class="mt-2" :messages="$errors->get('dm_read_receipts')" />
+
         <div class="flex items-center gap-4">
             <x-primary-button>Save</x-primary-button>
             <x-action-message class="me-3" on="dm-settings-updated">Saved.</x-action-message>
         </div>
     </form>
 </section>
-
