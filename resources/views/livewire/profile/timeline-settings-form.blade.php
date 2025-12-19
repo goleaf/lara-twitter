@@ -43,7 +43,7 @@ new class extends Component
                 <div class="font-medium">Show replies</div>
                 <div class="text-sm opacity-70">Include replies from accounts you follow.</div>
             </div>
-            <input type="checkbox" class="toggle" wire:model="show_replies" />
+            <input type="checkbox" class="toggle toggle-sm" wire:model="show_replies" />
         </div>
         <x-input-error class="mt-2" :messages="$errors->get('show_replies')" />
 
@@ -52,7 +52,7 @@ new class extends Component
                 <div class="font-medium">Show retweets</div>
                 <div class="text-sm opacity-70">Include retweets from accounts you follow.</div>
             </div>
-            <input type="checkbox" class="toggle" wire:model="show_retweets" />
+            <input type="checkbox" class="toggle toggle-sm" wire:model="show_retweets" />
         </div>
         <x-input-error class="mt-2" :messages="$errors->get('show_retweets')" />
 

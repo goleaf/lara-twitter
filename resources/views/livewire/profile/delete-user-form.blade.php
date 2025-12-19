@@ -57,7 +57,7 @@ new class extends Component
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
+                    class="mt-1 block w-full max-w-sm input-sm"
                     placeholder="{{ __('Password') }}"
                 />
 
