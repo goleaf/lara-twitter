@@ -109,16 +109,15 @@
                         <div class="text-xs opacity-60">
                             {{ $last?->created_at?->diffForHumans() }}
                         </div>
-                            <button
-                                type="button"
-                                wire:click.prevent="togglePin({{ $conversation->id }})"
-                                class="btn btn-ghost btn-xs"
-                                wire:loading.attr="disabled"
-                                wire:target="togglePin({{ $conversation->id }})"
-                            >
-                                {{ $meParticipant?->is_pinned ? 'Unpin' : 'Pin' }}
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            wire:click.prevent="togglePin({{ $conversation->id }})"
+                            class="btn btn-ghost btn-xs"
+                            wire:loading.attr="disabled"
+                            wire:target="togglePin({{ $conversation->id }})"
+                        >
+                            {{ $meParticipant?->is_pinned ? 'Unpin' : 'Pin' }}
+                        </button>
                     </div>
                 </div>
         @empty
