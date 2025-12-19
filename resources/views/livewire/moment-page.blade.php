@@ -6,7 +6,7 @@
                     <a class="avatar shrink-0" href="{{ route('profile.show', ['user' => $moment->owner]) }}" wire:navigate>
                         <div class="w-12 rounded-full border border-base-200 bg-base-100">
                             @if ($moment->owner->avatar_url)
-                                <img src="{{ $moment->owner->avatar_url }}" alt="" />
+                                <img src="{{ $moment->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
                             @else
                                 <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
                                     {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
@@ -33,7 +33,7 @@
             @php($coverUrl = $moment->coverUrl())
             @if ($coverUrl)
                 <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200" style="aspect-ratio: 16 / 9;">
-                    <img class="h-full w-full object-cover" src="{{ $coverUrl }}" alt="Moment cover image" loading="lazy" />
+                    <img class="h-full w-full object-cover" src="{{ $coverUrl }}" alt="Moment cover image" loading="lazy" decoding="async" />
                 </div>
             @endif
 

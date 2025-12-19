@@ -76,9 +76,9 @@
                         <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
                             <div class="flex items-start gap-3 min-w-0">
                                 <div class="shrink-0">
-                                    <div class="w-14 h-14 rounded-box border border-base-200 bg-base-100 overflow-hidden">
+                                    <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
                                         @if ($cover)
-                                            <img class="w-full h-full object-cover" src="{{ $cover }}" alt="" />
+                                            <img class="w-full h-full object-cover" src="{{ $cover }}" alt="{{ $moment->title }} cover image" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
                                         @endif
@@ -118,9 +118,9 @@
                     <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
                         <div class="flex items-start gap-3 min-w-0">
                             <div class="shrink-0">
-                                <div class="w-14 h-14 rounded-box border border-base-200 bg-base-100 overflow-hidden">
+                                <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
                                     @if ($cover)
-                                        <img class="w-full h-full object-cover" src="{{ $cover }}" alt="" />
+                                        <img class="w-full h-full object-cover" src="{{ $cover }}" alt="{{ $moment->title }} cover image" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
                                     @endif
@@ -131,14 +131,14 @@
                                 <div class="font-semibold truncate">{{ $moment->title }}</div>
                                 <div class="flex items-center gap-2 text-xs opacity-60 min-w-0">
                                     <div class="avatar shrink-0">
-                                        <div class="w-6 rounded-full border border-base-200 bg-base-100">
-                                            @if ($moment->owner->avatar_url)
-                                                <img src="{{ $moment->owner->avatar_url }}" alt="" />
-                                            @else
-                                                <div class="bg-base-200 grid place-items-center h-full w-full text-[10px] font-semibold">
-                                                    {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
-                                                </div>
-                                            @endif
+                                    <div class="w-6 rounded-full border border-base-200 bg-base-100">
+                                        @if ($moment->owner->avatar_url)
+                                            <img src="{{ $moment->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-[10px] font-semibold">
+                                                {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
+                                            </div>
+                                        @endif
                                         </div>
                                     </div>
                                     <div class="truncate min-w-0">
