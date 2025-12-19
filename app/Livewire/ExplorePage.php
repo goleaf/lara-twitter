@@ -20,7 +20,7 @@ class ExplorePage extends Component
 
     public function mount(): void
     {
-        $this->tab = in_array($this->tab, ['for-you', 'trending', 'news', 'sports', 'entertainment', 'technology'], true) ? $this->tab : 'trending';
+        $this->tab = in_array($this->tab, ['for-you', 'trending', 'news', 'politics', 'sports', 'entertainment', 'technology'], true) ? $this->tab : 'trending';
     }
 
     public function search(): void

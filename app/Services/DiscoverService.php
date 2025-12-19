@@ -15,6 +15,7 @@ class DiscoverService
     {
         return [
             'news' => ['news', 'world', 'tech', 'business'],
+            'politics' => ['politics', 'election', 'government', 'policy'],
             'sports' => ['sports', 'football', 'soccer', 'nba', 'f1'],
             'entertainment' => ['music', 'movies', 'tv', 'gaming'],
             'technology' => ['tech', 'ai', 'programming', 'laravel', 'php'],

@@ -19,6 +19,7 @@
                 <a class="tab {{ $tab === 'for-you' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'for-you']) }}" wire:navigate>For You</a>
                 <a class="tab {{ $tab === 'trending' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'trending']) }}" wire:navigate>Trending</a>
                 <a class="tab {{ $tab === 'news' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'news']) }}" wire:navigate>News</a>
+                <a class="tab {{ $tab === 'politics' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'politics']) }}" wire:navigate>Politics</a>
                 <a class="tab {{ $tab === 'sports' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'sports']) }}" wire:navigate>Sports</a>
                 <a class="tab {{ $tab === 'entertainment' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'entertainment']) }}" wire:navigate>Entertainment</a>
                 <a class="tab {{ $tab === 'technology' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'technology']) }}" wire:navigate>Technology</a>
