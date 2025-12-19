@@ -1,4 +1,7 @@
 <div class="max-w-2xl mx-auto space-y-4">
+    @php($recipientCount = count($recipientUserIds))
+    @php($isGroup = $recipientCount >= 2)
+
     <div class="card bg-base-100 border">
         <div class="card-body space-y-4">
             <div class="flex items-center justify-between gap-4">
@@ -25,12 +28,33 @@
                 </div>
             </div>
 
-            @if (count($recipientUserIds))
-                <div class="flex flex-wrap gap-2">
+            @if ($recipientCount)
+                <div class="space-y-2">
                     @foreach ($this->recipients as $user)
-                        <button type="button" class="badge badge-sm badge-neutral" wire:click="removeRecipient({{ $user->id }})">
-                            Remove &#64;{{ $user->username }}
-                        </button>
+                        <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 border border-base-200 bg-base-200/40">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="avatar shrink-0">
+                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                        @if ($user->avatar_url)
+                                            <img src="{{ $user->avatar_url }}" alt="" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate">{{ $user->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">&#64;{{ $user->username }}</div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-ghost btn-xs" wire:click="removeRecipient({{ $user->id }})">
+                                Remove
+                            </button>
+                        </div>
                     @endforeach
                 </div>
             @endif
@@ -40,11 +64,17 @@
     <div class="card bg-base-100 border">
         <div class="card-body space-y-3">
             <form wire:submit="create" class="space-y-3">
-                <div>
-                    <x-input-label for="title" value="Group title (optional)" />
-                    <x-text-input id="title" class="mt-1 block w-full input-sm" wire:model="title" />
-                    <x-input-error class="mt-2" :messages="$errors->get('title')" />
-                </div>
+                @if ($isGroup)
+                    <div>
+                        <x-input-label for="title" value="Group title (optional)" />
+                        <x-text-input id="title" class="mt-1 block w-full input-sm" wire:model="title" />
+                        <x-input-error class="mt-2" :messages="$errors->get('title')" />
+                    </div>
+                @elseif ($recipientCount === 1)
+                    <div class="text-sm opacity-70">
+                        This will start a direct message.
+                    </div>
+                @endif
 
                 <div class="flex justify-end">
                     <button type="submit" class="btn btn-primary btn-sm" @disabled(count($recipientUserIds) === 0)>
