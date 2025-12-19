@@ -39,6 +39,7 @@ Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashb
 
 Route::view('help', 'help.index')->name('help.index');
 Route::view('help/hashtags', 'help.hashtags')->name('help.hashtags');
+Route::view('help/profile', 'help.profile')->name('help.profile');
 
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');
