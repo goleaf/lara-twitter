@@ -17,7 +17,7 @@
                                     <div class="avatar">
                                         <div class="w-10 rounded-full border border-base-200 bg-base-100">
                                             @if ($u->avatar_url)
-                                                <img src="{{ $u->avatar_url }}" alt="" />
+                                                <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                             @else
                                                 <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
                                                     {{ mb_strtoupper(mb_substr($u->name ?? $u->username ?? 'U', 0, 1)) }}
@@ -39,7 +39,7 @@
                             <div class="avatar">
                                 <div class="w-12 rounded-full border border-base-200 bg-base-100">
                                     @if ($other?->avatar_url)
-                                        <img src="{{ $other->avatar_url }}" alt="" />
+                                        <img src="{{ $other->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-lg font-semibold">
                                             {{ mb_strtoupper(mb_substr($other?->name ?? $other?->username ?? 'U', 0, 1)) }}
@@ -162,7 +162,7 @@
 
                                 @if (str_starts_with($attachment->mime_type, 'image/'))
                                     <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-                                        <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" />
+                                        <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" decoding="async" />
                                     </div>
                                 @elseif (str_starts_with($attachment->mime_type, 'video/'))
                                     <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
