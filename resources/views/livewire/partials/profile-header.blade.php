@@ -2,7 +2,7 @@
     @if ($user->header_url)
         <div class="h-32 sm:h-40 bg-cover bg-center" style="background-image: url('{{ $user->header_url }}')"></div>
     @else
-        <div class="h-32 sm:h-40 bg-base-200"></div>
+        <div class="h-32 sm:h-40 bg-gradient-to-r from-primary/15 via-accent/10 to-secondary/10"></div>
     @endif
 
     <div class="card-body">
@@ -36,7 +36,7 @@
                     <div class="flex gap-2">
                         <a class="btn btn-outline btn-sm" href="{{ route('messages.new', ['user' => $user]) }}" wire:navigate>Message</a>
                         <livewire:report-button :reportable-type="\App\Models\User::class" :reportable-id="$user->id" label="Report" :key="'report-user-'.$user->id" />
-                        <button wire:click="toggleFollow" class="btn btn-outline btn-sm">
+                        <button wire:click="toggleFollow" class="btn btn-sm {{ $this->isFollowing ? 'btn-outline' : 'btn-primary' }}">
                             {{ $this->isFollowing ? 'Unfollow' : 'Follow' }}
                         </button>
                         <button wire:click="toggleMute" class="btn btn-outline btn-sm">

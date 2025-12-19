@@ -40,7 +40,7 @@
             @endif
 
             <a
-                class="card bg-base-100 border hover:border-base-300 transition {{ $isUnread ? 'border-primary/40' : '' }}"
+                class="card bg-base-100 card-hover {{ $isUnread ? 'ring-1 ring-primary/20' : '' }}"
                 href="{{ $href }}"
                 wire:click.prevent="open('{{ $notification->id }}')"
             >
