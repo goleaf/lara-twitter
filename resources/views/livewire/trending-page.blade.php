@@ -3,16 +3,20 @@
         <div class="card-body">
             <div class="flex items-center justify-between gap-4">
                 <div class="text-xl font-semibold">Trending</div>
-                @auth
-                    @if (auth()->user()->location)
-                        <div class="text-sm opacity-70">{{ auth()->user()->location }}</div>
-                    @endif
-                @endauth
+                <div class="flex items-center gap-2">
+                    <input
+                        class="input input-bordered input-sm w-48"
+                        type="text"
+                        placeholder="Location (optional)"
+                        wire:model.live.debounce.400ms="loc"
+                    />
+                    <a class="btn btn-ghost btn-sm" href="{{ route('trending', ['tab' => $tab, 'loc' => '']) }}" wire:navigate>Global</a>
+                </div>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
-                <a class="tab {{ $tab === 'hashtags' ? 'tab-active' : '' }}" href="{{ route('trending', ['tab' => 'hashtags']) }}" wire:navigate>Hashtags</a>
-                <a class="tab {{ $tab === 'keywords' ? 'tab-active' : '' }}" href="{{ route('trending', ['tab' => 'keywords']) }}" wire:navigate>Keywords</a>
+                <a class="tab {{ $tab === 'hashtags' ? 'tab-active' : '' }}" href="{{ route('trending', ['tab' => 'hashtags', 'loc' => $loc]) }}" wire:navigate>Hashtags</a>
+                <a class="tab {{ $tab === 'keywords' ? 'tab-active' : '' }}" href="{{ route('trending', ['tab' => 'keywords', 'loc' => $loc]) }}" wire:navigate>Keywords</a>
             </div>
         </div>
     </div>
@@ -39,10 +43,13 @@
                 <div class="font-semibold">Trending hashtags (24h)</div>
                 <div class="flex flex-wrap gap-2 pt-2">
                     @forelse ($this->trendingHashtags as $tag)
-                        <a class="badge badge-outline" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
-                            #{{ $tag->tag }}
-                            <span class="opacity-60 ms-1">{{ $tag->uses_count }}</span>
-                        </a>
+                        <div class="flex items-center gap-1">
+                            <a class="badge badge-outline" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                                #{{ $tag->tag }}
+                                <span class="opacity-60 ms-1">{{ $tag->uses_count }}</span>
+                            </a>
+                            <livewire:report-button :reportable-type="\App\Models\Hashtag::class" :reportable-id="$tag->id" label="Report" :key="'report-tag-'.$tag->id" />
+                        </div>
                     @empty
                         <div class="opacity-70 text-sm">No hashtags yet.</div>
                     @endforelse
@@ -51,4 +58,3 @@
         </div>
     @endif
 </div>
-

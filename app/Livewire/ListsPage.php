@@ -55,9 +55,18 @@ class ListsPage extends Component
             ->get();
     }
 
+    public function getSubscribedListsProperty()
+    {
+        return Auth::user()
+            ->listsSubscribed()
+            ->with('owner')
+            ->withCount('members')
+            ->latest('user_list_subscriptions.created_at')
+            ->get();
+    }
+
     public function render()
     {
         return view('livewire.lists-page')->layout('layouts.app');
     }
 }
-

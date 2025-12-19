@@ -36,6 +36,9 @@
             @elseif ($type === 'user_followed' && $profileUsername)
                 @php($href = route('profile.show', ['user' => $profileUsername]))
                 @php($navigate = true)
+            @elseif ($type === 'added_to_list' && ($data['list_id'] ?? null))
+                @php($href = route('lists.show', $data['list_id']))
+                @php($navigate = true)
             @elseif ($postId)
                 @php($href = route('posts.show', $postId))
                 @php($navigate = true)
@@ -63,6 +66,8 @@
                                     &#64;{{ $data['follower_username'] ?? 'someone' }} followed you
                                 @elseif ($type === 'message_received')
                                     &#64;{{ $data['sender_username'] ?? 'someone' }} sent you a message
+                                @elseif ($type === 'added_to_list')
+                                    You were added to the list “{{ $data['list_name'] ?? 'a list' }}”
                                 @else
                                     Notification
                                 @endif

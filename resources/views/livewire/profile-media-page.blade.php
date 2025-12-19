@@ -36,24 +36,14 @@
             <div class="tabs tabs-boxed mt-4">
                 <a class="tab" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
                 <a class="tab" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
-                <a class="tab tab-active" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
-                <a class="tab" href="{{ route('profile.media', ['user' => $user]) }}" wire:navigate>Media</a>
+                <a class="tab" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
+                <a class="tab tab-active" href="{{ route('profile.media', ['user' => $user]) }}" wire:navigate>Media</a>
             </div>
         </div>
     </div>
 
     <div class="space-y-3">
         @foreach ($this->posts as $post)
-            @if ($post->reply_to_id && $post->replyTo)
-                <div class="opacity-70 text-sm">
-                    Replying to
-                    <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
-                        &#64;{{ $post->replyTo->user->username }}
-                    </a>
-                </div>
-            @elseif ($post->is_reply_like)
-                <div class="opacity-70 text-sm">Reply-like post</div>
-            @endif
             <livewire:post-card :post="$post" :key="$post->id" />
         @endforeach
     </div>
@@ -62,3 +52,4 @@
         {{ $this->posts->links() }}
     </div>
 </div>
+

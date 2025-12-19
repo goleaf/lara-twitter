@@ -12,6 +12,7 @@ use App\Livewire\PostPage;
 use App\Livewire\PostLikesPage;
 use App\Livewire\RepostsPage;
 use App\Livewire\ProfileLikesPage;
+use App\Livewire\ProfileMediaPage;
 use App\Livewire\ProfileRepliesPage;
 use App\Livewire\ProfilePage;
 use App\Livewire\ExplorePage;
@@ -35,6 +36,7 @@ Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashb
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');
 Route::get('/@{user}/replies', ProfileRepliesPage::class)->name('profile.replies');
+Route::get('/@{user}/media', ProfileMediaPage::class)->name('profile.media');
 Route::get('/@{user}/followers', FollowersPage::class)->name('profile.followers');
 Route::get('/@{user}/following', FollowingPage::class)->name('profile.following');
 

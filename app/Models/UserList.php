@@ -37,6 +37,11 @@ class UserList extends Model
         return $this->belongsToMany(User::class, 'user_list_user')->withTimestamps();
     }
 
+    public function subscribers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_list_subscriptions')->withTimestamps();
+    }
+
     public function isVisibleTo(?User $viewer): bool
     {
         if (! $this->is_private) {
@@ -54,4 +59,3 @@ class UserList extends Model
         return $this->members()->where('user_id', $viewer->id)->exists();
     }
 }
-

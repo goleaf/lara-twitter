@@ -39,6 +39,7 @@ class User extends Authenticatable implements FilamentUser
         'dm_policy',
         'dm_allow_requests',
         'timeline_settings',
+        'pinned_post_id',
     ];
 
     /**
@@ -160,6 +161,7 @@ class User extends Authenticatable implements FilamentUser
             'mentions' => true,
             'follows' => true,
             'dms' => true,
+            'lists' => true,
         ];
 
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);
@@ -238,6 +240,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsToMany(UserList::class, 'user_list_user')->withTimestamps();
     }
 
+    public function listsSubscribed(): BelongsToMany
+    {
+        return $this->belongsToMany(UserList::class, 'user_list_subscriptions')->withTimestamps();
+    }
+
     public function blocksInitiated(): HasMany
     {
         return $this->hasMany(Block::class, 'blocker_id');
@@ -286,6 +293,11 @@ class User extends Authenticatable implements FilamentUser
     public function moments(): HasMany
     {
         return $this->hasMany(Moment::class, 'owner_id');
+    }
+
+    public function pinnedPost(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Post::class, 'pinned_post_id');
     }
 
     public function reportsMade(): HasMany

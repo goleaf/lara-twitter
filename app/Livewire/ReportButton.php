@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Http\Requests\Reports\StoreReportRequest;
+use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
@@ -77,10 +78,14 @@ class ReportButton extends Component
             return User::query()->findOrFail($this->reportableId);
         }
 
+        if ($this->reportableType === Hashtag::class) {
+            return Hashtag::query()->findOrFail($this->reportableId);
+        }
+
         throw new ModelNotFoundException();
     }
 
-    private function ensureNotSelfReport(Post|User $reportable): void
+    private function ensureNotSelfReport(Post|User|Hashtag $reportable): void
     {
         $reporterId = Auth::id();
 
@@ -100,4 +105,3 @@ class ReportButton extends Component
         ]);
     }
 }
-

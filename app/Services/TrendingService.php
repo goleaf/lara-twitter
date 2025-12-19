@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class TrendingService
 {
-    public function trendingHashtags(?User $viewer, int $limit = 10): Collection
+    public function trendingHashtags(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
         $since = now()->subDay();
 
@@ -18,10 +18,17 @@ class TrendingService
             ->selectRaw('count(*) as uses_count')
             ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
             ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
+            ->join('users', 'users.id', '=', 'posts.user_id')
             ->whereNull('posts.reply_to_id')
             ->where('posts.is_reply_like', false)
             ->where('posts.created_at', '>=', $since)
             ->groupBy('hashtags.id');
+
+        $location = is_string($location) ? trim($location) : null;
+        if ($location) {
+            $needle = '%'.mb_strtolower($location).'%';
+            $query->whereRaw('lower(users.location) like ?', [$needle]);
+        }
 
         $interests = $this->normalizedInterests($viewer);
         if (count($interests)) {
@@ -35,18 +42,27 @@ class TrendingService
             ->get();
     }
 
-    public function trendingKeywords(int $limit = 15): Collection
+    public function trendingKeywords(int $limit = 15, ?string $location = null): Collection
     {
         $since = now()->subDay();
 
-        $posts = Post::query()
+        $postsQuery = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
             ->where('created_at', '>=', $since)
             ->latest()
-            ->limit(500)
-            ->pluck('body')
-            ->all();
+            ->limit(500);
+
+        $location = is_string($location) ? trim($location) : null;
+        if ($location) {
+            $needle = '%'.mb_strtolower($location).'%';
+            $postsQuery
+                ->join('users', 'users.id', '=', 'posts.user_id')
+                ->whereRaw('lower(users.location) like ?', [$needle])
+                ->select('posts.body');
+        }
+
+        $posts = $postsQuery->pluck('body')->all();
 
         $stopwords = array_fill_keys([
             'the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'you', 'are', 'was', 'were', 'have', 'has',

@@ -20,7 +20,7 @@ class ProfilePage extends Component
 
     public function mount(User $user): void
     {
-        $this->user = $user->loadCount(['followers', 'following']);
+        $this->user = $user->loadCount(['followers', 'following'])->loadMissing(['pinnedPost.user', 'pinnedPost.images', 'pinnedPost.repostOf.user', 'pinnedPost.repostOf.images']);
 
         if (Auth::check() && Auth::id() !== $this->user->id) {
             abort_if(Auth::user()->isBlockedEitherWay($this->user), 403);
@@ -115,6 +115,7 @@ class ProfilePage extends Component
             ->where('user_id', $this->user->id)
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
+            ->when($this->user->pinned_post_id, fn ($q) => $q->where('id', '!=', $this->user->pinned_post_id))
             ->with([
                 'user',
                 'images',

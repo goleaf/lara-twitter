@@ -22,7 +22,12 @@
                     </div>
 
                     <div>
-                        <div class="text-xl font-bold">{{ $user->name }}</div>
+                        <div class="text-xl font-bold">
+                            {{ $user->name }}
+                            @if ($user->is_verified)
+                                <span class="badge badge-primary badge-sm align-middle ms-1">Verified</span>
+                            @endif
+                        </div>
                         <div class="opacity-60">&#64;{{ $user->username }}</div>
                     </div>
                 </div>
@@ -79,9 +84,19 @@
                 <a class="tab tab-active" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
                 <a class="tab" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
                 <a class="tab" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
+                <a class="tab" href="{{ route('profile.media', ['user' => $user]) }}" wire:navigate>Media</a>
             </div>
         </div>
     </div>
+
+    @if ($user->pinnedPost)
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="text-sm opacity-70">Pinned</div>
+                <livewire:post-card :post="$user->pinnedPost" :key="'pinned-'.$user->pinnedPost->id" />
+            </div>
+        </div>
+    @endif
 
     <div class="space-y-3">
         @foreach ($this->posts as $post)

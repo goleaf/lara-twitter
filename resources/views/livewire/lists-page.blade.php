@@ -30,6 +30,31 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
+            <div class="font-semibold">Subscribed</div>
+            <div class="space-y-2 pt-2">
+                @forelse ($this->subscribedLists as $list)
+                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('lists.show', $list) }}" wire:navigate>
+                        <div class="card-body py-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate">{{ $list->name }}</div>
+                                    <div class="text-sm opacity-70 truncate">by &#64;{{ $list->owner->username }}</div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0">
+                                    {{ $list->members_count }} members{{ $list->is_private ? ' · Private' : '' }}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="opacity-70 text-sm">No subscriptions yet.</div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 border">
+        <div class="card-body">
             <div class="font-semibold">Your lists</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->ownedLists as $list)
@@ -80,4 +105,3 @@
         </div>
     </div>
 </div>
-

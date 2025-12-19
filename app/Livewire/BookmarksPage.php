@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,6 +15,14 @@ class BookmarksPage extends Component
     public function mount(): void
     {
         abort_unless(Auth::check(), 403);
+    }
+
+    public function clearAll(): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        DB::table('bookmarks')->where('user_id', Auth::id())->delete();
+        $this->resetPage();
     }
 
     public function getPostsProperty()

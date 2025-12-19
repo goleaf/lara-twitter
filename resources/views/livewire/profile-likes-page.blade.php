@@ -22,7 +22,12 @@
                     </div>
 
                     <div>
-                        <div class="text-xl font-bold">{{ $user->name }}</div>
+                        <div class="text-xl font-bold">
+                            {{ $user->name }}
+                            @if ($user->is_verified)
+                                <span class="badge badge-primary badge-sm align-middle ms-1">Verified</span>
+                            @endif
+                        </div>
                         <div class="opacity-60">&#64;{{ $user->username }}</div>
                     </div>
                 </div>
@@ -65,6 +70,7 @@
                 <a class="tab" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
                 <a class="tab tab-active" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
                 <a class="tab" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
+                <a class="tab" href="{{ route('profile.media', ['user' => $user]) }}" wire:navigate>Media</a>
             </div>
         </div>
     </div>

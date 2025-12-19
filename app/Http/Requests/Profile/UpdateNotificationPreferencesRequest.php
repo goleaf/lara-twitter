@@ -18,6 +18,7 @@ class UpdateNotificationPreferencesRequest extends FormRequest
             'quality_filter' => ['boolean'],
             'only_following' => ['boolean'],
             'only_verified' => ['boolean'],
+            'lists' => ['boolean'],
         ];
     }
 

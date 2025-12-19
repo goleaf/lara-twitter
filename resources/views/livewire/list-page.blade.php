@@ -4,13 +4,28 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="min-w-0">
                     <div class="text-xl font-semibold truncate">{{ $list->name }}</div>
-                    <div class="text-sm opacity-70">by &#64;{{ $list->owner->username }} · {{ $list->members_count }} members{{ $list->is_private ? ' · Private' : '' }}</div>
+                    <div class="text-sm opacity-70">
+                        by &#64;{{ $list->owner->username }}
+                        · {{ $list->members_count }} members
+                        · {{ $list->subscribers_count ?? 0 }} subscribers
+                        {{ $list->is_private ? ' · Private' : '' }}
+                    </div>
                     @if ($list->description)
                         <div class="pt-2">{{ $list->description }}</div>
                     @endif
                 </div>
                 <a class="btn btn-ghost btn-sm" href="{{ route('lists.index') }}" wire:navigate>Back</a>
             </div>
+
+            @auth
+                @if (! $list->is_private && auth()->id() !== $list->owner_id)
+                    <div>
+                        <button class="btn btn-outline btn-sm" wire:click="toggleSubscribe">
+                            {{ $this->isSubscribed() ? 'Unsubscribe' : 'Subscribe' }}
+                        </button>
+                    </div>
+                @endif
+            @endauth
 
             <div class="flex flex-wrap gap-2">
                 @foreach ($this->members as $member)
@@ -52,4 +67,3 @@
         {{ $this->posts->links() }}
     </div>
 </div>
-

@@ -6,6 +6,7 @@ use App\Http\Requests\Lists\AddListMemberRequest;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\UserList;
+use App\Notifications\AddedToList;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -21,11 +22,37 @@ class ListPage extends Component
 
     public function mount(UserList $list): void
     {
-        $list->load(['owner'])->loadCount('members');
+        $list->load(['owner'])->loadCount('members', 'subscribers');
 
         abort_unless($list->isVisibleTo(Auth::user()), 403);
 
         $this->list = $list;
+    }
+
+    public function toggleSubscribe(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless(! $this->list->is_private, 403);
+        abort_unless(Auth::id() !== $this->list->owner_id, 403);
+
+        $existing = $this->list->subscribers()->where('user_id', Auth::id())->exists();
+
+        if ($existing) {
+            $this->list->subscribers()->detach(Auth::id());
+        } else {
+            $this->list->subscribers()->attach(Auth::id());
+        }
+
+        $this->list->loadCount('subscribers');
+    }
+
+    public function isSubscribed(): bool
+    {
+        if (! Auth::check() || $this->list->is_private || Auth::id() === $this->list->owner_id) {
+            return false;
+        }
+
+        return $this->list->subscribers()->where('user_id', Auth::id())->exists();
     }
 
     public function addMember(): void
@@ -47,7 +74,13 @@ class ListPage extends Component
             return;
         }
 
-        $this->list->members()->syncWithoutDetaching([$user->id]);
+        $changes = $this->list->members()->syncWithoutDetaching([$user->id]);
+
+        if (! $this->list->is_private && in_array($user->id, $changes['attached'] ?? [], true)) {
+            if ($user->wantsNotification('lists') && $user->allowsNotificationFrom(Auth::user())) {
+                $user->notify(new AddedToList(list: $this->list->loadMissing('owner'), addedBy: Auth::user()));
+            }
+        }
 
         $this->reset('member_username');
         $this->list->loadCount('members');

@@ -3,7 +3,12 @@
         <div class="card-body">
             <div class="flex items-center justify-between gap-3">
                 <div class="text-xl font-semibold">Bookmarks</div>
-                <div class="text-sm opacity-70">Private</div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm opacity-70">Private</div>
+                    <button type="button" class="btn btn-ghost btn-sm" wire:click="clearAll">
+                        Clear all
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -18,4 +23,3 @@
         {{ $this->posts->links() }}
     </div>
 </div>
-
