@@ -8,10 +8,10 @@
 
     @auth
         @if ($this->canCreate)
-            <div class="card bg-base-100 border">
-                <div class="card-body space-y-3">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="font-semibold">Create a Moment</div>
+        <div class="card bg-base-100 border">
+            <div class="card-body space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="font-semibold">Create a Moment</div>
                         <div class="badge badge-outline badge-sm">Verified/Admin</div>
                     </div>
 
@@ -34,13 +34,16 @@
                             <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
                         </div>
 
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" class="checkbox checkbox-sm" wire:model="is_public" />
-                            <span class="text-sm">Public</span>
+                        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                            <div class="min-w-0">
+                                <div class="font-medium">Public</div>
+                                <div class="text-sm opacity-70">Show this Moment in the public directory.</div>
+                            </div>
+                            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_public" />
                         </label>
 
                         <div class="flex justify-end">
-                            <button type="submit" class="btn btn-primary btn-sm">Create</button>
+                            <button type="submit" class="btn btn-primary btn-sm" wire:loading.attr="disabled" wire:target="create">Create</button>
                         </div>
                     </form>
                 </div>
@@ -69,11 +72,14 @@
     @auth
         <div class="card bg-base-100 border">
             <div class="card-body">
-                <div class="font-semibold">Your Moments</div>
+                <div class="flex items-center justify-between gap-3">
+                    <div class="font-semibold">Your Moments</div>
+                    <span class="badge badge-outline badge-sm">{{ $this->moments->count() }}</span>
+                </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->moments as $moment)
                         @php($cover = $moment->coverUrl())
-                        <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                        <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
                             <div class="flex items-start gap-3 min-w-0">
                                 <div class="shrink-0">
                                     <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
@@ -111,11 +117,14 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="font-semibold">Public Moments</div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="font-semibold">Public Moments</div>
+                <span class="badge badge-outline badge-sm">{{ $this->publicMoments->count() }}</span>
+            </div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->publicMoments as $moment)
                     @php($cover = $moment->coverUrl())
-                    <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                    <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
                         <div class="flex items-start gap-3 min-w-0">
                             <div class="shrink-0">
                                 <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">

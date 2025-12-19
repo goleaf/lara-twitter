@@ -228,17 +228,17 @@
                     <div class="font-semibold">Discover people</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->recommendedUsers as $u)
-                            <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus-within:ring-2 focus-within:ring-primary/20">
+                            <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
                                 <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-                                            <div class="avatar">
-                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                    @if ($u->avatar_url)
-                                                        <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                                    @else
-                                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
-                                                            {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
-                                                        </div>
-                                                    @endif
+                                    <div class="avatar shrink-0">
+                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                            @if ($u->avatar_url)
+                                                <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                            @else
+                                                <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                    {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -265,7 +265,13 @@
                                 </a>
 
                                 @auth
-                                    <button class="btn btn-xs {{ $this->isFollowing($u->id) ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleFollow({{ $u->id }})">
+                                    <button
+                                        type="button"
+                                        class="btn btn-xs {{ $this->isFollowing($u->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        wire:click="toggleFollow({{ $u->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="toggleFollow({{ $u->id }})"
+                                    >
                                         {{ $this->isFollowing($u->id) ? 'Following' : 'Follow' }}
                                     </button>
                                 @endauth

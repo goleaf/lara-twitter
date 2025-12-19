@@ -102,10 +102,10 @@
                         <a class="link link-primary text-sm" href="{{ route('trending') }}" wire:navigate>View all</a>
                     </div>
 
-                    <div class="space-y-1 pt-3">
+                    <div class="space-y-2 pt-3">
                         @forelse ($this->trendingHashtags as $tag)
-                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
-                                <div class="font-medium">#{{ $tag->tag }}</div>
+                            <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                                <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
                                 <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
                             </a>
                         @empty
@@ -115,10 +115,10 @@
 
                     <div class="divider my-2"></div>
 
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         @forelse ($this->trendingKeywords as $row)
-                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
-                                <div class="font-medium">{{ $row['keyword'] }}</div>
+                            <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                                <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
                         @empty
@@ -139,7 +139,7 @@
 
                             <div class="space-y-1 pt-3">
                                 @foreach ($this->upcomingSpaces->take(4) as $space)
-                                    <a class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
+                                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="avatar shrink-0">
                                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -187,7 +187,7 @@
                                     @php($mutualCount = (int) ($u->getAttribute('mutual_count') ?? 0))
                                     @php($interestPostsCount = (int) ($u->getAttribute('interest_posts_count') ?? 0))
 
-                                    <div class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition focus-within:ring-2 focus-within:ring-primary/20">
+                                    <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
                                         <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
                                             <div class="avatar shrink-0">
                                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">

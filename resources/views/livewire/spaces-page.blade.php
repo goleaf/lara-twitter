@@ -1,4 +1,7 @@
 <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
+    @php($liveSpaces = $this->liveSpaces)
+    @php($upcomingSpaces = $this->upcomingSpaces)
+
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="flex items-center justify-between gap-4">
@@ -50,15 +53,17 @@
                         <x-input-error class="mt-2" :messages="$errors->get('scheduled_for')" />
                     </div>
 
-                    <label class="label cursor-pointer justify-start gap-3">
-                        <input type="checkbox" class="checkbox checkbox-sm" wire:model="recording_enabled" />
-                        <span class="label-text">Enable recording metadata (30 days after end)</span>
+                    <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                        <span class="text-sm font-medium">Enable recording metadata (30 days after end)</span>
+                        <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="recording_enabled" />
                     </label>
 
                     <div class="flex justify-end">
                         <button
                             type="submit"
                             class="btn btn-primary btn-sm"
+                            wire:loading.attr="disabled"
+                            wire:target="create"
                             @disabled($minFollowers > 0 && $myFollowers < $minFollowers)
                         >
                             Create
@@ -71,10 +76,13 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="font-semibold">Live now</div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="font-semibold">Live now</div>
+                <span class="badge badge-outline badge-sm">{{ $liveSpaces->count() }}</span>
+            </div>
             <div class="space-y-2 pt-2">
-                @forelse ($this->liveSpaces as $space)
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
+                @forelse ($liveSpaces as $space)
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -102,7 +110,9 @@
                         </div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">No live spaces.</div>
+                    <div class="alert">
+                        <span class="opacity-70 text-sm">No live spaces.</span>
+                    </div>
                 @endforelse
             </div>
         </div>
@@ -110,10 +120,13 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="font-semibold">Upcoming</div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="font-semibold">Upcoming</div>
+                <span class="badge badge-outline badge-sm">{{ $upcomingSpaces->count() }}</span>
+            </div>
             <div class="space-y-2 pt-2">
-                @forelse ($this->upcomingSpaces as $space)
-                    <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
+                @forelse ($upcomingSpaces as $space)
+                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -143,7 +156,9 @@
                         </div>
                     </a>
                 @empty
-                    <div class="opacity-70 text-sm">No upcoming spaces.</div>
+                    <div class="alert">
+                        <span class="opacity-70 text-sm">No upcoming spaces.</span>
+                    </div>
                 @endforelse
             </div>
         </div>
