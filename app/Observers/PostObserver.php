@@ -169,6 +169,10 @@ class PostObserver
             Storage::disk('public')->delete($image->path);
         }
 
+        if ($post->video_path) {
+            Storage::disk('public')->delete($post->video_path);
+        }
+
         // Prevent orphaned retweets becoming empty posts if the original is deleted.
         Post::query()
             ->where('repost_of_id', $post->id)

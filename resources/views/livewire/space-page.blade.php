@@ -12,7 +12,10 @@
                     <div class="text-xl font-semibold">{{ $space->title }}</div>
                     <div class="text-sm opacity-70">Host: &#64;{{ $space->host->username }}</div>
                 </div>
-                <a class="btn btn-ghost btn-sm" href="{{ route('spaces.index') }}" wire:navigate>Back</a>
+                <div class="flex items-center gap-2">
+                    <livewire:report-button :reportable-type="\App\Models\Space::class" :reportable-id="$space->id" label="Report" :key="'report-space-'.$space->id" />
+                    <a class="btn btn-ghost btn-sm" href="{{ route('spaces.index') }}" wire:navigate>Back</a>
+                </div>
             </div>
 
             @if ($space->description)

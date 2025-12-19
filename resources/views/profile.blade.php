@@ -32,6 +32,12 @@
 
         <div class="card bg-base-100 border">
             <div class="card-body">
+                <livewire:profile.muted-terms-form />
+            </div>
+        </div>
+
+        <div class="card bg-base-100 border">
+            <div class="card-body">
                 <livewire:profile.interest-hashtags-form />
             </div>
         </div>

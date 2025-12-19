@@ -66,6 +66,10 @@
                             @endforeach
                         </div>
                     @endif
+
+                    <div class="pt-2 flex justify-end">
+                        <livewire:report-button :reportable-type="\App\Models\Message::class" :reportable-id="$message->id" label="Report" :key="'report-message-'.$message->id" />
+                    </div>
                 </div>
             </div>
         @endforeach

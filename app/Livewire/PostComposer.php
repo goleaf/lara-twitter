@@ -18,6 +18,8 @@ class PostComposer extends Component
     /** @var array<int, mixed> */
     public array $images = [];
 
+    public mixed $video = null;
+
     public function save(): void
     {
         abort_unless(Auth::check(), 403);
@@ -39,7 +41,16 @@ class PostComposer extends Component
             ]);
         }
 
-        $this->reset(['body', 'images', 'reply_policy']);
+        if (! empty($validated['video'])) {
+            $path = $validated['video']->storePublicly("posts/{$post->id}", ['disk' => 'public']);
+
+            $post->update([
+                'video_path' => $path,
+                'video_mime_type' => $validated['video']->getMimeType() ?? 'video/mp4',
+            ]);
+        }
+
+        $this->reset(['body', 'images', 'video', 'reply_policy']);
         $this->dispatch('post-created');
     }
 

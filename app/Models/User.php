@@ -261,6 +261,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Mute::class, 'muter_id');
     }
 
+    public function mutedTerms(): HasMany
+    {
+        return $this->hasMany(MutedTerm::class);
+    }
+
     public function hasBlocked(User $other): bool
     {
         return $this->blocksInitiated()->where('blocked_id', $other->id)->exists();

@@ -93,9 +93,60 @@ class TimelinePage extends Component
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }
+
+            $this->applyMutedTermsToPostsQuery($query, $viewer);
         }
 
         return $query;
+    }
+
+    private function applyMutedTermsToPostsQuery(Builder $query, \App\Models\User $viewer): void
+    {
+        $terms = $viewer->mutedTerms()
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->where('mute_timeline', true)
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        if ($terms->isEmpty()) {
+            return;
+        }
+
+        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+
+        foreach ($terms as $term) {
+            $raw = trim((string) $term->term);
+            if ($raw === '') {
+                continue;
+            }
+
+            $needle = mb_strtolower($raw);
+            if (str_starts_with($needle, '#')) {
+                $needle = '#'.ltrim($needle, '#');
+            }
+
+            $matchSql = null;
+            $matchArg = null;
+
+            if ($term->whole_word && preg_match('/^[a-z0-9_]+$/i', $needle)) {
+                $matchSql = "(' ' || lower(posts.body) || ' ') like ?";
+                $matchArg = '% '.$needle.' %';
+            } else {
+                $matchSql = 'lower(posts.body) like ?';
+                $matchArg = '%'.$needle.'%';
+            }
+
+            if ($term->only_non_followed && count($followingIds)) {
+                $query->where(function ($q) use ($followingIds, $matchSql, $matchArg): void {
+                    $q->whereIn('user_id', $followingIds)->orWhereRaw($matchSql.' = 0', [$matchArg]);
+                });
+            } else {
+                $query->whereRaw($matchSql.' = 0', [$matchArg]);
+            }
+        }
     }
 
     public function getPostsProperty()

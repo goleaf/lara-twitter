@@ -4,8 +4,11 @@ namespace App\Livewire;
 
 use App\Http\Requests\Reports\StoreReportRequest;
 use App\Models\Hashtag;
+use App\Models\Message;
 use App\Models\Post;
 use App\Models\Report;
+use App\Models\Space;
+use App\Models\UserList;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +52,7 @@ class ReportButton extends Component
         $validated = $this->validate(StoreReportRequest::rulesFor());
 
         $reportable = $this->resolveReportable();
+        $this->authorizeReportable($reportable);
         $this->ensureNotSelfReport($reportable);
 
         Report::query()->updateOrCreate(
@@ -68,7 +72,7 @@ class ReportButton extends Component
         $this->dispatch('report-submitted');
     }
 
-    private function resolveReportable(): Post|User|Hashtag
+    private function resolveReportable(): Post|User|Hashtag|Message|UserList|Space
     {
         if ($this->reportableType === Post::class) {
             return Post::query()->with('user')->findOrFail($this->reportableId);
@@ -82,10 +86,22 @@ class ReportButton extends Component
             return Hashtag::query()->findOrFail($this->reportableId);
         }
 
+        if ($this->reportableType === Message::class) {
+            return Message::query()->with(['conversation'])->findOrFail($this->reportableId);
+        }
+
+        if ($this->reportableType === UserList::class) {
+            return UserList::query()->findOrFail($this->reportableId);
+        }
+
+        if ($this->reportableType === Space::class) {
+            return Space::query()->findOrFail($this->reportableId);
+        }
+
         throw new ModelNotFoundException();
     }
 
-    private function ensureNotSelfReport(Post|User|Hashtag $reportable): void
+    private function ensureNotSelfReport(Post|User|Hashtag|Message|UserList|Space $reportable): void
     {
         $reporterId = Auth::id();
 
@@ -95,6 +111,33 @@ class ReportButton extends Component
 
         if ($reportable instanceof Post && $reportable->user_id === $reporterId) {
             abort(422, 'You cannot report your own post.');
+        }
+
+        if ($reportable instanceof Message && $reportable->user_id === $reporterId) {
+            abort(422, 'You cannot report your own message.');
+        }
+
+        if ($reportable instanceof UserList && $reportable->owner_id === $reporterId) {
+            abort(422, 'You cannot report your own list.');
+        }
+
+        if ($reportable instanceof Space && $reportable->host_user_id === $reporterId) {
+            abort(422, 'You cannot report your own space.');
+        }
+    }
+
+    private function authorizeReportable(Post|User|Hashtag|Message|UserList|Space $reportable): void
+    {
+        if (! Auth::check()) {
+            abort(403);
+        }
+
+        if ($reportable instanceof Message) {
+            abort_unless($reportable->conversation && $reportable->conversation->hasParticipant(Auth::user()), 403);
+        }
+
+        if ($reportable instanceof UserList) {
+            abort_unless($reportable->isVisibleTo(Auth::user()), 403);
         }
     }
 

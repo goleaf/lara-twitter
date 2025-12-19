@@ -22,10 +22,15 @@
         <x-input-error :messages="$errors->get('reply_policy')" />
 
         <div class="flex items-center justify-between gap-3">
-            <input wire:model="images" type="file" multiple accept="image/*" class="file-input file-input-bordered w-full max-w-xs" />
+            <div class="flex flex-wrap items-center gap-3">
+                <input wire:model="images" type="file" multiple accept="image/*" class="file-input file-input-bordered w-full max-w-xs" />
+                <input wire:model="video" type="file" accept="video/mp4,video/webm,video/*" class="file-input file-input-bordered w-full max-w-xs" />
+            </div>
             <button wire:click="save" class="btn btn-primary">Post</button>
         </div>
+        <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
         <x-input-error :messages="$errors->get('images')" />
         <x-input-error :messages="$errors->get('images.*')" />
+        <x-input-error :messages="$errors->get('video')" />
     </div>
 </div>

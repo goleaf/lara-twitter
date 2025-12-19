@@ -4,6 +4,7 @@ namespace App\Http\Requests\Posts;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Rules\ExclusivePostMedia;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,8 +17,9 @@ class StorePostRequest extends FormRequest
         return [
             'body' => ['required', 'string', "max:{$max}"],
             'reply_policy' => ['nullable', 'string', Rule::in(Post::replyPolicies())],
-            'images' => ['array', 'max:4'],
+            'images' => ['array', 'max:4', new ExclusivePostMedia('video')],
             'images.*' => ['image', 'max:4096'],
+            'video' => ['nullable', 'file', 'max:51200', 'mimetypes:video/mp4,video/webm', new ExclusivePostMedia('images')],
         ];
     }
 

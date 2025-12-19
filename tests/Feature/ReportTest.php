@@ -4,8 +4,13 @@ namespace Tests\Feature;
 
 use App\Livewire\ReportButton;
 use App\Models\Hashtag;
+use App\Models\Conversation;
+use App\Models\ConversationParticipant;
+use App\Models\Message;
 use App\Models\Post;
+use App\Models\Space;
 use App\Models\User;
+use App\Models\UserList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -117,6 +122,127 @@ class ReportTest extends TestCase
             'reportable_id' => $hashtag->id,
             'reason' => 'spam',
         ]);
+    }
+
+    public function test_user_can_report_a_list(): void
+    {
+        $owner = User::factory()->create(['username' => 'owner']);
+        $reporter = User::factory()->create(['username' => 'reporter']);
+
+        $list = UserList::query()->create([
+            'owner_id' => $owner->id,
+            'name' => 'My list',
+            'is_private' => false,
+        ]);
+
+        Livewire::actingAs($reporter)
+            ->test(ReportButton::class, [
+                'reportableType' => UserList::class,
+                'reportableId' => $list->id,
+            ])
+            ->set('reason', 'other')
+            ->set('details', 'Abusive list name')
+            ->call('submit');
+
+        $this->assertDatabaseHas('reports', [
+            'reporter_id' => $reporter->id,
+            'reportable_type' => UserList::class,
+            'reportable_id' => $list->id,
+            'reason' => 'other',
+        ]);
+    }
+
+    public function test_user_can_report_a_space(): void
+    {
+        $host = User::factory()->create(['username' => 'host']);
+        $reporter = User::factory()->create(['username' => 'reporter']);
+
+        $space = Space::query()->create([
+            'host_user_id' => $host->id,
+            'title' => 'Space',
+        ]);
+
+        Livewire::actingAs($reporter)
+            ->test(ReportButton::class, [
+                'reportableType' => Space::class,
+                'reportableId' => $space->id,
+            ])
+            ->set('reason', 'harassment')
+            ->set('details', 'Harassment in space')
+            ->call('submit');
+
+        $this->assertDatabaseHas('reports', [
+            'reporter_id' => $reporter->id,
+            'reportable_type' => Space::class,
+            'reportable_id' => $space->id,
+            'reason' => 'harassment',
+        ]);
+    }
+
+    public function test_user_can_report_a_message_in_a_conversation_they_are_in(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+        $bob = User::factory()->create(['username' => 'bob']);
+
+        $conversation = Conversation::query()->create([
+            'created_by_user_id' => $alice->id,
+            'is_group' => false,
+        ]);
+
+        ConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $alice->id]);
+        ConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $bob->id]);
+
+        $message = Message::query()->create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $bob->id,
+            'body' => 'Abusive message',
+        ]);
+
+        Livewire::actingAs($alice)
+            ->test(ReportButton::class, [
+                'reportableType' => Message::class,
+                'reportableId' => $message->id,
+            ])
+            ->set('reason', 'harassment')
+            ->set('details', 'Harassment in DM')
+            ->call('submit');
+
+        $this->assertDatabaseHas('reports', [
+            'reporter_id' => $alice->id,
+            'reportable_type' => Message::class,
+            'reportable_id' => $message->id,
+            'reason' => 'harassment',
+        ]);
+    }
+
+    public function test_user_cannot_report_message_outside_their_conversation(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+        $bob = User::factory()->create(['username' => 'bob']);
+        $mallory = User::factory()->create(['username' => 'mallory']);
+
+        $conversation = Conversation::query()->create([
+            'created_by_user_id' => $alice->id,
+            'is_group' => false,
+        ]);
+
+        ConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $alice->id]);
+        ConversationParticipant::query()->create(['conversation_id' => $conversation->id, 'user_id' => $bob->id]);
+
+        $message = Message::query()->create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $bob->id,
+            'body' => 'Hello',
+        ]);
+
+        Livewire::actingAs($mallory)
+            ->test(ReportButton::class, [
+                'reportableType' => Message::class,
+                'reportableId' => $message->id,
+            ])
+            ->set('reason', 'spam')
+            ->call('submit')
+            ->assertStatus(403);
     }
 
     public function test_user_cannot_report_themselves(): void

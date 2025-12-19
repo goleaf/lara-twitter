@@ -24,6 +24,8 @@ class Post extends Model
         'reply_policy',
         'is_reply_like',
         'body',
+        'video_path',
+        'video_mime_type',
     ];
 
     protected function casts(): array

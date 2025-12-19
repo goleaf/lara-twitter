@@ -14,7 +14,10 @@
                         <div class="pt-2">{{ $list->description }}</div>
                     @endif
                 </div>
-                <a class="btn btn-ghost btn-sm" href="{{ route('lists.index') }}" wire:navigate>Back</a>
+                <div class="flex items-center gap-2">
+                    <livewire:report-button :reportable-type="\App\Models\UserList::class" :reportable-id="$list->id" label="Report" :key="'report-list-'.$list->id" />
+                    <a class="btn btn-ghost btn-sm" href="{{ route('lists.index') }}" wire:navigate>Back</a>
+                </div>
             </div>
 
             @auth
