@@ -30,7 +30,12 @@
                             </div>
 
                             <div class="min-w-0">
-                                <div class="font-semibold truncate">{{ $follower->name }}</div>
+                                <div class="font-semibold truncate">
+                                    {{ $follower->name }}
+                                    @if ($follower->is_verified)
+                                        <x-verified-icon class="ms-1 align-middle" />
+                                    @endif
+                                </div>
                                 <div class="text-xs opacity-60 truncate">&#64;{{ $follower->username }}</div>
                             </div>
                         </a>

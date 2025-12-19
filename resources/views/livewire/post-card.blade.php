@@ -40,6 +40,9 @@
         <div class="flex items-center justify-between gap-3">
             <a class="font-semibold link link-hover truncate" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate>
                 {{ $primary->user->name }}
+                @if ($primary->user->is_verified)
+                    <x-verified-icon class="ms-1 align-middle" />
+                @endif
                 <span class="opacity-60 font-normal">&#64;{{ $primary->user->username }}</span>
             </a>
             <div class="flex items-center gap-2 shrink-0">
