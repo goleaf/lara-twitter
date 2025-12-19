@@ -5,17 +5,22 @@ namespace App\Observers;
 use App\Models\Hashtag;
 use App\Models\Mention;
 use App\Models\Post;
+use App\Models\PostLinkPreview;
 use App\Models\User;
 use App\Notifications\FollowedUserPosted;
 use App\Notifications\PostMentioned;
 use App\Notifications\PostReposted;
 use App\Notifications\PostReplied;
+use App\Services\PostLinkPreviewService;
 use App\Services\PostTextParser;
 use Illuminate\Support\Facades\Storage;
 
 class PostObserver
 {
-    public function __construct(private readonly PostTextParser $parser)
+    public function __construct(
+        private readonly PostTextParser $parser,
+        private readonly PostLinkPreviewService $linkPreviews,
+    )
     {
     }
 
@@ -97,6 +102,49 @@ class PostObserver
                 ));
             }
         }
+
+        $this->syncLinkPreview($post);
+    }
+
+    private function syncLinkPreview(Post $post): void
+    {
+        if (! $post->wasRecentlyCreated && ! $post->wasChanged('body')) {
+            return;
+        }
+
+        $url = $this->linkPreviews->extractFirstUrl($post->body);
+
+        if (! $url) {
+            PostLinkPreview::query()->where('post_id', $post->id)->delete();
+
+            return;
+        }
+
+        $preview = PostLinkPreview::query()->updateOrCreate(
+            ['post_id' => $post->id],
+            ['url' => $url],
+        );
+
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
+        if (! $preview->wasRecentlyCreated && ! $preview->wasChanged('url') && $preview->fetched_at) {
+            return;
+        }
+
+        $data = $this->linkPreviews->fetch($url);
+        if (! $data) {
+            return;
+        }
+
+        $preview->update([
+            'site_name' => $data['site_name'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'image_url' => $data['image_url'],
+            'fetched_at' => now(),
+        ]);
     }
 
     public function created(Post $post): void
