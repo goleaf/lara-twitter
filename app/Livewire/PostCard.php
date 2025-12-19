@@ -22,6 +22,8 @@ class PostCard extends Component
 
     public bool $bookmarked = false;
 
+    public bool $liked = false;
+
     public bool $isQuoting = false;
 
     public bool $isReplying = false;
@@ -48,6 +50,11 @@ class PostCard extends Component
             $this->bookmarked = Bookmark::query()
                 ->where('user_id', Auth::id())
                 ->where('post_id', $this->primaryId)
+                ->exists();
+
+            $this->liked = $this->primaryPost()
+                ->likes()
+                ->where('user_id', Auth::id())
                 ->exists();
         }
     }
@@ -76,6 +83,8 @@ class PostCard extends Component
         } else {
             $post->likes()->create(['user_id' => Auth::id()]);
         }
+
+        $this->liked = ! $existing;
 
         $post->loadCount('likes', 'reposts');
 
@@ -413,13 +422,7 @@ class PostCard extends Component
 
     public function hasLiked(): bool
     {
-        if (! Auth::check()) {
-            return false;
-        }
-
-        $post = $this->primaryPost();
-
-        return $post->likes()->where('user_id', Auth::id())->exists();
+        return $this->liked;
     }
 
     public function render()

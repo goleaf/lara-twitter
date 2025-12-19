@@ -228,13 +228,14 @@
                 class="btn btn-ghost btn-sm {{ $this->hasLiked() ? 'text-error' : '' }}"
                 @disabled(!auth()->check())
                 aria-label="Like"
-                title="Like"
+                title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
+                aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
             >
                 <span class="text-lg leading-none">♥</span>
             </button>
 
-            <a class="btn btn-ghost btn-sm" href="{{ route('posts.likes', $primary) }}" wire:navigate>
-                Likes <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
+            <a class="btn btn-ghost btn-sm" href="{{ route('posts.likes', $primary) }}" wire:navigate aria-label="View likes">
+                <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
             </a>
 
             <button
