@@ -98,6 +98,8 @@ new class extends Component
                 class="mt-1 block w-full input-sm"
                 placeholder="spoiler, \"movie name\", #politics"
                 autocomplete="off"
+                wire:loading.attr="disabled"
+                wire:target="add"
             />
             <x-input-error class="mt-2" :messages="$errors->get('term')" />
         </div>
@@ -105,7 +107,7 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
                 <x-input-label for="duration" :value="__('Duration')" />
-                <select id="duration" class="select select-bordered select-sm w-full mt-1" wire:model="duration">
+                <select id="duration" class="select select-bordered select-sm w-full mt-1" wire:model="duration" wire:loading.attr="disabled" wire:target="add">
                     <option value="forever">{{ __('Forever') }}</option>
                     <option value="1h">{{ __('1 hour') }}</option>
                     <option value="1d">{{ __('1 day') }}</option>
@@ -120,29 +122,29 @@ new class extends Component
             <div class="font-semibold text-sm">{{ __('Options') }}</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_timeline" />
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_timeline" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Mute in timeline') }}</span>
                 </label>
 
                 <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_notifications" />
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_notifications" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Mute in notifications') }}</span>
                 </label>
 
                 <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="whole_word" />
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="whole_word" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Whole word (best effort)') }}</span>
                 </label>
 
                 <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_non_followed" />
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_non_followed" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Only apply to people you do not follow') }}</span>
                 </label>
             </div>
         </div>
 
         <div class="flex items-center gap-3 pt-2">
-            <x-primary-button>{{ __('Add') }}</x-primary-button>
+            <x-primary-button wire:loading.attr="disabled" wire:target="add">{{ __('Add') }}</x-primary-button>
 
             <x-action-message class="me-3" on="muted-terms-updated">
                 {{ __('Updated.') }}
@@ -174,7 +176,13 @@ new class extends Component
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-ghost btn-xs" wire:click="remove({{ $row->id }})">
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs"
+                    wire:click="remove({{ $row->id }})"
+                    wire:loading.attr="disabled"
+                    wire:target="remove({{ $row->id }})"
+                >
                     {{ __('Remove') }}
                 </button>
             </div>

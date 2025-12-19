@@ -75,7 +75,13 @@ new class extends Component
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-outline btn-sm" wire:click="unmute({{ $user->id }})">
+                <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    wire:click="unmute({{ $user->id }})"
+                    wire:loading.attr="disabled"
+                    wire:target="unmute({{ $user->id }})"
+                >
                     {{ __('Unmute') }}
                 </button>
             </div>
