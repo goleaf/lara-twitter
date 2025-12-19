@@ -65,6 +65,57 @@
             {!! $this->bodyHtml() !!}
         </div>
 
+        @if ($primary->poll)
+            @php($poll = $primary->poll)
+            @php($options = $poll->options)
+            @php($totalVotes = (int) $options->sum('votes_count'))
+            @php($myVoteOptionId = $this->pollVoteOptionId($poll->id))
+            @php($showResults = $poll->ends_at->isPast() || $myVoteOptionId)
+
+            <div class="pt-2">
+                <div class="card bg-base-200 border">
+                    <div class="card-body gap-2">
+                        @if ($showResults)
+                            @foreach ($options as $option)
+                                @php($count = (int) ($option->votes_count ?? 0))
+                                @php($pct = $totalVotes ? (int) round(($count / $totalVotes) * 100) : 0)
+
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="{{ (int) $myVoteOptionId === (int) $option->id ? 'font-semibold' : '' }}">
+                                            {{ $option->option_text }}
+                                        </span>
+                                        <span class="opacity-70">{{ $pct }}%</span>
+                                    </div>
+                                    <progress class="progress progress-primary w-full" value="{{ $pct }}" max="100"></progress>
+                                </div>
+                            @endforeach
+
+                            <div class="text-xs opacity-70">
+                                {{ $totalVotes }} vote{{ $totalVotes === 1 ? '' : 's' }}
+                                ·
+                                {{ $poll->ends_at->isPast() ? 'Final results' : 'Poll ends '.$poll->ends_at->diffForHumans() }}
+                            </div>
+                        @else
+                            <div class="space-y-2">
+                                @foreach ($options as $option)
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline btn-sm w-full justify-start"
+                                        wire:click="voteInPoll({{ $option->id }})"
+                                    >
+                                        {{ $option->option_text }}
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <div class="text-xs opacity-70">Poll ends {{ $poll->ends_at->diffForHumans() }}</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @if ($primary->video_path)
             <div class="pt-2">
                 <video class="w-full rounded-box border" controls preload="metadata">
@@ -99,6 +150,57 @@
                         <div class="prose max-w-none">
                             {!! app(\App\Services\PostBodyRenderer::class)->render($post->repostOf->body, $post->repostOf->id) !!}
                         </div>
+
+                        @if ($post->repostOf->poll)
+                            @php($poll = $post->repostOf->poll)
+                            @php($options = $poll->options)
+                            @php($totalVotes = (int) $options->sum('votes_count'))
+                            @php($myVoteOptionId = $this->pollVoteOptionId($poll->id))
+                            @php($showResults = $poll->ends_at->isPast() || $myVoteOptionId)
+
+                            <div class="pt-2">
+                                <div class="card bg-base-100 border">
+                                    <div class="card-body gap-2">
+                                        @if ($showResults)
+                                            @foreach ($options as $option)
+                                                @php($count = (int) ($option->votes_count ?? 0))
+                                                @php($pct = $totalVotes ? (int) round(($count / $totalVotes) * 100) : 0)
+
+                                                <div class="space-y-1">
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <span class="{{ (int) $myVoteOptionId === (int) $option->id ? 'font-semibold' : '' }}">
+                                                            {{ $option->option_text }}
+                                                        </span>
+                                                        <span class="opacity-70">{{ $pct }}%</span>
+                                                    </div>
+                                                    <progress class="progress progress-primary w-full" value="{{ $pct }}" max="100"></progress>
+                                                </div>
+                                            @endforeach
+
+                                            <div class="text-xs opacity-70">
+                                                {{ $totalVotes }} vote{{ $totalVotes === 1 ? '' : 's' }}
+                                                ·
+                                                {{ $poll->ends_at->isPast() ? 'Final results' : 'Poll ends '.$poll->ends_at->diffForHumans() }}
+                                            </div>
+                                        @else
+                                            <div class="space-y-2">
+                                                @foreach ($options as $option)
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline btn-sm w-full justify-start"
+                                                        wire:click="voteInPoll({{ $option->id }})"
+                                                    >
+                                                        {{ $option->option_text }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+
+                                            <div class="text-xs opacity-70">Poll ends {{ $poll->ends_at->diffForHumans() }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         @if ($post->repostOf->video_path)
                             <div class="pt-2">
