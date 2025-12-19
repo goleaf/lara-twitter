@@ -16,7 +16,7 @@ class ExplorePage extends Component
 
     public function mount(): void
     {
-        $this->tab = in_array($this->tab, ['trending', 'news', 'sports', 'entertainment'], true) ? $this->tab : 'trending';
+        $this->tab = in_array($this->tab, ['for-you', 'trending', 'news', 'sports', 'entertainment', 'technology'], true) ? $this->tab : 'trending';
     }
 
     public function toggleFollow(int $userId): void
@@ -61,9 +61,14 @@ class ExplorePage extends Component
         return app(DiscoverService::class)->recommendedUsers(Auth::user(), 8);
     }
 
+    public function getForYouPostsProperty()
+    {
+        return app(DiscoverService::class)->forYouPosts(Auth::user(), 20);
+    }
+
     public function getCategoryPostsProperty()
     {
-        if ($this->tab === 'trending') {
+        if (in_array($this->tab, ['trending', 'for-you'], true)) {
             return collect();
         }
 
@@ -75,4 +80,3 @@ class ExplorePage extends Component
         return view('livewire.explore-page')->layout('layouts.app');
     }
 }
-

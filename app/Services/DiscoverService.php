@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,7 @@ class DiscoverService
             'news' => ['news', 'world', 'tech', 'business'],
             'sports' => ['sports', 'football', 'soccer', 'nba', 'f1'],
             'entertainment' => ['music', 'movies', 'tv', 'gaming'],
+            'technology' => ['tech', 'ai', 'programming', 'laravel', 'php'],
         ];
     }
 
@@ -61,6 +63,36 @@ class DiscoverService
         return $users;
     }
 
+    public function forYouPosts(?User $viewer, int $limit = 15)
+    {
+        $query = Post::query()
+            ->whereNull('reply_to_id')
+            ->where('is_reply_like', false)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->with([
+                'user',
+                'images',
+                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
+            ])
+            ->withCount(['likes', 'reposts', 'replies']);
+
+        $this->applyViewerExclusions($query, $viewer);
+
+        if ($viewer) {
+            $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+            $idsCsv = implode(',', array_map('intval', $followingIds));
+            if ($idsCsv !== '') {
+                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end desc");
+            }
+        }
+
+        return $query
+            ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
+            ->orderByDesc('created_at')
+            ->limit($limit)
+            ->get();
+    }
+
     public function categoryPosts(string $category, ?User $viewer, int $limit = 15)
     {
         $map = $this->categoryHashtags();
@@ -76,6 +108,8 @@ class DiscoverService
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
             ])
             ->withCount(['likes', 'reposts', 'replies']);
+
+        $this->applyViewerExclusions($query, $viewer);
 
         if (count($tags)) {
             $query->whereHas('hashtags', fn ($q) => $q->whereIn('tag', $tags));
@@ -94,5 +128,21 @@ class DiscoverService
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();
+    }
+
+    private function applyViewerExclusions(Builder $query, ?User $viewer): void
+    {
+        if (! $viewer) {
+            return;
+        }
+
+        $mutedIds = $viewer->mutesInitiated()->pluck('muted_id');
+        $blockedIds = $viewer->blocksInitiated()->pluck('blocked_id');
+        $blockedByIds = $viewer->blocksReceived()->pluck('blocker_id');
+
+        $exclude = $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
+        if ($exclude->isNotEmpty()) {
+            $query->whereNotIn('user_id', $exclude);
+        }
     }
 }

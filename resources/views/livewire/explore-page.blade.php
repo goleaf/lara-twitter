@@ -4,17 +4,31 @@
             <div class="text-xl font-semibold">Explore</div>
 
             <div class="tabs tabs-boxed mt-4">
+                <a class="tab {{ $tab === 'for-you' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'for-you']) }}" wire:navigate>For You</a>
                 <a class="tab {{ $tab === 'trending' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'trending']) }}" wire:navigate>Trending</a>
                 <a class="tab {{ $tab === 'news' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'news']) }}" wire:navigate>News</a>
                 <a class="tab {{ $tab === 'sports' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'sports']) }}" wire:navigate>Sports</a>
                 <a class="tab {{ $tab === 'entertainment' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'entertainment']) }}" wire:navigate>Entertainment</a>
+                <a class="tab {{ $tab === 'technology' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'technology']) }}" wire:navigate>Technology</a>
             </div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 space-y-4">
-            @if ($tab === 'trending')
+            @if ($tab === 'for-you')
+                <div class="space-y-3">
+                    @forelse ($this->forYouPosts as $post)
+                        <livewire:post-card :post="$post" :key="$post->id" />
+                    @empty
+                        <div class="card bg-base-100 border">
+                            <div class="card-body">
+                                <div class="opacity-70">No recommendations yet.</div>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+            @elseif ($tab === 'trending')
                 <div class="card bg-base-100 border">
                     <div class="card-body">
                         <div class="font-semibold">Trending hashtags (24h)</div>
@@ -98,4 +112,3 @@
         </div>
     </div>
 </div>
-
