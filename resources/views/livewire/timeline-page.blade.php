@@ -35,14 +35,14 @@
                                         wire:navigate
                                     >
                                         <div class="avatar shrink-0">
-                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                    @if ($space->host->avatar_url)
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($space->host->avatar_url)
                                                     <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                                    @else
-                                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
-                                                            {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
-                                                        </div>
-                                                    @endif
+                                                @else
+                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                        {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -142,14 +142,14 @@
                                     <a class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="avatar shrink-0">
-                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                @if ($space->host->avatar_url)
-                                                    <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                                @else
-                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
-                                                        {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
-                                                    </div>
-                                                @endif
+                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                    @if ($space->host->avatar_url)
+                                                        <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                                    @else
+                                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                            {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
 

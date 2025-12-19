@@ -76,7 +76,7 @@
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                     @if ($space->host->avatar_url)
-                                        <img src="{{ $space->host->avatar_url }}" alt="" />
+                                        <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
                                             {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
@@ -115,7 +115,7 @@
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                     @if ($space->host->avatar_url)
-                                        <img src="{{ $space->host->avatar_url }}" alt="" />
+                                        <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
                                             {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
