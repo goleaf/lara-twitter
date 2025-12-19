@@ -11,6 +11,7 @@ class HelpPagesTest extends TestCase
         $this->get(route('help.index'))
             ->assertOk()
             ->assertSee('Help')
+            ->assertSee('Direct Messages')
             ->assertSee('Hashtags')
             ->assertSee('Profile');
 
@@ -25,5 +26,11 @@ class HelpPagesTest extends TestCase
             ->assertSee('Profile')
             ->assertSee('Avatar')
             ->assertSee('Pinned post');
+
+        $this->get(route('help.direct-messages'))
+            ->assertOk()
+            ->assertSee('Direct Messages')
+            ->assertSee('Message requests')
+            ->assertSee('Read receipts');
     }
 }

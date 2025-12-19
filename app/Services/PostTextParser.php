@@ -19,7 +19,7 @@ class PostTextParser
         }
 
         $mentions = [];
-        if (preg_match_all('/(^|[^A-Za-z0-9_])@([A-Za-z0-9_]{3,30})/', $text, $matches)) {
+        if (preg_match_all('/(^|[^A-Za-z0-9_])@([A-Za-z0-9_-]{3,30})/', $text, $matches)) {
             $mentions = array_map(
                 static fn (string $username): string => mb_strtolower($username),
                 $matches[2] ?? [],
