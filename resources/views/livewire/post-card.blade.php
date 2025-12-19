@@ -196,22 +196,22 @@
             </div>
         @endif
 
-	        @php($urls = $this->imageUrls())
-	        @php($imageCount = count($urls))
-	        @if ($imageCount)
-	            @php($gridClass = $imageCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
-	            <div class="grid {{ $gridClass }} gap-2 pt-2">
-	                @foreach ($urls as $url)
-	                    @php($isWide = $imageCount === 1 || ($imageCount === 3 && $loop->last))
-	                    @php($spanClass = $imageCount === 3 && $loop->last ? 'col-span-2' : '')
-	                    @php($ratio = $isWide ? '16 / 9' : '1 / 1')
-	
-	                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-	                        <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" />
-	                    </div>
-	                @endforeach
-	            </div>
-	        @endif
+            @php($urls = $this->imageUrls())
+            @php($imageCount = count($urls))
+            @if ($imageCount)
+                @php($gridClass = $imageCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
+                <div class="grid {{ $gridClass }} gap-2 pt-2">
+                    @foreach ($urls as $url)
+                        @php($isWide = $imageCount === 1 || ($imageCount === 3 && $loop->last))
+                        @php($spanClass = $imageCount === 3 && $loop->last ? 'col-span-2' : '')
+                        @php($ratio = $isWide ? '16 / 9' : '1 / 1')
+    
+                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                            <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" />
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
         @if ($post->repostOf && ! $this->isRepost())
             <div class="pt-2">
@@ -325,21 +325,21 @@
                             </div>
                         @endif
 
-	                        @php($repostImagesCount = $post->repostOf->images->count())
-	                        @if ($repostImagesCount)
-	                            @php($gridClass = $repostImagesCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
-	                            <div class="grid {{ $gridClass }} gap-2 pt-2">
-	                                @foreach ($post->repostOf->images as $image)
-	                                    @php($isWide = $repostImagesCount === 1 || ($repostImagesCount === 3 && $loop->last))
-	                                    @php($spanClass = $repostImagesCount === 3 && $loop->last ? 'col-span-2' : '')
-	                                    @php($ratio = $isWide ? '16 / 9' : '1 / 1')
-	
-	                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-	                                        <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" />
-	                                    </div>
-	                                @endforeach
-	                            </div>
-	                        @endif
+                            @php($repostImagesCount = $post->repostOf->images->count())
+                            @if ($repostImagesCount)
+                                @php($gridClass = $repostImagesCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
+                                <div class="grid {{ $gridClass }} gap-2 pt-2">
+                                    @foreach ($post->repostOf->images as $image)
+                                        @php($isWide = $repostImagesCount === 1 || ($repostImagesCount === 3 && $loop->last))
+                                        @php($spanClass = $repostImagesCount === 3 && $loop->last ? 'col-span-2' : '')
+                                        @php($ratio = $isWide ? '16 / 9' : '1 / 1')
+    
+                                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" />
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                     </div>
                 </div>
             </div>
