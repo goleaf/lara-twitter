@@ -51,7 +51,7 @@ new class extends Component
                             {{ __('Settings') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link wire:click="logout">
+                        <x-dropdown-link wire:click="logout" wire:loading.attr="disabled" wire:target="logout">
                             {{ __('Log Out') }}
                         </x-dropdown-link>
                     </x-slot>
@@ -92,7 +92,7 @@ new class extends Component
                     {{ __('Settings') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link wire:click="logout">
+                <x-responsive-nav-link wire:click="logout" wire:loading.attr="disabled" wire:target="logout">
                     {{ __('Log Out') }}
                 </x-responsive-nav-link>
             </div>
