@@ -23,15 +23,10 @@
                 @php($myFollowers = $minFollowers > 0 ? auth()->user()->followers()->count() : 0)
 
                 @if ($minFollowers > 0 && $myFollowers < $minFollowers)
-                    <div class="alert alert-warning" role="alert">
-                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm.75 6a.75.75 0 0 0-1.5 0v5a.75.75 0 0 0 1.5 0V8ZM12 17a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clip-rule="evenodd" />
-                        </svg>
-                        <div class="text-sm">
-                            You need at least {{ $minFollowers }} followers to host a Space.
-                            You currently have {{ $myFollowers }}.
-                        </div>
-                    </div>
+                    <x-callout type="warning" title="Host requirement">
+                        You need at least <span class="font-semibold tabular-nums">{{ $minFollowers }}</span> followers to host a Space.
+                        You currently have <span class="font-semibold tabular-nums">{{ $myFollowers }}</span>.
+                    </x-callout>
                 @endif
 
                 <form wire:submit="create" class="space-y-3">
@@ -110,9 +105,9 @@
                         </div>
                     </a>
                 @empty
-                    <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
-                        <div class="text-sm opacity-70">No live spaces.</div>
-                    </div>
+                    <x-empty-state>
+                        No live spaces.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
@@ -156,9 +151,9 @@
                         </div>
                     </a>
                 @empty
-                    <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
-                        <div class="text-sm opacity-70">No upcoming spaces.</div>
-                    </div>
+                    <x-empty-state>
+                        No upcoming spaces.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
