@@ -29,6 +29,8 @@ class PostReposted extends Notification
         return [
             'type' => 'post_reposted',
             'kind' => $this->kind,
+            'actor_user_id' => $this->reposter->id,
+            'actor_username' => $this->reposter->username,
             'original_post_id' => $this->originalPost->id,
             'repost_post_id' => $this->repostPost?->id,
             'reposter_user_id' => $this->reposter->id,
@@ -37,4 +39,3 @@ class PostReposted extends Notification
         ];
     }
 }
-

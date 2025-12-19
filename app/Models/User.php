@@ -35,8 +35,10 @@ class User extends Authenticatable implements FilamentUser
         'website',
         'is_admin',
         'is_premium',
+        'is_verified',
         'dm_policy',
         'dm_allow_requests',
+        'timeline_settings',
     ];
 
     /**
@@ -61,6 +63,7 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_premium' => 'boolean',
+            'is_verified' => 'boolean',
             'dm_allow_requests' => 'boolean',
             'timeline_settings' => 'array',
             'notification_settings' => 'array',
@@ -155,9 +158,42 @@ class User extends Authenticatable implements FilamentUser
             'reposts' => true,
             'replies' => true,
             'mentions' => true,
+            'follows' => true,
+            'dms' => true,
         ];
 
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);
+    }
+
+    public function allowsNotificationFrom(User $actor): bool
+    {
+        if ($this->id === $actor->id) {
+            return false;
+        }
+
+        $settings = $this->notification_settings ?? [];
+
+        if ((bool) ($settings['only_verified'] ?? false) && ! $actor->is_verified) {
+            return false;
+        }
+
+        if ((bool) ($settings['only_following'] ?? false)) {
+            $isFollowingActor = $this->following()->where('followed_id', $actor->id)->exists();
+            if (! $isFollowingActor) {
+                return false;
+            }
+        }
+
+        if ((bool) ($settings['quality_filter'] ?? false)) {
+            $hasAvatar = (bool) $actor->avatar_path;
+            $hasVerifiedEmail = (bool) $actor->email_verified_at;
+
+            if (! $hasAvatar || ! $hasVerifiedEmail) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function conversationParticipants(): HasMany

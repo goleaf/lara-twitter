@@ -46,6 +46,8 @@ class UserForm
                 Toggle::make('is_admin'),
                 Toggle::make('is_premium')
                     ->label('Premium (long posts)'),
+                Toggle::make('is_verified')
+                    ->label('Verified'),
                 Select::make('dm_policy')
                     ->label('DM policy')
                     ->options(array_combine(User::dmPolicies(), User::dmPolicies()))

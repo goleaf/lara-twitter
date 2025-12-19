@@ -27,6 +27,8 @@ class PostReplied extends Notification
     {
         return [
             'type' => 'post_replied',
+            'actor_user_id' => $this->replier->id,
+            'actor_username' => $this->replier->username,
             'original_post_id' => $this->originalPost->id,
             'reply_post_id' => $this->replyPost->id,
             'replier_user_id' => $this->replier->id,
@@ -35,4 +37,3 @@ class PostReplied extends Notification
         ];
     }
 }
-

@@ -14,16 +14,19 @@ class ReplyLikeMentionsTest extends TestCase
     public function test_post_starting_with_mention_is_treated_as_reply_like_and_hidden_from_posts_tab(): void
     {
         $author = User::factory()->create(['username' => 'alice']);
-        $target = User::factory()->create(['username' => 'bob']);
+        User::factory()->create(['username' => 'bob']);
 
         Post::query()->create(['user_id' => $author->id, 'body' => '@bob hi']);
 
         $this->get(route('profile.show', ['user' => $author]))
             ->assertOk()
-            ->assertDontSee('hi');
+            ->assertDontSee('Replying to')
+            ->assertDontSee('/@bob');
 
         $this->get(route('profile.replies', ['user' => $author]))
             ->assertOk()
+            ->assertSee('Replying to')
+            ->assertSee('/@bob')
             ->assertSee('hi');
     }
 
@@ -52,15 +55,16 @@ class ReplyLikeMentionsTest extends TestCase
         $this->actingAs($viewer)
             ->get(route('timeline', ['feed' => 'following']))
             ->assertOk()
-            ->assertDontSee('hello');
+            ->assertDontSee('Replying to')
+            ->assertDontSee('/@bob');
 
         $viewer->update(['timeline_settings' => ['show_replies' => true, 'show_retweets' => true]]);
 
-        $this->actingAs($viewer)
+        $this->actingAs($viewer->fresh())
             ->get(route('timeline', ['feed' => 'following']))
             ->assertOk()
-            ->assertSee('hello')
-            ->assertSee('Replying to');
+            ->assertSee('Replying to')
+            ->assertSee('/@bob')
+            ->assertSee('hello');
     }
 }
-

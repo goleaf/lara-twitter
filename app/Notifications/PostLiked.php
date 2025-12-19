@@ -26,6 +26,8 @@ class PostLiked extends Notification
     {
         return [
             'type' => 'post_liked',
+            'actor_user_id' => $this->likedBy->id,
+            'actor_username' => $this->likedBy->username,
             'post_id' => $this->post->id,
             'liked_by_user_id' => $this->likedBy->id,
             'liked_by_username' => $this->likedBy->username,
@@ -33,4 +35,3 @@ class PostLiked extends Notification
         ];
     }
 }
-
