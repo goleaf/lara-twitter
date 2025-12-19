@@ -35,41 +35,42 @@
                             </label>
                         </div>
 
-                            <div class="flex-1 min-w-0 flex items-center gap-4">
-                                <a class="btn btn-ghost text-xl font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate>
-                                    MiniTwitter
-                                </a>
+                        <div class="flex-1 min-w-0 flex items-center gap-4">
+                            <a class="btn btn-ghost gap-3 text-xl font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate aria-label="MiniTwitter home">
+                                <x-brand-mark class="h-9 w-9" />
+                                <span class="truncate">MiniTwitter</span>
+                            </a>
 
-                                <form
-                                    action="{{ route('search') }}"
-                                    method="GET"
-                                    class="hidden lg:flex flex-1 max-w-md"
-                                    data-livewire-navigate-search
-                                >
-                                    <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70">
-                                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
-                                        </svg>
-                                        <input
-                                            type="search"
-                                            name="q"
-                                            class="grow"
-                                            placeholder="Search"
-                                            value="{{ request('q') }}"
-                                            aria-label="Search"
-                                        />
-                                    </label>
-                                </form>
-                            </div>
+                            <form
+                                action="{{ route('search') }}"
+                                method="GET"
+                                class="hidden lg:flex flex-1 max-w-md"
+                                data-livewire-navigate-search
+                            >
+                                <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                                    </svg>
+                                    <input
+                                        type="search"
+                                        name="q"
+                                        class="grow"
+                                        placeholder="Search"
+                                        value="{{ request('q') }}"
+                                        aria-label="Search"
+                                    />
+                                </label>
+                            </form>
+                        </div>
 
                         <div class="flex-none gap-1">
-                                <div class="hidden lg:flex gap-1">
-                                    <a class="btn btn-ghost btn-square {{ request()->routeIs('trending') ? 'btn-active text-primary' : '' }}" href="{{ route('trending') }}" wire:navigate aria-label="Trending">
-                                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l3-3 4 4 7-7" />
-                                        </svg>
-                                    </a>
-    
+                            <div class="hidden lg:flex gap-1">
+                                <a class="btn btn-ghost btn-square {{ request()->routeIs('trending') ? 'btn-active text-primary' : '' }}" href="{{ route('trending') }}" wire:navigate aria-label="Trending">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l3-3 4 4 7-7" />
+                                    </svg>
+                                </a>
+
                                 <a class="btn btn-ghost btn-square {{ request()->routeIs('explore') ? 'btn-active text-primary' : '' }}" href="{{ route('explore') }}" wire:navigate aria-label="Explore">
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
@@ -168,8 +169,9 @@
                 <aside class="bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur min-h-full w-72 border-r border-base-200">
                     <div class="p-4">
                         <div class="hidden lg:block pb-2">
-                            <a class="btn btn-ghost text-xl w-full justify-start font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate>
-                                MiniTwitter
+                            <a class="btn btn-ghost gap-3 text-xl w-full justify-start font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate aria-label="MiniTwitter home">
+                                <x-brand-mark class="h-9 w-9" />
+                                <span class="truncate">MiniTwitter</span>
                             </a>
                         </div>
 
