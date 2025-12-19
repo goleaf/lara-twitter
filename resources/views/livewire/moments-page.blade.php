@@ -72,20 +72,34 @@
                 <div class="font-semibold">Your Moments</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->moments as $moment)
-                        <a class="card bg-base-200 card-hover" href="{{ route('moments.show', $moment) }}" wire:navigate>
-                            <div class="card-body py-4">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <div class="font-semibold truncate">{{ $moment->title }}</div>
-                                        @if ($moment->description)
-                                            <div class="text-sm opacity-70 truncate">{{ $moment->description }}</div>
+                        @php($cover = $moment->coverUrl())
+                        <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                            <div class="flex items-start gap-3 min-w-0">
+                                <div class="shrink-0">
+                                    <div class="w-14 h-14 rounded-box border border-base-200 bg-base-100 overflow-hidden">
+                                        @if ($cover)
+                                            <img class="w-full h-full object-cover" src="{{ $cover }}" alt="" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
                                         @endif
                                     </div>
-                                    <div class="text-sm opacity-60 shrink-0">
-                                        {{ $moment->items_count }} posts{{ $moment->is_public ? '' : ' · Private' }}
+                                </div>
+
+                                <div class="min-w-0">
+                                    <div class="flex items-start gap-2 flex-wrap">
+                                        <div class="font-semibold truncate">{{ $moment->title }}</div>
+                                        @if (! $moment->is_public)
+                                            <span class="badge badge-outline badge-sm">Private</span>
+                                        @endif
                                     </div>
+                                    <div class="text-xs opacity-60 truncate">{{ $moment->items_count }} posts</div>
+                                    @if ($moment->description)
+                                        <div class="text-sm opacity-70 truncate">{{ $moment->description }}</div>
+                                    @endif
                                 </div>
                             </div>
+
+                            <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
                         <div class="opacity-70 text-sm">No moments yet.</div>
@@ -100,16 +114,41 @@
             <div class="font-semibold">Public Moments</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->publicMoments as $moment)
-                    <a class="card bg-base-200 card-hover" href="{{ route('moments.show', $moment) }}" wire:navigate>
-                        <div class="card-body py-4">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="min-w-0">
-                                    <div class="font-semibold truncate">{{ $moment->title }}</div>
-                                    <div class="text-sm opacity-70 truncate">by &#64;{{ $moment->owner->username }}</div>
+                    @php($cover = $moment->coverUrl())
+                    <a class="flex items-start justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="shrink-0">
+                                <div class="w-14 h-14 rounded-box border border-base-200 bg-base-100 overflow-hidden">
+                                    @if ($cover)
+                                        <img class="w-full h-full object-cover" src="{{ $cover }}" alt="" />
+                                    @else
+                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
+                                    @endif
                                 </div>
-                                <div class="text-sm opacity-60 shrink-0">{{ $moment->items_count }} posts</div>
+                            </div>
+
+                            <div class="min-w-0">
+                                <div class="font-semibold truncate">{{ $moment->title }}</div>
+                                <div class="flex items-center gap-2 text-xs opacity-60 min-w-0">
+                                    <div class="avatar shrink-0">
+                                        <div class="w-6 rounded-full border border-base-200 bg-base-100">
+                                            @if ($moment->owner->avatar_url)
+                                                <img src="{{ $moment->owner->avatar_url }}" alt="" />
+                                            @else
+                                                <div class="bg-base-200 grid place-items-center h-full w-full text-[10px] font-semibold">
+                                                    {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="truncate min-w-0">
+                                        by &#64;{{ $moment->owner->username }} · {{ $moment->items_count }} posts
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="text-sm opacity-60 shrink-0">View</div>
                     </a>
                 @empty
                     <div class="opacity-70 text-sm">No public moments yet.</div>

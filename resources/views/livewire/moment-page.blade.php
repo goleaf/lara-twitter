@@ -2,9 +2,30 @@
     <div class="card bg-base-100 border">
         <div class="card-body space-y-2">
             <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                    <div class="text-xl font-semibold truncate">{{ $moment->title }}</div>
-                    <div class="text-sm opacity-70">by &#64;{{ $moment->owner->username }}{{ $moment->is_public ? '' : ' · Private' }}</div>
+                <div class="flex items-start gap-3 min-w-0">
+                    <a class="avatar shrink-0" href="{{ route('profile.show', ['user' => $moment->owner]) }}" wire:navigate>
+                        <div class="w-12 rounded-full border border-base-200 bg-base-100">
+                            @if ($moment->owner->avatar_url)
+                                <img src="{{ $moment->owner->avatar_url }}" alt="" />
+                            @else
+                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                    {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
+                    </a>
+
+                    <div class="min-w-0">
+                        <div class="flex items-start gap-2 flex-wrap">
+                            <div class="text-xl font-semibold truncate">{{ $moment->title }}</div>
+                            @if (! $moment->is_public)
+                                <span class="badge badge-outline badge-sm">Private</span>
+                            @endif
+                        </div>
+                        <div class="text-sm opacity-70 truncate">
+                            by <a class="link link-hover" href="{{ route('profile.show', ['user' => $moment->owner]) }}" wire:navigate>&#64;{{ $moment->owner->username }}</a>
+                        </div>
+                    </div>
                 </div>
                 <a class="btn btn-ghost btn-sm" href="{{ route('moments.index') }}" wire:navigate>Back</a>
             </div>
