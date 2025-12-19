@@ -51,6 +51,7 @@
                             <option value="desc">Desc</option>
                             <option value="asc">Asc</option>
                         </select>
+                        <a class="btn btn-ghost btn-sm" href="{{ route('analytics.export', ['range' => $range]) }}">Export CSV</a>
                     </div>
                 </div>
 
@@ -155,6 +156,12 @@
                     <div class="text-sm opacity-70">Impressions</div>
                     <div class="text-2xl font-semibold">{{ $s['impressions'] }}</div>
                     <div class="text-xs opacity-60">Unique daily views · {{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['impressions_delta'] >= 0 ? '+' : '' }}{{ $s['impressions_delta'] }}
+                        @if ($s['impressions_delta_pct'] !== null)
+                            ({{ number_format($s['impressions_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -162,6 +169,12 @@
                     <div class="text-sm opacity-70">Engagements</div>
                     <div class="text-2xl font-semibold">{{ $s['engagements'] }}</div>
                     <div class="text-xs opacity-60">Likes, reposts, replies, clicks</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['engagements_delta'] >= 0 ? '+' : '' }}{{ $s['engagements_delta'] }}
+                        @if ($s['engagements_delta_pct'] !== null)
+                            ({{ number_format($s['engagements_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -169,6 +182,9 @@
                     <div class="text-sm opacity-70">Engagement rate</div>
                     <div class="text-2xl font-semibold">{{ number_format($s['engagement_rate'] * 100, 1) }}%</div>
                     <div class="text-xs opacity-60">Engagements / impressions</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['engagement_rate_delta'] >= 0 ? '+' : '' }}{{ number_format($s['engagement_rate_delta'] * 100, 1) }} pp
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -176,6 +192,12 @@
                     <div class="text-sm opacity-70">Profile visits</div>
                     <div class="text-2xl font-semibold">{{ $s['profile_visits'] }}</div>
                     <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['profile_visits_delta'] >= 0 ? '+' : '' }}{{ $s['profile_visits_delta'] }}
+                        @if ($s['profile_visits_delta_pct'] !== null)
+                            ({{ number_format($s['profile_visits_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -183,6 +205,12 @@
                     <div class="text-sm opacity-70">Mentions</div>
                     <div class="text-2xl font-semibold">{{ $s['mentions'] }}</div>
                     <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['mentions_delta'] >= 0 ? '+' : '' }}{{ $s['mentions_delta'] }}
+                        @if ($s['mentions_delta_pct'] !== null)
+                            ({{ number_format($s['mentions_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -190,6 +218,12 @@
                     <div class="text-sm opacity-70">New followers</div>
                     <div class="text-2xl font-semibold">{{ $s['new_followers'] }}</div>
                     <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['new_followers_delta'] >= 0 ? '+' : '' }}{{ $s['new_followers_delta'] }}
+                        @if ($s['new_followers_delta_pct'] !== null)
+                            ({{ number_format($s['new_followers_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
             <div class="card bg-base-100 border">
@@ -197,6 +231,51 @@
                     <div class="text-sm opacity-70">Posts published</div>
                     <div class="text-2xl font-semibold">{{ $s['posts_published'] }}</div>
                     <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['posts_published_delta'] >= 0 ? '+' : '' }}{{ $s['posts_published_delta'] }}
+                        @if ($s['posts_published_delta_pct'] !== null)
+                            ({{ number_format($s['posts_published_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="text-sm opacity-70">Link clicks</div>
+                    <div class="text-2xl font-semibold">{{ $s['link_clicks'] }}</div>
+                    <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['link_clicks_delta'] >= 0 ? '+' : '' }}{{ $s['link_clicks_delta'] }}
+                        @if ($s['link_clicks_delta_pct'] !== null)
+                            ({{ number_format($s['link_clicks_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="text-sm opacity-70">Profile clicks</div>
+                    <div class="text-2xl font-semibold">{{ $s['profile_clicks'] }}</div>
+                    <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['profile_clicks_delta'] >= 0 ? '+' : '' }}{{ $s['profile_clicks_delta'] }}
+                        @if ($s['profile_clicks_delta_pct'] !== null)
+                            ({{ number_format($s['profile_clicks_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="text-sm opacity-70">Media views</div>
+                    <div class="text-2xl font-semibold">{{ $s['media_views'] }}</div>
+                    <div class="text-xs opacity-60">{{ $s['days'] }} days</div>
+                    <div class="text-xs opacity-60">
+                        vs prev: {{ $s['media_views_delta'] >= 0 ? '+' : '' }}{{ $s['media_views_delta'] }}
+                        @if ($s['media_views_delta_pct'] !== null)
+                            ({{ number_format($s['media_views_delta_pct'] * 100, 1) }}%)
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
