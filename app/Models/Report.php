@@ -10,26 +10,45 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Report extends Model
 {
     public const STATUS_OPEN = 'open';
+
     public const STATUS_REVIEWING = 'reviewing';
+
     public const STATUS_RESOLVED = 'resolved';
+
     public const STATUS_DISMISSED = 'dismissed';
 
     public const REASON_SPAM = 'spam';
+
     public const REASON_FAKE_ACCOUNT = 'fake_account';
+
     public const REASON_HARASSMENT = 'harassment';
+
     public const REASON_HATE = 'hate';
+
     public const REASON_VIOLENCE = 'violence';
+
     public const REASON_SELF_HARM = 'self_harm';
+
     public const REASON_CHILD_SAFETY = 'child_safety';
+
     public const REASON_PRIVACY = 'privacy';
+
     public const REASON_MISINFORMATION = 'misinformation';
+
     public const REASON_MANIPULATED_MEDIA = 'manipulated_media';
+
     public const REASON_CIVIC_INTEGRITY = 'civic_integrity';
+
     public const REASON_COVID_MISINFORMATION = 'covid_misinformation';
+
     public const REASON_NUDITY = 'nudity';
+
     public const REASON_SENSITIVE_MEDIA = 'sensitive_media';
+
     public const REASON_ILLEGAL = 'illegal';
+
     public const REASON_COPYRIGHT = 'copyright';
+
     public const REASON_OTHER = 'other';
 
     protected $fillable = [

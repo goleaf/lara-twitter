@@ -64,4 +64,3 @@ class ReportsPageTest extends TestCase
             ->assertDontSee($othersReport->case_number);
     }
 }
-

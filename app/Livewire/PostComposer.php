@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Models\Post;
+use App\Models\PostPoll;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -19,6 +20,11 @@ class PostComposer extends Component
     public array $images = [];
 
     public mixed $video = null;
+
+    /** @var array<int, string> */
+    public array $poll_options = [];
+
+    public ?int $poll_duration = null;
 
     public function save(): void
     {
@@ -50,8 +56,35 @@ class PostComposer extends Component
             ]);
         }
 
-        $this->reset(['body', 'images', 'video', 'reply_policy']);
+        $pollOptions = $this->normalizedPollOptions($validated['poll_options']);
+        if (count($pollOptions)) {
+            $poll = PostPoll::query()->create([
+                'post_id' => $post->id,
+                'ends_at' => now()->addMinutes((int) $validated['poll_duration']),
+            ]);
+
+            foreach ($pollOptions as $index => $optionText) {
+                $poll->options()->create([
+                    'option_text' => $optionText,
+                    'sort_order' => $index,
+                ]);
+            }
+        }
+
+        $this->reset(['body', 'images', 'video', 'reply_policy', 'poll_options', 'poll_duration']);
         $this->dispatch('post-created');
+    }
+
+    /**
+     * @param  array<int, string>  $options
+     * @return array<int, string>
+     */
+    private function normalizedPollOptions(array $options): array
+    {
+        $options = array_map('trim', $options);
+        $options = array_values(array_filter($options, static fn (string $v): bool => $v !== ''));
+
+        return array_slice($options, 0, 4);
     }
 
     public function render()
