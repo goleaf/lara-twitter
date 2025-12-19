@@ -46,6 +46,9 @@
                 <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $primary) }}" wire:navigate>
                     {{ $primary->created_at->diffForHumans() }}
                 </a>
+                @if ($primary->location)
+                    <span class="text-sm opacity-60">· {{ $primary->location }}</span>
+                @endif
 
                 @auth
                     @if ($this->canDelete())
@@ -172,9 +175,14 @@
                                 {{ $post->repostOf->user->name }}
                                 <span class="opacity-60 font-normal">&#64;{{ $post->repostOf->user->username }}</span>
                             </a>
-                            <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $post->repostOf) }}" wire:navigate>
-                                {{ $post->repostOf->created_at->diffForHumans() }}
-                            </a>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $post->repostOf) }}" wire:navigate>
+                                    {{ $post->repostOf->created_at->diffForHumans() }}
+                                </a>
+                                @if ($post->repostOf->location)
+                                    <span class="text-sm opacity-60">· {{ $post->repostOf->location }}</span>
+                                @endif
+                            </div>
                         </div>
 
                         <div class="prose max-w-none">

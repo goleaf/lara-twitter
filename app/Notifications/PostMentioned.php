@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class PostMentioned extends Notification
 {
@@ -19,7 +20,29 @@ class PostMentioned extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if ($notifiable instanceof User && $notifiable->shouldSendNotificationEmail()) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $excerpt = mb_substr((string) $this->post->body, 0, 120);
+
+        $mail = (new MailMessage)
+            ->subject('@'.$this->mentionedBy->username.' mentioned you')
+            ->line('@'.$this->mentionedBy->username.' mentioned you in a post.')
+            ->action('View post', route('posts.show', $this->post->id));
+
+        if ($excerpt !== '') {
+            $mail->line('“'.$excerpt.'”');
+        }
+
+        return $mail;
     }
 
     public function toArray(object $notifiable): array

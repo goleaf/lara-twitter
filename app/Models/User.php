@@ -221,6 +221,72 @@ class User extends Authenticatable implements FilamentUser
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);
     }
 
+    public function wantsEmailNotifications(): bool
+    {
+        $settings = $this->notification_settings ?? [];
+
+        return (bool) ($settings['email_enabled'] ?? false);
+    }
+
+    public function isInNotificationQuietHours(): bool
+    {
+        $settings = $this->notification_settings ?? [];
+
+        if (! (bool) ($settings['quiet_hours_enabled'] ?? false)) {
+            return false;
+        }
+
+        $startMinutes = $this->minutesSinceMidnight((string) ($settings['quiet_hours_start'] ?? '22:00'));
+        $endMinutes = $this->minutesSinceMidnight((string) ($settings['quiet_hours_end'] ?? '07:00'));
+
+        if (is_null($startMinutes) || is_null($endMinutes)) {
+            return false;
+        }
+
+        if ($startMinutes === $endMinutes) {
+            return true;
+        }
+
+        $nowMinutes = ((int) now()->format('H')) * 60 + (int) now()->format('i');
+
+        // Example: 22:00 -> 07:00 (wraps midnight).
+        if ($startMinutes > $endMinutes) {
+            return $nowMinutes >= $startMinutes || $nowMinutes < $endMinutes;
+        }
+
+        // Example: 13:00 -> 17:00 (same-day range).
+        return $nowMinutes >= $startMinutes && $nowMinutes < $endMinutes;
+    }
+
+    public function shouldSendNotificationEmail(): bool
+    {
+        if (! $this->wantsEmailNotifications()) {
+            return false;
+        }
+
+        if (! $this->email_verified_at) {
+            return false;
+        }
+
+        return ! $this->isInNotificationQuietHours();
+    }
+
+    private function minutesSinceMidnight(string $time): ?int
+    {
+        if (! preg_match('/^(\\d{1,2}):(\\d{2})$/', $time, $m)) {
+            return null;
+        }
+
+        $hours = (int) $m[1];
+        $minutes = (int) $m[2];
+
+        if ($hours < 0 || $hours > 23 || $minutes < 0 || $minutes > 59) {
+            return null;
+        }
+
+        return ($hours * 60) + $minutes;
+    }
+
     public function allowsNotificationFrom(User $actor, ?string $type = null): bool
     {
         if ($this->id === $actor->id) {

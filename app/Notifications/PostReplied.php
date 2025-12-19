@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class PostReplied extends Notification
 {
@@ -20,7 +21,29 @@ class PostReplied extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if ($notifiable instanceof User && $notifiable->shouldSendNotificationEmail()) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $excerpt = mb_substr((string) $this->replyPost->body, 0, 120);
+
+        $mail = (new MailMessage)
+            ->subject('@'.$this->replier->username.' replied to your post')
+            ->line('@'.$this->replier->username.' replied to your post.')
+            ->action('View reply', route('posts.show', $this->replyPost->id));
+
+        if ($excerpt !== '') {
+            $mail->line('“'.$excerpt.'”');
+        }
+
+        return $mail;
     }
 
     public function toArray(object $notifiable): array

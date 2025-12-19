@@ -21,6 +21,21 @@
         </div>
         <x-input-error :messages="$errors->get('reply_policy')" />
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+                <label class="text-sm opacity-70">Location (optional)</label>
+                <input wire:model="location" type="text" class="input input-bordered w-full" placeholder="e.g. Prague" />
+                <x-input-error :messages="$errors->get('location')" />
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-sm opacity-70">Schedule (optional)</label>
+                <input wire:model="scheduled_for" type="datetime-local" class="input input-bordered w-full" />
+                <x-input-error :messages="$errors->get('scheduled_for')" />
+            </div>
+        </div>
+        <div class="text-xs opacity-70">Scheduled posts won’t appear until they’re published.</div>
+
         <div class="flex items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-3">
                 <input wire:model="images" type="file" multiple accept="image/*" class="file-input file-input-bordered w-full max-w-xs" />
