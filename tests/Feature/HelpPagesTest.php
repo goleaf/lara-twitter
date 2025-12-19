@@ -12,10 +12,18 @@ class HelpPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Help')
             ->assertSee('Block')
+            ->assertSee('Mute')
             ->assertSee('Direct Messages')
             ->assertSee('Replies')
             ->assertSee('Hashtags')
             ->assertSee('Profile');
+
+        $this->get(route('help.mute'))
+            ->assertOk()
+            ->assertSee('Mute')
+            ->assertSee('What happens when you mute an account')
+            ->assertSee('Muted words')
+            ->assertSee('Muted accounts');
 
         $this->get(route('help.blocking'))
             ->assertOk()
