@@ -22,7 +22,7 @@ class MomentsTest extends TestCase
 
     public function test_user_can_create_moment_and_add_posts_in_order(): void
     {
-        $owner = User::factory()->create(['username' => 'owner']);
+        $owner = User::factory()->create(['username' => 'owner', 'is_verified' => true]);
         $author = User::factory()->create(['username' => 'alice']);
 
         $p1 = Post::query()->create(['user_id' => $author->id, 'body' => 'First']);
@@ -59,7 +59,7 @@ class MomentsTest extends TestCase
     {
         Storage::fake('public');
 
-        $owner = User::factory()->create(['username' => 'owner']);
+        $owner = User::factory()->create(['username' => 'owner', 'is_verified' => true]);
 
         Livewire::actingAs($owner)
             ->test(\App\Livewire\MomentsPage::class)
@@ -71,6 +71,50 @@ class MomentsTest extends TestCase
         $moment = Moment::query()->firstOrFail();
         $this->assertNotNull($moment->cover_image_path);
         Storage::disk('public')->assertExists($moment->cover_image_path);
+    }
+
+    public function test_unverified_user_cannot_create_moment(): void
+    {
+        $user = User::factory()->create(['username' => 'user', 'is_verified' => false]);
+
+        Livewire::actingAs($user)
+            ->test(\App\Livewire\MomentsPage::class)
+            ->set('title', 'Nope')
+            ->call('create')
+            ->assertStatus(403);
+
+        $this->assertDatabaseCount('moments', 0);
+    }
+
+    public function test_moment_item_can_have_caption(): void
+    {
+        $owner = User::factory()->create(['username' => 'owner', 'is_verified' => true]);
+        $author = User::factory()->create(['username' => 'alice']);
+
+        $post = Post::query()->create(['user_id' => $author->id, 'body' => 'Hello']);
+
+        Livewire::actingAs($owner)
+            ->test(\App\Livewire\MomentsPage::class)
+            ->set('title', 'My Moment')
+            ->call('create')
+            ->assertRedirect();
+
+        $moment = Moment::query()->firstOrFail();
+
+        Livewire::actingAs($owner)
+            ->test(\App\Livewire\MomentPage::class, ['moment' => $moment])
+            ->set('post_id', (string) $post->id)
+            ->set('caption', 'Context')
+            ->call('addPost')
+            ->assertHasNoErrors();
+
+        $item = $moment->refresh()->items()->firstOrFail();
+        $this->assertSame('Context', $item->caption);
+
+        $this->get(route('moments.show', $moment))
+            ->assertOk()
+            ->assertSee('Context')
+            ->assertSee('Hello');
     }
 
     public function test_owner_can_reorder_items(): void

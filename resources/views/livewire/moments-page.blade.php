@@ -12,7 +12,7 @@
                 <div class="card-body space-y-3">
                     <div class="flex items-center justify-between gap-3">
                         <div class="font-semibold">Create a Moment</div>
-                        <div class="badge badge-outline badge-sm">Verified only</div>
+                        <div class="badge badge-outline badge-sm">Verified/Admin</div>
                     </div>
 
                     <form wire:submit="create" class="space-y-3">

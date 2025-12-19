@@ -44,98 +44,45 @@ class AnalyticsPage extends Component
     {
         $userId = Auth::id();
         $days = $this->rangeDays();
-        $sinceDay = now()->subDays($days)->toDateString();
-        $sinceDateTime = now()->subDays($days);
+        [$sinceDay, $untilDay] = $this->dayRange($days);
+        [$sinceDateTime, $untilDateTime] = $this->dateTimeRange($days);
 
         $postIds = $this->userPostIds();
 
-        $impressions = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
-            ->where('type', 'post_view')
-            ->whereIn('entity_id', $postIds)
-            ->where('day', '>=', $sinceDay)
-            ->count();
+        $current = $this->metricsForPeriod(
+            userId: $userId,
+            postIds: $postIds,
+            sinceDay: $sinceDay,
+            untilDay: $untilDay,
+            sinceDateTime: $sinceDateTime,
+            untilDateTime: $untilDateTime,
+        );
 
-        $profileVisits = (int) DB::table('analytics_uniques')
-            ->where('type', 'profile_view')
-            ->where('entity_id', $userId)
-            ->where('day', '>=', $sinceDay)
-            ->count();
+        [$prevSinceDay, $prevUntilDay] = $this->previousDayRange($days);
+        [$prevSinceDateTime, $prevUntilDateTime] = $this->previousDateTimeRange($days);
 
-        $mentions = (int) DB::table('mentions')
-            ->join('posts', 'mentions.post_id', '=', 'posts.id')
-            ->where('mentions.mentioned_user_id', $userId)
-            ->where('posts.created_at', '>=', $sinceDateTime)
-            ->count();
+        $previous = $this->metricsForPeriod(
+            userId: $userId,
+            postIds: $postIds,
+            sinceDay: $prevSinceDay,
+            untilDay: $prevUntilDay,
+            sinceDateTime: $prevSinceDateTime,
+            untilDateTime: $prevUntilDateTime,
+        );
 
-        $newFollowers = (int) DB::table('follows')
-            ->where('followed_id', $userId)
-            ->where('created_at', '>=', $sinceDateTime)
-            ->count();
+        $comparison = $this->comparisonForMetrics($current, $previous);
 
-        $postsPublished = (int) DB::table('posts')
-            ->where('user_id', $userId)
-            ->where('body', '!=', '')
-            ->where('created_at', '>=', $sinceDateTime)
-            ->count();
-
-        $likes = empty($postIds) ? 0 : (int) DB::table('likes')
-            ->whereIn('post_id', $postIds)
-            ->where('created_at', '>=', $sinceDateTime)
-            ->count();
-
-        $reposts = empty($postIds) ? 0 : (int) DB::table('posts')
-            ->whereIn('repost_of_id', $postIds)
-            ->where('created_at', '>=', $sinceDateTime)
-            ->count();
-
-        $replies = empty($postIds) ? 0 : (int) DB::table('posts')
-            ->whereIn('reply_to_id', $postIds)
-            ->where('created_at', '>=', $sinceDateTime)
-            ->count();
-
-        $linkClicks = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
-            ->where('type', 'post_link_click')
-            ->whereIn('entity_id', $postIds)
-            ->where('day', '>=', $sinceDay)
-            ->count();
-
-        $profileClicks = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
-            ->where('type', 'post_profile_click')
-            ->whereIn('entity_id', $postIds)
-            ->where('day', '>=', $sinceDay)
-            ->count();
-
-        $mediaViews = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
-            ->where('type', 'post_media_view')
-            ->whereIn('entity_id', $postIds)
-            ->where('day', '>=', $sinceDay)
-            ->count();
-
-        $engagements = $likes + $reposts + $replies + $linkClicks + $profileClicks + $mediaViews;
-        $engagementRate = $impressions > 0 ? $engagements / $impressions : 0.0;
-
-        return [
-            'days' => $days,
-            'impressions' => $impressions,
-            'profile_visits' => $profileVisits,
-            'mentions' => $mentions,
-            'new_followers' => $newFollowers,
-            'posts_published' => $postsPublished,
-            'likes' => $likes,
-            'reposts' => $reposts,
-            'replies' => $replies,
-            'link_clicks' => $linkClicks,
-            'profile_clicks' => $profileClicks,
-            'media_views' => $mediaViews,
-            'engagements' => $engagements,
-            'engagement_rate' => $engagementRate,
-        ];
+        return array_merge(
+            ['days' => $days],
+            $current,
+            $comparison,
+        );
     }
 
     public function getTopPostsProperty(): Collection
     {
         $days = $this->rangeDays();
-        $sinceDay = now()->subDays($days)->toDateString();
+        [$sinceDay, $untilDay] = $this->dayRange($days);
         $sinceDateTime = now()->subDays($days);
 
         $postIds = $this->userPostIds();
@@ -147,7 +94,7 @@ class AnalyticsPage extends Component
             ->select('entity_id', DB::raw('count(*) as impressions'))
             ->where('type', 'post_view')
             ->whereIn('entity_id', $postIds)
-            ->where('day', '>=', $sinceDay)
+            ->whereBetween('day', [$sinceDay, $untilDay])
             ->groupBy('entity_id')
             ->orderByDesc('impressions')
             ->limit(10)
@@ -164,7 +111,7 @@ class AnalyticsPage extends Component
             ->select('entity_id', 'type', DB::raw('count(*) as count'))
             ->whereIn('entity_id', $topPostIds)
             ->whereIn('type', ['post_link_click', 'post_profile_click', 'post_media_view'])
-            ->where('day', '>=', $sinceDay)
+            ->whereBetween('day', [$sinceDay, $untilDay])
             ->groupBy('entity_id', 'type')
             ->get();
 
@@ -213,7 +160,7 @@ class AnalyticsPage extends Component
     {
         $userId = Auth::id();
         $days = $this->rangeDays();
-        $sinceDay = now()->subDays($days)->toDateString();
+        [$sinceDay, $untilDay] = $this->dayRange($days);
         $sinceDateTime = now()->subDays($days);
 
         $posts = Post::query()
@@ -238,7 +185,7 @@ class AnalyticsPage extends Component
             ->select('entity_id', 'type', DB::raw('count(*) as count'))
             ->whereIn('entity_id', $postIds)
             ->whereIn('type', ['post_view', 'post_link_click', 'post_profile_click', 'post_media_view'])
-            ->where('day', '>=', $sinceDay)
+            ->whereBetween('day', [$sinceDay, $untilDay])
             ->groupBy('entity_id', 'type')
             ->get();
 
@@ -323,6 +270,207 @@ class AnalyticsPage extends Component
     private function rangeDays(): int
     {
         return (int) ($this->rangeDaysMap()[$this->range] ?? 28);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function dayRange(int $days): array
+    {
+        $untilDay = now()->toDateString();
+        $sinceDay = now()->subDays($days - 1)->toDateString();
+
+        return [$sinceDay, $untilDay];
+    }
+
+    /**
+     * @return array{0: \Illuminate\Support\Carbon, 1: \Illuminate\Support\Carbon}
+     */
+    private function dateTimeRange(int $days): array
+    {
+        $until = now();
+        $since = now()->subDays($days);
+
+        return [$since, $until];
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function previousDayRange(int $days): array
+    {
+        $until = now()->subDays($days)->toDateString();
+        $since = now()->subDays(($days * 2) - 1)->toDateString();
+
+        return [$since, $until];
+    }
+
+    /**
+     * @return array{0: \Illuminate\Support\Carbon, 1: \Illuminate\Support\Carbon}
+     */
+    private function previousDateTimeRange(int $days): array
+    {
+        $until = now()->subDays($days);
+        $since = now()->subDays($days * 2);
+
+        return [$since, $until];
+    }
+
+    /**
+     * @param  array<int, int>  $postIds
+     * @return array{
+     *     impressions: int,
+     *     profile_visits: int,
+     *     mentions: int,
+     *     new_followers: int,
+     *     posts_published: int,
+     *     likes: int,
+     *     reposts: int,
+     *     replies: int,
+     *     link_clicks: int,
+     *     profile_clicks: int,
+     *     media_views: int,
+     *     engagements: int,
+     *     engagement_rate: float
+     * }
+     */
+    private function metricsForPeriod(
+        int $userId,
+        array $postIds,
+        string $sinceDay,
+        string $untilDay,
+        \Illuminate\Support\Carbon $sinceDateTime,
+        \Illuminate\Support\Carbon $untilDateTime,
+    ): array {
+        $impressions = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
+            ->where('type', 'post_view')
+            ->whereIn('entity_id', $postIds)
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->count();
+
+        $profileVisits = (int) DB::table('analytics_uniques')
+            ->where('type', 'profile_view')
+            ->where('entity_id', $userId)
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->count();
+
+        $mentions = (int) DB::table('mentions')
+            ->join('posts', 'mentions.post_id', '=', 'posts.id')
+            ->where('mentions.mentioned_user_id', $userId)
+            ->where('posts.created_at', '>=', $sinceDateTime)
+            ->where('posts.created_at', '<', $untilDateTime)
+            ->count();
+
+        $newFollowers = (int) DB::table('follows')
+            ->where('followed_id', $userId)
+            ->where('created_at', '>=', $sinceDateTime)
+            ->where('created_at', '<', $untilDateTime)
+            ->count();
+
+        $postsPublished = (int) DB::table('posts')
+            ->where('user_id', $userId)
+            ->where('body', '!=', '')
+            ->where('created_at', '>=', $sinceDateTime)
+            ->where('created_at', '<', $untilDateTime)
+            ->count();
+
+        $likes = empty($postIds) ? 0 : (int) DB::table('likes')
+            ->whereIn('post_id', $postIds)
+            ->where('created_at', '>=', $sinceDateTime)
+            ->where('created_at', '<', $untilDateTime)
+            ->count();
+
+        $reposts = empty($postIds) ? 0 : (int) DB::table('posts')
+            ->whereIn('repost_of_id', $postIds)
+            ->where('created_at', '>=', $sinceDateTime)
+            ->where('created_at', '<', $untilDateTime)
+            ->count();
+
+        $replies = empty($postIds) ? 0 : (int) DB::table('posts')
+            ->whereIn('reply_to_id', $postIds)
+            ->where('created_at', '>=', $sinceDateTime)
+            ->where('created_at', '<', $untilDateTime)
+            ->count();
+
+        $linkClicks = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
+            ->where('type', 'post_link_click')
+            ->whereIn('entity_id', $postIds)
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->count();
+
+        $profileClicks = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
+            ->where('type', 'post_profile_click')
+            ->whereIn('entity_id', $postIds)
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->count();
+
+        $mediaViews = empty($postIds) ? 0 : (int) DB::table('analytics_uniques')
+            ->where('type', 'post_media_view')
+            ->whereIn('entity_id', $postIds)
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->count();
+
+        $engagements = $likes + $reposts + $replies + $linkClicks + $profileClicks + $mediaViews;
+        $engagementRate = $impressions > 0 ? $engagements / $impressions : 0.0;
+
+        return [
+            'impressions' => $impressions,
+            'profile_visits' => $profileVisits,
+            'mentions' => $mentions,
+            'new_followers' => $newFollowers,
+            'posts_published' => $postsPublished,
+            'likes' => $likes,
+            'reposts' => $reposts,
+            'replies' => $replies,
+            'link_clicks' => $linkClicks,
+            'profile_clicks' => $profileClicks,
+            'media_views' => $mediaViews,
+            'engagements' => $engagements,
+            'engagement_rate' => $engagementRate,
+        ];
+    }
+
+    /**
+     * @param  array{engagement_rate: float}  $current
+     * @param  array{engagement_rate: float}  $previous
+     * @return array<string, int|float|null>
+     */
+    private function comparisonForMetrics(array $current, array $previous): array
+    {
+        $keys = [
+            'impressions',
+            'profile_visits',
+            'mentions',
+            'new_followers',
+            'posts_published',
+            'likes',
+            'reposts',
+            'replies',
+            'link_clicks',
+            'profile_clicks',
+            'media_views',
+            'engagements',
+        ];
+
+        $out = [];
+
+        foreach ($keys as $key) {
+            $currentValue = (int) ($current[$key] ?? 0);
+            $previousValue = (int) ($previous[$key] ?? 0);
+            $delta = $currentValue - $previousValue;
+            $deltaPct = $previousValue > 0 ? $delta / $previousValue : null;
+
+            $out[$key.'_prev'] = $previousValue;
+            $out[$key.'_delta'] = $delta;
+            $out[$key.'_delta_pct'] = $deltaPct;
+        }
+
+        $currentRate = (float) ($current['engagement_rate'] ?? 0);
+        $previousRate = (float) ($previous['engagement_rate'] ?? 0);
+        $out['engagement_rate_prev'] = $previousRate;
+        $out['engagement_rate_delta'] = $currentRate - $previousRate;
+
+        return $out;
     }
 
     /**

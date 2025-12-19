@@ -42,6 +42,25 @@ class ReplyLikeMentionsTest extends TestCase
             ->assertSee('hi');
     }
 
+    public function test_mention_with_dashes_is_supported_for_reply_like_and_links(): void
+    {
+        $author = User::factory()->create(['username' => 'alice']);
+        User::factory()->create(['username' => 'john-doe']);
+
+        Post::query()->create(['user_id' => $author->id, 'body' => '@john-doe hi']);
+
+        $this->get(route('profile.show', ['user' => $author]))
+            ->assertOk()
+            ->assertDontSee('Replying to')
+            ->assertDontSee('/@john-doe');
+
+        $this->get(route('profile.replies', ['user' => $author]))
+            ->assertOk()
+            ->assertSee('Replying to')
+            ->assertSee('/@john-doe')
+            ->assertSee('hi');
+    }
+
     public function test_timeline_following_excludes_reply_like_by_default_and_can_include_when_enabled(): void
     {
         $viewer = User::factory()->create(['timeline_settings' => ['show_replies' => false, 'show_retweets' => true]]);
