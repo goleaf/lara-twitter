@@ -135,7 +135,7 @@
                                     <span class="opacity-60 ms-1">{{ $tag->uses_count }}</span>
                                 </a>
                             @empty
-                                <x-empty-state>
+                                <x-empty-state class="w-full">
                                     No hashtags yet.
                                 </x-empty-state>
                             @endforelse
