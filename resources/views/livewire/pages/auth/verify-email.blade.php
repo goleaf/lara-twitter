@@ -38,7 +38,7 @@ new #[Layout('layouts.app')] class extends Component
 <div class="max-w-md mx-auto space-y-4">
     <div class="text-center">
         <a class="inline-flex items-center gap-3" href="{{ route('timeline') }}" wire:navigate>
-            <x-brand-mark class="h-11 w-11" />
+            <x-brand-mark />
             <span class="text-xl font-bold tracking-tight">{{ config('app.name', 'MiniTwitter') }}</span>
         </a>
     </div>
