@@ -171,7 +171,7 @@
 	                    </div>
 	                @endif
 
-	                @if ($this->recommendedUsers->isNotEmpty())
+	                @if ($feed === 'for-you' && $this->recommendedUsers->isNotEmpty())
 	                    <div class="card bg-base-100 border">
 	                        <div class="card-body">
 	                            <div class="flex items-center justify-between">
