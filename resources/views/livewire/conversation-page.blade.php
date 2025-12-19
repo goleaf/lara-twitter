@@ -63,13 +63,13 @@
                     <div class="divider">Manage</div>
 
                     <form wire:submit="updateGroupTitle" class="flex flex-col sm:flex-row gap-2">
-                        <input class="input input-bordered w-full" placeholder="Group title" wire:model="groupTitle" />
+                        <input class="input input-bordered input-sm w-full" placeholder="Group title" wire:model="groupTitle" />
                         <button type="submit" class="btn btn-primary btn-sm shrink-0">Save</button>
                     </form>
                     <x-input-error class="mt-2" :messages="$errors->get('groupTitle')" />
 
                     <form wire:submit="addMember" class="flex flex-col sm:flex-row gap-2">
-                        <input class="input input-bordered w-full" placeholder="@username" wire:model="memberUsername" />
+                        <input class="input input-bordered input-sm w-full" placeholder="@username" wire:model="memberUsername" />
                         <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
                     </form>
                     <x-input-error class="mt-2" :messages="$errors->get('memberUsername')" />
@@ -77,7 +77,7 @@
                     <div class="flex flex-wrap gap-2 pt-2">
                         @foreach ($conversation->participants as $participant)
                             @if ($participant->user_id !== $me->id)
-                                <button type="button" class="badge badge-neutral" wire:click="removeMember({{ $participant->user_id }})">
+                                <button type="button" class="badge badge-sm badge-neutral" wire:click="removeMember({{ $participant->user_id }})">
                                     Remove &#64;{{ $participant->user->username }}
                                 </button>
                             @endif
@@ -98,13 +98,13 @@
                         <button type="button" wire:click="unsend({{ $message->id }})" class="link link-hover ms-2">Unsend</button>
                     @endif
                 </div>
-                <div class="chat-bubble">
+                <div class="chat-bubble {{ $message->user_id === $me->id ? 'chat-bubble-primary' : '' }}">
                     @if ($message->body)
                         <div class="whitespace-pre-wrap">{{ $message->body }}</div>
                     @endif
 
                     @if ($message->attachments->count())
-                        <div class="pt-2 grid grid-cols-2 gap-2">
+                        <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                             @foreach ($message->attachments as $attachment)
                                 @php($url = \Illuminate\Support\Facades\Storage::disk('public')->url($attachment->path))
                                 @if (str_starts_with($attachment->mime_type, 'image/'))
@@ -138,7 +138,7 @@
                             @php($mine = $items->contains('user_id', $me->id))
                             <button
                                 type="button"
-                                class="badge {{ $mine ? 'badge-primary' : 'badge-ghost' }}"
+                                class="badge badge-sm {{ $mine ? 'badge-primary' : 'badge-ghost' }}"
                                 wire:click="toggleReaction({{ $message->id }}, @js($emoji))"
                                 @disabled($myParticipant?->is_request)
                             >
@@ -152,7 +152,7 @@
                     <div class="pt-1">
                         <div class="dropdown {{ $message->user_id === $me->id ? 'dropdown-end' : 'dropdown-start' }}">
                             <div tabindex="0" role="button" class="btn btn-ghost btn-xs">React</div>
-                            <div tabindex="0" class="dropdown-content bg-base-100 border rounded-box shadow p-2">
+                            <div tabindex="0" class="dropdown-content bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur border border-base-200 rounded-box shadow-lg p-2">
                                 <div class="flex gap-1">
                                     @foreach ($this->reactionEmojis() as $emoji)
                                         <button
@@ -193,7 +193,7 @@
                     <textarea
                         wire:model="body"
                         wire:keydown.throttle.800ms="typing"
-                        class="textarea textarea-bordered w-full"
+                        class="textarea textarea-bordered textarea-sm w-full"
                         rows="3"
                         placeholder="Write a message..."
                         maxlength="10000"
@@ -203,7 +203,7 @@
                 </div>
 
                 <div>
-                    <input wire:model="attachments" type="file" multiple class="file-input file-input-bordered w-full" @disabled($myParticipant?->is_request) />
+                    <input wire:model="attachments" type="file" multiple class="file-input file-input-bordered file-input-sm w-full" @disabled($myParticipant?->is_request) />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments')" />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments.*')" />
                     <div class="text-xs opacity-70 mt-1">Up to 4 attachments (images/video/audio/GIF), 10MB each.</div>
