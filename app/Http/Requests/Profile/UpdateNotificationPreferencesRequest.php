@@ -20,6 +20,10 @@ class UpdateNotificationPreferencesRequest extends FormRequest
             'only_verified' => ['boolean'],
             'lists' => ['boolean'],
             'followed_posts' => ['boolean'],
+            'email_enabled' => ['boolean'],
+            'quiet_hours_enabled' => ['boolean'],
+            'quiet_hours_start' => ['nullable', 'date_format:H:i'],
+            'quiet_hours_end' => ['nullable', 'date_format:H:i'],
         ];
     }
 

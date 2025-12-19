@@ -91,6 +91,15 @@ class ExplorePage extends Component
             ->filter(fn ($posts) => $posts->isNotEmpty());
     }
 
+    public function getTrendingConversationsProperty()
+    {
+        if ($this->tab !== 'trending') {
+            return collect();
+        }
+
+        return app(TrendingService::class)->trendingConversations(Auth::user(), 6);
+    }
+
     public function getTopStoriesProperty()
     {
         return Moment::query()

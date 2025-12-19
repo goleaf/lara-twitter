@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Models\Post;
 use App\Models\PostPoll;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -15,6 +16,10 @@ class PostComposer extends Component
 
     public string $body = '';
     public string $reply_policy = \App\Models\Post::REPLY_EVERYONE;
+
+    public string $location = '';
+
+    public ?string $scheduled_for = null;
 
     /** @var array<int, mixed> */
     public array $images = [];
@@ -30,12 +35,30 @@ class PostComposer extends Component
     {
         abort_unless(Auth::check(), 403);
 
+        $this->location = trim($this->location);
+
+        if (is_string($this->scheduled_for) && trim($this->scheduled_for) === '') {
+            $this->scheduled_for = null;
+        }
+
         $validated = $this->validate(StorePostRequest::rulesFor(Auth::user()));
+
+        $scheduledFor = isset($validated['scheduled_for']) && is_string($validated['scheduled_for'])
+            ? Carbon::createFromFormat('Y-m-d\\TH:i', $validated['scheduled_for'], config('app.timezone'))
+            : null;
+
+        $isScheduled = $scheduledFor && $scheduledFor->isFuture();
+
+        $location = isset($validated['location']) ? trim((string) $validated['location']) : null;
+        $location = $location === '' ? null : $location;
 
         $post = Post::query()->create([
             'user_id' => Auth::id(),
             'body' => $validated['body'],
             'reply_policy' => $validated['reply_policy'] ?? Post::REPLY_EVERYONE,
+            'location' => $location,
+            'is_published' => ! $isScheduled,
+            'scheduled_for' => $isScheduled ? $scheduledFor : null,
         ]);
 
         foreach ($validated['images'] as $index => $image) {
@@ -58,9 +81,11 @@ class PostComposer extends Component
 
         $pollOptions = $this->normalizedPollOptions($validated['poll_options']);
         if (count($pollOptions)) {
+            $pollStartAt = $isScheduled ? $scheduledFor : now();
+
             $poll = PostPoll::query()->create([
                 'post_id' => $post->id,
-                'ends_at' => now()->addMinutes((int) $validated['poll_duration']),
+                'ends_at' => $pollStartAt->copy()->addMinutes((int) $validated['poll_duration']),
             ]);
 
             foreach ($pollOptions as $index => $optionText) {
@@ -71,7 +96,7 @@ class PostComposer extends Component
             }
         }
 
-        $this->reset(['body', 'images', 'video', 'reply_policy', 'poll_options', 'poll_duration']);
+        $this->reset(['body', 'location', 'scheduled_for', 'images', 'video', 'reply_policy', 'poll_options', 'poll_duration']);
         $this->dispatch('post-created');
     }
 
