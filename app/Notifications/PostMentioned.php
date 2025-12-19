@@ -26,6 +26,8 @@ class PostMentioned extends Notification
     {
         return [
             'type' => 'post_mentioned',
+            'actor_user_id' => $this->mentionedBy->id,
+            'actor_username' => $this->mentionedBy->username,
             'post_id' => $this->post->id,
             'mentioned_by_user_id' => $this->mentionedBy->id,
             'mentioned_by_username' => $this->mentionedBy->username,
@@ -33,4 +35,3 @@ class PostMentioned extends Notification
         ];
     }
 }
-
