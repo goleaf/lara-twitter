@@ -1,0 +1,146 @@
+<?php
+
+namespace App\Observers;
+
+use App\Models\Hashtag;
+use App\Models\Mention;
+use App\Models\Post;
+use App\Models\User;
+use App\Notifications\PostMentioned;
+use App\Notifications\PostReposted;
+use App\Notifications\PostReplied;
+use App\Services\PostTextParser;
+use Illuminate\Support\Facades\Storage;
+
+class PostObserver
+{
+    public function __construct(private readonly PostTextParser $parser)
+    {
+    }
+
+    public function saved(Post $post): void
+    {
+        $existingMentionedUserIds = Mention::query()
+            ->where('post_id', $post->id)
+            ->pluck('mentioned_user_id')
+            ->all();
+
+        $parsed = $this->parser->parse($post->body);
+
+        $hashtagIds = [];
+        foreach ($parsed['hashtags'] as $tag) {
+            $hashtagIds[] = Hashtag::query()->firstOrCreate(['tag' => $tag])->id;
+        }
+        $post->hashtags()->sync($hashtagIds);
+
+        $mentionedUsers = User::query()
+            ->whereIn('username', $parsed['mentions'])
+            ->pluck('id', 'username');
+
+        $mentionsToKeep = [];
+        foreach ($mentionedUsers as $username => $mentionedUserId) {
+            $mentionsToKeep[] = $mentionedUserId;
+            Mention::query()->firstOrCreate([
+                'post_id' => $post->id,
+                'mentioned_user_id' => $mentionedUserId,
+            ]);
+        }
+
+        Mention::query()
+            ->where('post_id', $post->id)
+            ->whereNotIn('mentioned_user_id', $mentionsToKeep)
+            ->delete();
+
+        $newMentionedUserIds = array_values(array_diff($mentionsToKeep, $existingMentionedUserIds));
+        if (count($newMentionedUserIds)) {
+            $post->loadMissing('user');
+
+            $toNotify = User::query()
+                ->whereIn('id', $newMentionedUserIds)
+                ->where('id', '!=', $post->user_id)
+                ->get();
+
+            foreach ($toNotify as $user) {
+                if (! $user->wantsNotification('mentions')) {
+                    continue;
+                }
+
+                $user->notify(new PostMentioned(
+                    post: $post,
+                    mentionedBy: $post->user,
+                ));
+            }
+        }
+    }
+
+    public function created(Post $post): void
+    {
+        if ($post->repost_of_id && ! $post->reply_to_id) {
+            $original = $post->repostOf()->with('user')->first();
+            if ($original && $original->user_id !== $post->user_id) {
+                if ($original->user->wantsNotification('reposts')) {
+                    $post->loadMissing('user');
+
+                    $kind = $post->body === '' ? 'retweet' : 'quote';
+
+                    $original->user->notify(new PostReposted(
+                        originalPost: $original,
+                        repostPost: $post,
+                        reposter: $post->user,
+                        kind: $kind,
+                    ));
+                }
+            }
+        }
+
+        if (! $post->reply_to_id) {
+            return;
+        }
+
+        $original = $post->replyTo()->with('user')->first();
+        if (! $original) {
+            return;
+        }
+
+        if ($original->user_id === $post->user_id) {
+            return;
+        }
+
+        $post->loadMissing('user');
+
+        // Block: don't allow replies; Mute: allow, but don't notify.
+        if ($post->user->isBlockedEitherWay($original->user)) {
+            return;
+        }
+
+        if ($original->user->hasMuted($post->user)) {
+            return;
+        }
+
+        if (! $original->user->wantsNotification('replies')) {
+            return;
+        }
+
+        $original->user->notify(new PostReplied(
+            originalPost: $original,
+            replyPost: $post,
+            replier: $post->user,
+        ));
+    }
+
+    public function deleting(Post $post): void
+    {
+        $post->loadMissing('images');
+
+        foreach ($post->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+
+        // Prevent orphaned retweets becoming empty posts if the original is deleted.
+        Post::query()
+            ->where('repost_of_id', $post->id)
+            ->whereNull('reply_to_id')
+            ->where('body', '')
+            ->delete();
+    }
+}
