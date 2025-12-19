@@ -10,6 +10,7 @@ class AddMomentItemRequest extends FormRequest
     {
         return [
             'post_id' => ['required', 'integer', 'exists:posts,id'],
+            'caption' => ['nullable', 'string', 'max:280'],
         ];
     }
 
@@ -23,4 +24,3 @@ class AddMomentItemRequest extends FormRequest
         return self::rulesFor();
     }
 }
-

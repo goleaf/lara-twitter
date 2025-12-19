@@ -13,6 +13,7 @@ class MomentItem extends Model
     protected $fillable = [
         'moment_id',
         'post_id',
+        'caption',
         'sort_order',
     ];
 
@@ -26,4 +27,3 @@ class MomentItem extends Model
         return $this->belongsTo(Post::class);
     }
 }
-

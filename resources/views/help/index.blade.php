@@ -15,6 +15,10 @@
                         <div class="font-medium">Hashtags</div>
                         <div class="text-sm opacity-60">How #tags work</div>
                     </a>
+                    <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('help.profile') }}" wire:navigate>
+                        <div class="font-medium">Profile</div>
+                        <div class="text-sm opacity-60">Your public page</div>
+                    </a>
                 </div>
             </div>
         </div>

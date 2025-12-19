@@ -5,7 +5,7 @@
                 <div class="text-xl font-semibold">Bookmarks</div>
                 <div class="flex items-center gap-3">
                     <div class="text-sm opacity-70">Private</div>
-                    @if ($this->posts->total())
+                    @if ($this->bookmarks->total())
                         <button type="button" class="btn btn-ghost btn-sm" wire:click="clearAll">
                             Clear all
                         </button>
@@ -16,16 +16,33 @@
     </div>
 
     <div class="space-y-3">
-        @forelse ($this->posts as $post)
-            @if ($post->reply_to_id && $post->replyTo)
-                <div class="opacity-70 text-sm">
-                    Replying to
-                    <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
-                        &#64;{{ $post->replyTo->user->username }}
-                    </a>
+        @forelse ($this->bookmarks as $bookmark)
+            @if ($bookmark->post)
+                @php($post = $bookmark->post)
+                @if ($post->reply_to_id && $post->replyTo)
+                    <div class="opacity-70 text-sm">
+                        Replying to
+                        <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
+                            &#64;{{ $post->replyTo->user->username }}
+                        </a>
+                    </div>
+                @endif
+                <livewire:post-card :post="$post" :key="'bookmark-post-'.$bookmark->post_id" />
+            @else
+                <div class="card bg-base-100 border">
+                    <div class="card-body gap-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="font-semibold">This post is no longer available</div>
+                                <div class="text-sm opacity-70">Bookmarked {{ $bookmark->created_at?->diffForHumans() }}</div>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="remove({{ (int) $bookmark->post_id }})">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
                 </div>
             @endif
-            <livewire:post-card :post="$post" :key="$post->id" />
         @empty
             <div class="card bg-base-100 border">
                 <div class="card-body">
@@ -36,6 +53,6 @@
     </div>
 
     <div class="pt-2">
-        {{ $this->posts->links() }}
+        {{ $this->bookmarks->links() }}
     </div>
 </div>
