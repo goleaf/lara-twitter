@@ -76,7 +76,50 @@ function scrollToHash() {
     });
 }
 
+function setupLivewireNavigateSearchForms() {
+    document.querySelectorAll('form[data-livewire-navigate-search]').forEach((form) => {
+        if (form.dataset.livewireNavigateSearchBound === '1') {
+            return;
+        }
+
+        form.dataset.livewireNavigateSearchBound = '1';
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const action = form.getAttribute('action') || window.location.pathname;
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            for (const [key, value] of formData.entries()) {
+                if (typeof value !== 'string') {
+                    continue;
+                }
+
+                const trimmedValue = value.trim();
+                if (!trimmedValue) {
+                    continue;
+                }
+
+                params.set(key, trimmedValue);
+            }
+
+            const url = params.toString() ? `${action}?${params.toString()}` : action;
+
+            const navigate = window.Livewire?.navigate;
+            if (typeof navigate === 'function') {
+                navigate(url);
+                return;
+            }
+
+            window.location.assign(url);
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', scrollToHash);
 window.addEventListener('hashchange', scrollToHash);
 document.addEventListener('livewire:navigated', scrollToHash);
 document.addEventListener('DOMContentLoaded', setupNavigateProgress);
+document.addEventListener('DOMContentLoaded', setupLivewireNavigateSearchForms);
+document.addEventListener('livewire:navigated', setupLivewireNavigateSearchForms);
