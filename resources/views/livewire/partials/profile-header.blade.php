@@ -95,28 +95,28 @@
             @endif
         </div>
 
-            <div class="pt-4 grid grid-cols-3 gap-2">
-                <a
-                    class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-                    href="{{ route('profile.followers', ['user' => $user]) }}"
-                    wire:navigate
-                >
+        <div class="pt-4 grid grid-cols-3 gap-2">
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.followers', ['user' => $user]) }}"
+                wire:navigate
+            >
                 <div class="font-semibold leading-none">{{ $user->followers_count }}</div>
                 <div class="text-xs opacity-70">followers</div>
-                </a>
-                <a
-                    class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-                    href="{{ route('profile.following', ['user' => $user]) }}"
-                    wire:navigate
-                >
+            </a>
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.following', ['user' => $user]) }}"
+                wire:navigate
+            >
                 <div class="font-semibold leading-none">{{ $user->following_count }}</div>
                 <div class="text-xs opacity-70">following</div>
-                </a>
-                <a
-                    class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-                    href="{{ route('profile.lists', ['user' => $user]) }}"
-                    wire:navigate
-                >
+            </a>
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.lists', ['user' => $user]) }}"
+                wire:navigate
+            >
                 <div class="font-semibold leading-none">{{ $this->listsCount }}</div>
                 <div class="text-xs opacity-70">lists</div>
             </a>
