@@ -14,14 +14,14 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-base-200">
+    <body class="font-sans antialiased bg-gradient-to-b from-base-200 via-base-200 to-base-300/40 text-base-content">
         @php($unreadNotificationsCount = auth()->check() ? app(\App\Services\NotificationVisibilityService::class)->visibleUnreadCount(auth()->user()) : 0)
 
         <div class="drawer lg:drawer-open">
             <input id="app-drawer" type="checkbox" class="drawer-toggle" />
 
             <div class="drawer-content min-h-screen flex flex-col">
-                <div class="sticky top-0 z-50 border-b bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
+                <div class="sticky top-0 z-50 border-b border-base-200 bg-base-100/90 backdrop-blur supports-[backdrop-filter]:bg-base-100/70 shadow-sm">
                     <div class="navbar max-w-7xl w-full mx-auto px-4">
                         <div class="flex-none lg:hidden">
                             <label for="app-drawer" class="btn btn-ghost btn-square" aria-label="Open menu">
@@ -32,7 +32,7 @@
                         </div>
 
                         <div class="flex-1 min-w-0">
-                            <a class="btn btn-ghost text-xl" href="{{ route('timeline') }}" wire:navigate>
+                            <a class="btn btn-ghost text-xl font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate>
                                 MiniTwitter
                             </a>
                         </div>
@@ -121,7 +121,7 @@
 
                 @if (isset($header) || $__env->hasSection('header'))
                     <header class="max-w-7xl w-full mx-auto px-4 pt-6">
-                        <div class="card bg-base-100 border">
+                        <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
                             <div class="card-body py-4">
                                 @isset($header)
                                     {{ $header }}
@@ -144,10 +144,10 @@
 
             <div class="drawer-side">
                 <label for="app-drawer" class="drawer-overlay" aria-label="Close menu"></label>
-                <aside class="bg-base-100 min-h-full w-72 border-r">
+                <aside class="bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur min-h-full w-72 border-r border-base-200">
                     <div class="p-4">
                         <div class="hidden lg:block pb-2">
-                            <a class="btn btn-ghost text-xl w-full justify-start" href="{{ route('timeline') }}" wire:navigate>
+                            <a class="btn btn-ghost text-xl w-full justify-start font-bold tracking-tight" href="{{ route('timeline') }}" wire:navigate>
                                 MiniTwitter
                             </a>
                         </div>
@@ -323,7 +323,7 @@
 
                         @auth
                             <div class="mt-4 pt-4 border-t border-base-200">
-                                <a class="flex items-center gap-3 p-2 rounded-btn hover:bg-base-200" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
+                                <a class="flex items-center gap-3 p-2 rounded-btn hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
                                     <div class="avatar shrink-0">
                                         <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                             @if (auth()->user()->avatar_url)

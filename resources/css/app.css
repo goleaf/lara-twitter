@@ -21,6 +21,10 @@
         @apply transition hover:shadow-md hover:border-base-300;
     }
 
+    .menu a.active {
+        @apply bg-primary/10 text-primary font-semibold;
+    }
+
     .prose {
         @apply text-sm leading-relaxed text-base-content;
     }
