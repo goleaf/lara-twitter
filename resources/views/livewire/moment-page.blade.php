@@ -30,12 +30,15 @@
                 <a class="btn btn-ghost btn-sm" href="{{ route('moments.index') }}" wire:navigate>Back</a>
             </div>
 
-            @if ($moment->coverUrl())
-                <img class="rounded-box border w-full max-h-64 object-cover" src="{{ $moment->coverUrl() }}" alt="Moment cover image" />
+            @php($coverUrl = $moment->coverUrl())
+            @if ($coverUrl)
+                <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200" style="aspect-ratio: 16 / 9;">
+                    <img class="h-full w-full object-cover" src="{{ $coverUrl }}" alt="Moment cover image" loading="lazy" />
+                </div>
             @endif
 
             @if ($moment->description)
-                <div>{{ $moment->description }}</div>
+                <div class="text-sm opacity-80 leading-relaxed">{{ $moment->description }}</div>
             @endif
 
             @auth
