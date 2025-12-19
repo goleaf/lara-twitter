@@ -23,7 +23,7 @@
     <div class="card bg-base-100 border">
         <div class="card-body p-0">
             <div class="overflow-x-auto">
-                <table class="table table-zebra">
+                <table class="table table-zebra table-sm">
                     <thead>
                         <tr>
                             <th>Case</th>
@@ -37,48 +37,72 @@
                         @forelse ($this->reports as $report)
                             @php($target = $report->reportable)
                             <tr>
-                                <td class="font-mono text-xs">{{ $report->case_number }}</td>
+                                <td class="font-mono text-xs whitespace-nowrap">{{ $report->case_number }}</td>
 
                                 <td>
                                     @php($badge = match ($report->status) { 'open' => 'badge-neutral', 'reviewing' => 'badge-warning', 'resolved' => 'badge-success', 'dismissed' => 'badge-ghost', default => 'badge-neutral' })
-                                    <span class="badge {{ $badge }}">{{ $report->status }}</span>
+                                    <span class="badge badge-sm {{ $badge }} whitespace-nowrap">{{ ucfirst($report->status) }}</span>
                                 </td>
 
-                                <td>{{ \App\Models\Report::reasonLabel($report->reason) }}</td>
+                                <td class="text-sm">{{ \App\Models\Report::reasonLabel($report->reason) }}</td>
 
                                 <td class="min-w-0">
                                     @if (! $target)
-                                        <span class="opacity-70">{{ class_basename($report->reportable_type) }} #{{ $report->reportable_id }} (deleted)</span>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">{{ class_basename($report->reportable_type) }}</span>
+                                            <span class="opacity-70 text-sm truncate">#{{ $report->reportable_id }} (deleted)</span>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\Post)
-                                        <a class="link link-hover truncate inline-block max-w-xs" href="{{ route('posts.show', $target) }}" wire:navigate>
-                                            Post: {{ str($target->body)->limit(60) }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">Post</span>
+                                            <a class="link link-hover block truncate" href="{{ route('posts.show', $target) }}" wire:navigate>
+                                                {{ str($target->body)->limit(60) }}
+                                            </a>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\User)
-                                        <a class="link link-hover" href="{{ route('profile.show', ['user' => $target]) }}" wire:navigate>
-                                            Account: &#64;{{ $target->username }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">Account</span>
+                                            <a class="link link-hover block truncate" href="{{ route('profile.show', ['user' => $target]) }}" wire:navigate>
+                                                &#64;{{ $target->username }}
+                                            </a>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\Hashtag)
-                                        <a class="link link-hover" href="{{ route('hashtags.show', ['tag' => $target->tag]) }}" wire:navigate>
-                                            Hashtag: #{{ $target->tag }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">Hashtag</span>
+                                            <a class="link link-hover block truncate" href="{{ route('hashtags.show', ['tag' => $target->tag]) }}" wire:navigate>
+                                                #{{ $target->tag }}
+                                            </a>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\Message)
-                                        <a class="link link-hover truncate inline-block max-w-xs" href="{{ route('messages.show', $target->conversation_id) }}" wire:navigate>
-                                            Message: {{ $target->body ? str($target->body)->limit(60) : 'Attachment' }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">Message</span>
+                                            <a class="link link-hover block truncate" href="{{ route('messages.show', $target->conversation_id) }}" wire:navigate>
+                                                {{ $target->body ? str($target->body)->limit(60) : 'Attachment' }}
+                                            </a>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\UserList)
-                                        <a class="link link-hover truncate inline-block max-w-xs" href="{{ route('lists.show', $target) }}" wire:navigate>
-                                            List: {{ $target->name }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">List</span>
+                                            <a class="link link-hover block truncate" href="{{ route('lists.show', $target) }}" wire:navigate>
+                                                {{ $target->name }}
+                                            </a>
+                                        </div>
                                     @elseif ($target instanceof \App\Models\Space)
-                                        <a class="link link-hover truncate inline-block max-w-xs" href="{{ route('spaces.show', $target) }}" wire:navigate>
-                                            Space: {{ $target->title }}
-                                        </a>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">Space</span>
+                                            <a class="link link-hover block truncate" href="{{ route('spaces.show', $target) }}" wire:navigate>
+                                                {{ $target->title }}
+                                            </a>
+                                        </div>
                                     @else
-                                        <span class="opacity-70">{{ class_basename($report->reportable_type) }} #{{ $report->reportable_id }}</span>
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="badge badge-ghost badge-sm shrink-0">{{ class_basename($report->reportable_type) }}</span>
+                                            <span class="opacity-70 text-sm truncate">#{{ $report->reportable_id }}</span>
+                                        </div>
                                     @endif
                                 </td>
 
-                                <td class="text-right text-sm opacity-70">
+                                <td class="text-right text-sm opacity-70 whitespace-nowrap">
                                     {{ $report->updated_at->diffForHumans() }}
                                 </td>
                             </tr>
@@ -97,4 +121,3 @@
         {{ $this->reports->links() }}
     </div>
 </div>
-

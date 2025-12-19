@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="overflow-x-auto pt-3">
-                    <table class="table table-sm">
+                    <table class="table table-zebra table-sm">
                         <thead>
                             <tr>
                                 <th>Post</th>
