@@ -95,7 +95,7 @@ class ExplorePage extends Component
     {
         return Moment::query()
             ->where('is_public', true)
-            ->with(['owner'])
+            ->with(['owner', 'firstItem.post.user'])
             ->withCount('items')
             ->latest()
             ->limit(5)

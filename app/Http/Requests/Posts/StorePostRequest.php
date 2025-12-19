@@ -5,6 +5,8 @@ namespace App\Http\Requests\Posts;
 use App\Models\Post;
 use App\Models\User;
 use App\Rules\ExclusivePostMedia;
+use App\Rules\PollDurationRequired;
+use App\Rules\ValidPollOptions;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,9 +19,12 @@ class StorePostRequest extends FormRequest
         return [
             'body' => ['required', 'string', "max:{$max}"],
             'reply_policy' => ['nullable', 'string', Rule::in(Post::replyPolicies())],
-            'images' => ['array', 'max:4', new ExclusivePostMedia('video')],
+            'images' => ['array', 'max:4', new ExclusivePostMedia('video'), new ExclusivePostMedia('poll_options')],
             'images.*' => ['image', 'max:4096'],
-            'video' => ['nullable', 'file', 'max:51200', 'mimetypes:video/mp4,video/webm', new ExclusivePostMedia('images')],
+            'video' => ['nullable', 'file', 'max:51200', 'mimetypes:video/mp4,video/webm', new ExclusivePostMedia('images'), new ExclusivePostMedia('poll_options')],
+            'poll_options' => ['array', 'max:4', new ExclusivePostMedia('images'), new ExclusivePostMedia('video'), new ValidPollOptions],
+            'poll_options.*' => ['nullable', 'string', 'max:50'],
+            'poll_duration' => ['nullable', 'integer', Rule::in([1440, 4320, 10080]), new PollDurationRequired],
         ];
     }
 

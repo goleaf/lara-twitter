@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 class Moment extends Model
@@ -35,6 +36,11 @@ class Moment extends Model
     public function items(): HasMany
     {
         return $this->hasMany(MomentItem::class)->orderBy('sort_order');
+    }
+
+    public function firstItem(): HasOne
+    {
+        return $this->hasOne(MomentItem::class)->orderBy('sort_order');
     }
 
     public function isVisibleTo(?User $viewer): bool

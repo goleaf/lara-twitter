@@ -11,6 +11,7 @@ use App\Models\Post;
 use App\Models\Space;
 use App\Models\User;
 use App\Models\UserList;
+use App\Models\Report;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -18,6 +19,52 @@ use Tests\TestCase;
 class ReportTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_details_are_required_for_serious_reasons(): void
+    {
+        $author = User::factory()->create();
+        $reporter = User::factory()->create();
+
+        $post = Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'Hello world',
+        ]);
+
+        Livewire::actingAs($reporter)
+            ->test(ReportButton::class, [
+                'reportableType' => Post::class,
+                'reportableId' => $post->id,
+            ])
+            ->set('reason', Report::REASON_VIOLENCE)
+            ->call('submit')
+            ->assertHasErrors(['details']);
+    }
+
+    public function test_report_submit_shows_case_number_notice(): void
+    {
+        $author = User::factory()->create();
+        $reporter = User::factory()->create();
+
+        $post = Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'Hello world',
+        ]);
+
+        $component = Livewire::actingAs($reporter)
+            ->test(ReportButton::class, [
+                'reportableType' => Post::class,
+                'reportableId' => $post->id,
+            ])
+            ->set('reason', Report::REASON_SPAM)
+            ->set('details', 'Looks like automated spam.')
+            ->call('submit');
+
+        $report = Report::query()->firstOrFail();
+
+        $component
+            ->assertSee('Report submitted')
+            ->assertSee($report->case_number);
+    }
 
     public function test_user_can_report_a_post_once(): void
     {
