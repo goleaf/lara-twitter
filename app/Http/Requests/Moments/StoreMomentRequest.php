@@ -12,6 +12,7 @@ class StoreMomentRequest extends FormRequest
             'title' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:280'],
             'is_public' => ['boolean'],
+            'cover_image' => ['nullable', 'image', 'max:2048'],
         ];
     }
 
@@ -25,4 +26,3 @@ class StoreMomentRequest extends FormRequest
         return self::rulesFor();
     }
 }
-

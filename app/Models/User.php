@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -278,6 +279,15 @@ class User extends Authenticatable implements FilamentUser
     public function hasMuted(User $other): bool
     {
         return $this->mutesInitiated()->where('muted_id', $other->id)->exists();
+    }
+
+    public function excludedUserIds(): Collection
+    {
+        $mutedIds = $this->mutesInitiated()->pluck('muted_id');
+        $blockedIds = $this->blocksInitiated()->pluck('blocked_id');
+        $blockedByIds = $this->blocksReceived()->pluck('blocker_id');
+
+        return $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
     }
 
     public function spacesHosted(): HasMany

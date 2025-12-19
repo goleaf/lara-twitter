@@ -27,7 +27,7 @@ class BookmarksPage extends Component
 
     public function getPostsProperty()
     {
-        return Auth::user()
+        $query = Auth::user()
             ->bookmarkedPosts()
             ->getQuery()
             ->whereNull('reply_to_id')
@@ -38,8 +38,14 @@ class BookmarksPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
             ])
             ->withCount(['likes', 'reposts', 'replies'])
-            ->latest('bookmarks.created_at')
-            ->paginate(15);
+            ->latest('bookmarks.created_at');
+
+        $exclude = Auth::user()->excludedUserIds();
+        if ($exclude->isNotEmpty()) {
+            $query->whereNotIn('user_id', $exclude);
+        }
+
+        return $query->paginate(15);
     }
 
     public function render()

@@ -51,20 +51,28 @@ class RepostsPage extends Component
     {
         $primary = $this->primaryPost();
 
-        return Post::query()
+        $query = Post::query()
             ->where('repost_of_id', $primary->id)
             ->whereNull('reply_to_id')
             ->where('body', '')
             ->with('user')
-            ->latest()
-            ->paginate(20);
+            ->latest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(20);
     }
 
     public function getQuotesProperty()
     {
         $primary = $this->primaryPost();
 
-        return Post::query()
+        $query = Post::query()
             ->where('repost_of_id', $primary->id)
             ->whereNull('reply_to_id')
             ->where('body', '!=', '')
@@ -74,8 +82,16 @@ class RepostsPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
             ])
             ->withCount(['likes', 'reposts', 'replies'])
-            ->latest()
-            ->paginate(15);
+            ->latest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(15);
     }
 
     public function render()
@@ -83,4 +99,3 @@ class RepostsPage extends Component
         return view('livewire.reposts-page')->layout('layouts.app');
     }
 }
-

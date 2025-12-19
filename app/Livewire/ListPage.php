@@ -106,7 +106,7 @@ class ListPage extends Component
     {
         $memberIds = $this->list->members()->pluck('users.id')->all();
 
-        return Post::query()
+        $query = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
             ->whereIn('user_id', $memberIds)
@@ -116,8 +116,16 @@ class ListPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
             ])
             ->withCount(['likes', 'reposts', 'replies'])
-            ->latest()
-            ->paginate(15);
+            ->latest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(15);
     }
 
     public function render()

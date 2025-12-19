@@ -33,6 +33,8 @@ class PostCard extends Component
         abort_unless(Auth::check(), 403);
 
         $post = $this->primaryPost();
+        $post->loadMissing('user');
+        abort_if(Auth::user()->isBlockedEitherWay($post->user), 403);
 
         $existing = $post->likes()->where('user_id', Auth::id())->exists();
 
@@ -56,6 +58,8 @@ class PostCard extends Component
         abort_unless(Auth::check(), 403);
 
         $post = $this->primaryPost();
+        $post->loadMissing('user');
+        abort_if(Auth::user()->isBlockedEitherWay($post->user), 403);
 
         $existing = Bookmark::query()
             ->where('user_id', Auth::id())
@@ -94,6 +98,8 @@ class PostCard extends Component
         abort_unless(Auth::check(), 403);
 
         $post = $this->primaryPost();
+        $post->loadMissing('user');
+        abort_if(Auth::user()->isBlockedEitherWay($post->user), 403);
 
         $existing = Post::query()
             ->where('user_id', Auth::id())
@@ -123,6 +129,10 @@ class PostCard extends Component
     {
         abort_unless(Auth::check(), 403);
 
+        $post = $this->primaryPost();
+        $post->loadMissing('user');
+        abort_if(Auth::user()->isBlockedEitherWay($post->user), 403);
+
         $this->isQuoting = true;
     }
 
@@ -131,6 +141,8 @@ class PostCard extends Component
         abort_unless(Auth::check(), 403);
 
         $post = $this->primaryPost();
+        $post->loadMissing('user');
+        abort_if(Auth::user()->isBlockedEitherWay($post->user), 403);
 
         $validated = $this->validate(QuoteRepostRequest::rulesFor(Auth::user()));
 

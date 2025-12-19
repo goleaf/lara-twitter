@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Hashtag;
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -56,6 +57,13 @@ class HashtagPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
             ])
             ->withCount(['likes', 'reposts', 'replies']);
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
 
         if ($this->normalizedSort() === 'top') {
             return $query

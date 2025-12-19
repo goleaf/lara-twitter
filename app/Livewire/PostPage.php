@@ -91,7 +91,7 @@ class PostPage extends Component
 
     public function getRepliesProperty()
     {
-        return Post::query()
+        $query = Post::query()
             ->where('reply_to_id', $this->post->id)
             ->with([
                 'user',
@@ -99,8 +99,16 @@ class PostPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
             ])
             ->withCount(['likes', 'reposts'])
-            ->oldest()
-            ->paginate(15);
+            ->oldest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(15);
     }
 
     public function render()

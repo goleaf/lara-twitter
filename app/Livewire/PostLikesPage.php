@@ -38,11 +38,19 @@ class PostLikesPage extends Component
     {
         $primary = $this->primaryPost();
 
-        return Like::query()
+        $query = Like::query()
             ->where('post_id', $primary->id)
             ->with('user')
-            ->latest()
-            ->paginate(20);
+            ->latest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(20);
     }
 
     public function render()
@@ -50,4 +58,3 @@ class PostLikesPage extends Component
         return view('livewire.post-likes-page')->layout('layouts.app');
     }
 }
-

@@ -53,7 +53,7 @@ Route::get('trending', TrendingPage::class)->name('trending');
 Route::get('explore', ExplorePage::class)->name('explore');
 Route::get('spaces', SpacesPage::class)->name('spaces.index');
 Route::get('spaces/{space}', SpacePage::class)->name('spaces.show');
-Route::get('moments', MomentsPage::class)->middleware('auth')->name('moments.index');
+Route::get('moments', MomentsPage::class)->name('moments.index');
 Route::get('moments/{moment}', MomentPage::class)->name('moments.show');
 
 Route::view('profile', 'profile')->middleware(['auth'])->name('profile');

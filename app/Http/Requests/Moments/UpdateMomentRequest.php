@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Spaces;
+namespace App\Http\Requests\Moments;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSpaceRequest extends FormRequest
+class UpdateMomentRequest extends FormRequest
 {
     public static function rulesFor(): array
     {
         return [
             'title' => ['required', 'string', 'max:120'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'scheduled_for' => ['nullable', 'date', 'after_or_equal:now'],
-            'recording_enabled' => ['nullable', 'boolean'],
+            'description' => ['nullable', 'string', 'max:280'],
+            'is_public' => ['boolean'],
+            'cover_image' => ['nullable', 'image', 'max:2048'],
         ];
     }
 
@@ -26,3 +26,4 @@ class StoreSpaceRequest extends FormRequest
         return self::rulesFor();
     }
 }
+

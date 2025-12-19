@@ -13,7 +13,7 @@ class MentionsPage extends Component
 
     public function getPostsProperty()
     {
-        return Post::query()
+        $query = Post::query()
             ->whereHas('mentions', fn ($q) => $q->where('mentioned_user_id', Auth::id()))
             ->with([
                 'user',
@@ -21,8 +21,16 @@ class MentionsPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
             ])
             ->withCount(['likes', 'reposts'])
-            ->latest()
-            ->paginate(15);
+            ->latest();
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->paginate(15);
     }
 
     public function render()

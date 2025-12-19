@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -274,19 +275,36 @@ class SearchPage extends Component
 
         $q = $this->normalizedQuery();
         if ($q === '') {
-            return User::query()->latest()->limit(10)->get();
+            $query = User::query()->latest()->limit(10);
+
+            if (Auth::check()) {
+                $exclude = Auth::user()->excludedUserIds();
+                if ($exclude->isNotEmpty()) {
+                    $query->whereNotIn('id', $exclude);
+                }
+            }
+
+            return $query->get();
         }
 
         $needle = '%'.mb_strtolower($q).'%';
 
-        return User::query()
+        $query = User::query()
             ->where(function (Builder $query) use ($needle): void {
                 $query
                     ->whereRaw('lower(username) like ?', [$needle])
                     ->orWhereRaw('lower(name) like ?', [$needle]);
             })
-            ->limit(20)
-            ->get();
+            ->limit(20);
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('id', $exclude);
+            }
+        }
+
+        return $query->get();
     }
 
     public function getHashtagsProperty()
@@ -334,6 +352,13 @@ class SearchPage extends Component
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
             ])
             ->withCount(['likes', 'reposts', 'replies']);
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
 
         if ($username) {
             $userId = User::query()->where('username', $username)->value('id');

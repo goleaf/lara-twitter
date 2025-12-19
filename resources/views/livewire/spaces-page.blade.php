@@ -33,6 +33,11 @@
                         <x-input-error class="mt-2" :messages="$errors->get('scheduled_for')" />
                     </div>
 
+                    <label class="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" class="checkbox checkbox-sm" wire:model="recording_enabled" />
+                        <span class="label-text">Enable recording metadata (30 days after end)</span>
+                    </label>
+
                     <div class="flex justify-end">
                         <button type="submit" class="btn btn-primary btn-sm">Create</button>
                     </div>
@@ -84,4 +89,3 @@
         </div>
     </div>
 </div>
-

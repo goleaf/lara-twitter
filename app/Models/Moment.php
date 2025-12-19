@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Moment extends Model
 {
@@ -15,6 +16,7 @@ class Moment extends Model
         'owner_id',
         'title',
         'description',
+        'cover_image_path',
         'is_public',
     ];
 
@@ -43,5 +45,13 @@ class Moment extends Model
 
         return $viewer && $viewer->id === $this->owner_id;
     }
-}
 
+    public function coverUrl(): ?string
+    {
+        if (! $this->cover_image_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->cover_image_path);
+    }
+}

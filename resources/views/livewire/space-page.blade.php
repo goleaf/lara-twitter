@@ -1,6 +1,8 @@
 @php($me = auth()->user())
 @php($isHost = $me && $me->id === $space->host_user_id)
 @php($participant = $this->myParticipant())
+@php($isModerator = $me && ($isHost || ($participant && $participant->left_at === null && $participant->role === 'cohost')))
+@php($myRequest = $this->mySpeakerRequest())
 
 <div class="max-w-2xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
@@ -28,6 +30,14 @@
 
                 @if ($space->scheduled_for)
                     <span>Scheduled {{ $space->scheduled_for->diffForHumans() }}</span>
+                @endif
+
+                @if ($space->recording_enabled)
+                    @if ($space->recording_available_until)
+                        <span>Recording available until {{ $space->recording_available_until->toDateString() }}</span>
+                    @else
+                        <span>Recording enabled</span>
+                    @endif
                 @endif
 
                 <span>{{ $space->participants_count }} participants</span>
@@ -60,20 +70,70 @@
                     <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login to join</a>
                 @endauth
             </div>
+
+            @auth
+                @if ($participant && $participant->left_at === null && $participant->role === 'listener' && ! $space->isEnded())
+                    <div class="flex items-center gap-2 pt-2">
+                        <button class="btn btn-outline btn-sm" wire:click="requestToSpeak">Request to speak</button>
+                        @if ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_PENDING)
+                            <div class="text-sm opacity-70">Request pending</div>
+                        @elseif ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_DENIED)
+                            <div class="text-sm opacity-70">Request denied</div>
+                        @endif
+                    </div>
+                @endif
+            @endauth
         </div>
     </div>
+
+    @if ($isModerator)
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="font-semibold">Speaker requests</div>
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->pendingSpeakerRequests as $req)
+                        <div class="flex items-center justify-between gap-3">
+                            <a class="link link-hover" href="{{ route('profile.show', ['user' => $req->user]) }}" wire:navigate>
+                                &#64;{{ $req->user->username }}
+                            </a>
+                            <div class="flex items-center gap-2">
+                                <button class="btn btn-outline btn-xs" wire:click="decideSpeakerRequest({{ $req->id }}, 'approve')">Approve</button>
+                                <button class="btn btn-outline btn-xs" wire:click="decideSpeakerRequest({{ $req->id }}, 'deny')">Deny</button>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="opacity-70 text-sm">No pending requests.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="font-semibold">Participants</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->participants as $p)
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-3">
                         <a class="link link-hover" href="{{ route('profile.show', ['user' => $p->user]) }}" wire:navigate>
                             &#64;{{ $p->user->username }}
                         </a>
-                        <div class="text-sm opacity-70">
-                            {{ ucfirst($p->role) }}
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm opacity-70">
+                                {{ ucfirst($p->role) }}
+                            </div>
+
+                            @if ($isModerator && $p->user_id !== $space->host_user_id)
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">Manage</div>
+                                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-44 border">
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'listener')">Set listener</button></li>
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'speaker')">Set speaker</button></li>
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'cohost')">Set co-host</button></li>
+                                        <li><button type="button" wire:click="removeParticipant({{ $p->id }})">Remove</button></li>
+                                    </ul>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @empty
@@ -83,4 +143,3 @@
         </div>
     </div>
 </div>
-

@@ -53,6 +53,7 @@
                             <a class="btn btn-ghost btn-sm" href="{{ route('trending') }}" wire:navigate>Trending</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('spaces.index') }}" wire:navigate>Spaces</a>
+                            <a class="btn btn-ghost btn-sm" href="{{ route('moments.index') }}" wire:navigate>Moments</a>
                             <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('register') }}" wire:navigate>Register</a>
                         @endauth

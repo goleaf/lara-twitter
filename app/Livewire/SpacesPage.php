@@ -15,6 +15,8 @@ class SpacesPage extends Component
 
     public string $scheduled_for = '';
 
+    public bool $recording_enabled = false;
+
     public function create(): void
     {
         abort_unless(Auth::check(), 403);
@@ -26,6 +28,7 @@ class SpacesPage extends Component
             'title' => $validated['title'],
             'description' => $validated['description'] ?: null,
             'scheduled_for' => $validated['scheduled_for'] ?: null,
+            'recording_enabled' => (bool) ($validated['recording_enabled'] ?? false),
         ]);
 
         $this->redirectRoute('spaces.show', ['space' => $space], navigate: true);
@@ -58,4 +61,3 @@ class SpacesPage extends Component
         return view('livewire.spaces-page')->layout('layouts.app');
     }
 }
-

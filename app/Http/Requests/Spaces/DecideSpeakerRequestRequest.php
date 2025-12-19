@@ -3,16 +3,15 @@
 namespace App\Http\Requests\Spaces;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreSpaceRequest extends FormRequest
+class DecideSpeakerRequestRequest extends FormRequest
 {
     public static function rulesFor(): array
     {
         return [
-            'title' => ['required', 'string', 'max:120'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'scheduled_for' => ['nullable', 'date', 'after_or_equal:now'],
-            'recording_enabled' => ['nullable', 'boolean'],
+            'request_id' => ['required', 'integer', 'exists:space_speaker_requests,id'],
+            'decision' => ['required', 'string', Rule::in(['approve', 'deny'])],
         ];
     }
 
@@ -26,3 +25,4 @@ class StoreSpaceRequest extends FormRequest
         return self::rulesFor();
     }
 }
+
