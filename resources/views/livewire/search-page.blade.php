@@ -3,13 +3,18 @@
         <div class="card-body space-y-3">
             <div class="text-xl font-semibold">Search</div>
 
-            <div class="flex flex-col gap-2">
-                <input
-                    class="input input-bordered input-sm w-full"
-                    type="text"
-                    placeholder="Search posts, users, lists, #hashtags, @mentions, or URLs…"
-                    wire:model.live.debounce.350ms="q"
-                />
+            <div class="flex flex-col gap-3">
+                <label class="input input-bordered input-sm w-full flex items-center gap-2">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                    </svg>
+                    <input
+                        class="grow"
+                        type="search"
+                        placeholder="Search posts, users, lists, #hashtags, @mentions, or URLs…"
+                        wire:model.live.debounce.350ms="q"
+                    />
+                </label>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <select class="select select-bordered select-sm w-full" wire:model.live="type">
@@ -25,21 +30,30 @@
                         <option value="latest">Latest</option>
                         <option value="top">Top</option>
                     </select>
-
-                    <input
-                        class="input input-bordered input-sm w-full"
-                        type="text"
-                        placeholder="From user (@username)"
-                        wire:model.live.debounce.350ms="user"
-                    />
-
-                    <input class="input input-bordered input-sm w-full" type="date" wire:model.live="from" />
-                    <input class="input input-bordered input-sm w-full" type="date" wire:model.live="to" />
                 </div>
 
-                <div class="text-xs opacity-70">
-                    Tips: `from:alice`, `to:alice`, `since:2025-01-01`, `until:2025-01-31`, `min_faves:10`, `min_retweets:5`, `filter:verified`, `has:media`, `has:images`, `has:videos`, `has:links`, `"exact phrase"`, `laravel OR symfony`, `-exclude`.
-                </div>
+                @php($hasAdvanced = trim((string) $user) !== '' || trim((string) $from) !== '' || trim((string) $to) !== '')
+                <details class="collapse collapse-arrow bg-base-200/40 border border-base-200" @if ($hasAdvanced) open @endif>
+                    <summary class="collapse-title text-sm font-medium">Advanced filters</summary>
+                    <div class="collapse-content pt-0">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input
+                                class="input input-bordered input-sm w-full"
+                                type="text"
+                                placeholder="From user (@username)"
+                                wire:model.live.debounce.350ms="user"
+                            />
+                            <div class="grid grid-cols-2 gap-2 sm:col-span-1">
+                                <input class="input input-bordered input-sm w-full" type="date" wire:model.live="from" />
+                                <input class="input input-bordered input-sm w-full" type="date" wire:model.live="to" />
+                            </div>
+                        </div>
+
+                        <div class="text-xs opacity-70 pt-3">
+                            Tips: `from:alice`, `to:alice`, `since:2025-01-01`, `until:2025-01-31`, `min_faves:10`, `min_retweets:5`, `filter:verified`, `has:media`, `has:images`, `has:videos`, `has:links`, `"exact phrase"`, `laravel OR symfony`, `-exclude`.
+                        </div>
+                    </div>
+                </details>
             </div>
         </div>
     </div>
@@ -73,7 +87,7 @@
                                 <div class="avatar">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                         @if ($u->avatar_url)
-                                            <img src="{{ $u->avatar_url }}" alt="" />
+                                            <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
                                                 {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
@@ -131,7 +145,7 @@
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                         @if ($list->owner->avatar_url)
-                                            <img src="{{ $list->owner->avatar_url }}" alt="" />
+                                            <img src="{{ $list->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
                                                 {{ mb_strtoupper(mb_substr($list->owner->name, 0, 1)) }}
