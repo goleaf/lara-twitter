@@ -5,7 +5,7 @@
 
             <div class="flex flex-col gap-2">
                 <input
-                    class="input input-bordered w-full"
+                    class="input input-bordered input-sm w-full"
                     type="text"
                     placeholder="Search posts, users, lists, #hashtags, @mentions, or URLs…"
                     wire:model.live.debounce.350ms="q"

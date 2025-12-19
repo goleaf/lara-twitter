@@ -30,7 +30,7 @@
                     <div class="font-semibold">Trending keywords (24h)</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->trendingKeywords as $row)
-                            <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
                                 <div class="min-w-0">
                                     <div class="font-medium truncate">{{ $row['keyword'] }}</div>
                                     <div class="text-xs opacity-70">
@@ -52,7 +52,7 @@
                     <div class="font-semibold">Trending topics (24h)</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->trendingTopics as $row)
-                            <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('explore', ['tab' => $row['category']]) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('explore', ['tab' => $row['category']]) }}" wire:navigate>
                                 <div class="min-w-0">
                                     <div class="font-medium truncate">{{ $row['topic'] }}</div>
                                     <div class="text-xs opacity-70">{{ $row['recent_count'] ?? 0 }} in last hour</div>
@@ -83,7 +83,7 @@
                     <div class="font-semibold">Trending hashtags (24h)</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->trendingHashtags as $tag)
-                            <div class="flex items-start justify-between gap-2 hover:bg-base-200 rounded-box px-2 py-2">
+                            <div class="flex items-start justify-between gap-2 hover:bg-base-200/70 transition rounded-box px-2 py-2">
                                 <a class="min-w-0" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
                                     <div class="font-medium truncate">#{{ $tag->tag }}</div>
                                     <div class="text-xs opacity-70">
