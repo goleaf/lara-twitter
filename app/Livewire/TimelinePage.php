@@ -4,6 +4,9 @@ namespace App\Livewire;
 
 use App\Models\Post;
 use App\Models\Space;
+use App\Models\User;
+use App\Services\DiscoverService;
+use App\Services\FollowService;
 use App\Services\TrendingService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -206,6 +209,28 @@ class TimelinePage extends Component
             ->latest('started_at')
             ->limit(8)
             ->get();
+    }
+
+    public function getRecommendedUsersProperty()
+    {
+        if (! Auth::check()) {
+            return collect();
+        }
+
+        return app(DiscoverService::class)->recommendedUsers(Auth::user(), 5);
+    }
+
+    public function toggleFollow(int $userId): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_if(Auth::id() === $userId, 403);
+
+        $target = User::query()->findOrFail($userId);
+        abort_if(Auth::user()->isBlockedEitherWay($target), 403);
+
+        app(FollowService::class)->toggle(Auth::user(), $target);
+
+        $this->dispatch('$refresh');
     }
 
     public function getUpcomingSpacesProperty()

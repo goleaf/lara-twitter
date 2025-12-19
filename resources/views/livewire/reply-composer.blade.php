@@ -1,12 +1,12 @@
 <form wire:submit="save" class="space-y-3">
-    <textarea
-        wire:model="body"
-        class="textarea textarea-bordered textarea-sm w-full"
-        rows="3"
-        placeholder="Write a reply..."
-        maxlength="{{ $maxLength }}"
-    ></textarea>
-    @error('body') <div class="text-error text-sm">{{ $message }}</div> @enderror
+	    <textarea
+	        wire:model="body"
+	        class="textarea textarea-bordered textarea-sm w-full"
+	        rows="3"
+	        placeholder="Write a reply..."
+	        maxlength="{{ $maxLength }}"
+	    ></textarea>
+	    <x-input-error class="mt-2" :messages="$errors->get('body')" />
 
     <div class="space-y-2">
         <div class="flex flex-wrap items-center gap-3">
@@ -21,10 +21,10 @@
             @endif
         </div>
 
-        @error('images') <div class="text-error text-sm">{{ $message }}</div> @enderror
-        @error('images.*') <div class="text-error text-sm">{{ $message }}</div> @enderror
-        @error('video') <div class="text-error text-sm">{{ $message }}</div> @enderror
-    </div>
+	        <x-input-error class="mt-2" :messages="$errors->get('images')" />
+	        <x-input-error class="mt-2" :messages="$errors->get('images.*')" />
+	        <x-input-error class="mt-2" :messages="$errors->get('video')" />
+	    </div>
 
     <div class="flex items-center justify-end gap-2">
         <button class="btn btn-primary btn-sm" type="submit">Reply</button>
