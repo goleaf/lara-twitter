@@ -91,7 +91,7 @@ class ListPage extends Component
         $changes = $this->list->members()->syncWithoutDetaching([$user->id]);
 
         if (! $this->list->is_private && in_array($user->id, $changes['attached'] ?? [], true)) {
-            if ($user->wantsNotification('lists') && $user->allowsNotificationFrom(Auth::user())) {
+            if ($user->wantsNotification('lists') && $user->allowsNotificationFrom(Auth::user(), 'lists')) {
                 $user->notify(new AddedToList(list: $this->list->loadMissing('owner'), addedBy: Auth::user()));
             }
         }

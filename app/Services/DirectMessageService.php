@@ -37,6 +37,14 @@ class DirectMessageService
         return ['allowed' => true, 'is_request' => true];
     }
 
+    /**
+     * @return array{allowed: bool, is_request: bool}
+     */
+    public function policyFor(User $sender, User $recipient): array
+    {
+        return $this->evaluateDmPolicy(sender: $sender, recipient: $recipient);
+    }
+
     public function findOrCreate(User $a, User $b): Conversation
     {
         if ($a->is($b)) {

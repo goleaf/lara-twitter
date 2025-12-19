@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Services\MutedTermMatcher;
+use App\Services\NotificationVisibilityService;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -94,7 +94,7 @@ class NotificationsPage extends Component
             ->limit(200)
             ->get();
 
-        $items = $this->applyMutedTermsFilter($items);
+        $items = app(NotificationVisibilityService::class)->filter(Auth::user(), $items);
 
         if ($this->normalizedTab() === 'verified') {
             $items = $this->applyVerifiedFilter($items);
@@ -132,42 +132,6 @@ class NotificationsPage extends Component
             ->filter(function ($n) use ($verifiedIds) {
                 $id = $this->actorUserId($n->data ?? []);
                 return $id && in_array($id, $verifiedIds, true);
-            })
-            ->values();
-    }
-
-    private function applyMutedTermsFilter(Collection $items): Collection
-    {
-        $terms = Auth::user()
-            ->mutedTerms()
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->where('mute_notifications', true)
-            ->latest()
-            ->limit(50)
-            ->get();
-
-        if ($terms->isEmpty()) {
-            return $items;
-        }
-
-        $matcher = app(MutedTermMatcher::class);
-
-        return $items
-            ->filter(function ($notification) use ($terms, $matcher) {
-                $excerpt = (string) (($notification->data ?? [])['excerpt'] ?? '');
-                if ($excerpt === '') {
-                    return true;
-                }
-
-                foreach ($terms as $term) {
-                    if ($matcher->matches($excerpt, $term)) {
-                        return false;
-                    }
-                }
-
-                return true;
             })
             ->values();
     }

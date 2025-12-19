@@ -7,7 +7,7 @@
                 <input
                     class="input input-bordered w-full"
                     type="text"
-                    placeholder="Search posts, users, #hashtags, @mentions, or URLs…"
+                    placeholder="Search posts, users, lists, #hashtags, @mentions, or URLs…"
                     wire:model.live.debounce.350ms="q"
                 />
 
@@ -18,6 +18,7 @@
                         <option value="media">Media</option>
                         <option value="users">Users</option>
                         <option value="tags">Hashtags</option>
+                        <option value="lists">Lists</option>
                     </select>
 
                     <select class="select select-bordered w-full" wire:model.live="sort">
@@ -93,6 +94,34 @@
                         </a>
                     @empty
                         <div class="opacity-70 text-sm">No hashtags found.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if (in_array($type, ['all', 'lists'], true) && (trim($q) !== '' || $type === 'lists'))
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="font-semibold">Lists</div>
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->lists as $list)
+                        <a class="flex items-center justify-between gap-4 hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('lists.show', $list) }}" wire:navigate>
+                            <div class="min-w-0">
+                                <div class="font-semibold truncate">{{ $list->name }}</div>
+                                <div class="text-sm opacity-70 truncate">
+                                    by &#64;{{ $list->owner->username }}
+                                    · {{ $list->members_count }} members
+                                    · {{ $list->subscribers_count }} subscribers
+                                </div>
+                                @if ($list->description)
+                                    <div class="text-sm opacity-70 truncate">{{ $list->description }}</div>
+                                @endif
+                            </div>
+                            <div class="text-sm opacity-60">View</div>
+                        </a>
+                    @empty
+                        <div class="opacity-70 text-sm">No lists found.</div>
                     @endforelse
                 </div>
             </div>

@@ -3,6 +3,16 @@
         {{ $label }}
     </button>
 
+    @if ($submittedCaseNumber)
+        <div class="mt-1 flex items-center gap-2 text-xs">
+            <div class="text-success">
+                Report submitted (case <span class="font-mono">{{ $submittedCaseNumber }}</span>)
+            </div>
+            <a class="link link-hover opacity-70" href="{{ route('reports.index') }}" wire:navigate>View</a>
+            <button type="button" class="btn btn-ghost btn-xs" wire:click="clearNotice">Dismiss</button>
+        </div>
+    @endif
+
     <dialog class="modal" @if($open) open @endif>
         <div class="modal-box">
             <h3 class="font-semibold text-lg">Report</h3>

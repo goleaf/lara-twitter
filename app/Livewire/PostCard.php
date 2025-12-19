@@ -3,12 +3,12 @@
 namespace App\Livewire;
 
 use App\Http\Requests\Posts\QuoteRepostRequest;
-use App\Models\Post;
 use App\Models\Bookmark;
+use App\Models\Post;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 
@@ -21,10 +21,13 @@ class PostCard extends Component
     public bool $bookmarked = false;
 
     public bool $isQuoting = false;
+
     public bool $isReplying = false;
+
     public bool $showThread = false;
 
     public string $quote_body = '';
+
     public ?string $replyError = null;
 
     protected $listeners = [
@@ -104,6 +107,7 @@ class PostCard extends Component
         }
 
         $this->bookmarked = ! $existing;
+        $this->dispatch('bookmark-toggled');
     }
 
     public function hasBookmarked(): bool

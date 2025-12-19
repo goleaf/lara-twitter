@@ -43,22 +43,29 @@ class ProfilePinnedMediaVerifiedTest extends TestCase
         $this->assertSame(1, substr_count($response->getContent(), 'Pinned post'));
     }
 
-    public function test_media_tab_shows_only_posts_with_images(): void
+    public function test_media_tab_shows_posts_with_images_or_video(): void
     {
         Storage::fake('public');
 
         $user = User::factory()->create(['username' => 'alice']);
 
         $withImage = Post::query()->create(['user_id' => $user->id, 'body' => 'With image']);
-        $withoutImage = Post::query()->create(['user_id' => $user->id, 'body' => 'Without image']);
+        $withVideo = Post::query()->create(['user_id' => $user->id, 'body' => 'With video']);
+        $withoutMedia = Post::query()->create(['user_id' => $user->id, 'body' => 'Without media']);
 
         $path = UploadedFile::fake()->image('one.jpg')->storePublicly("posts/{$withImage->id}", ['disk' => 'public']);
         $withImage->images()->create(['path' => $path, 'sort_order' => 0]);
 
+        $videoPath = UploadedFile::fake()->create('clip.mp4', 100, 'video/mp4')->storePublicly("posts/{$withVideo->id}", ['disk' => 'public']);
+        $withVideo->update([
+            'video_path' => $videoPath,
+            'video_mime_type' => 'video/mp4',
+        ]);
+
         $this->get(route('profile.media', ['user' => $user]))
             ->assertOk()
             ->assertSee('With image')
-            ->assertDontSee('Without image');
+            ->assertSee('With video')
+            ->assertDontSee('Without media');
     }
 }
-

@@ -21,7 +21,7 @@ class LikeObserver
             return;
         }
 
-        if (! $postAuthor->allowsNotificationFrom($like->user)) {
+        if (! $postAuthor->allowsNotificationFrom($like->user, 'likes')) {
             return;
         }
 

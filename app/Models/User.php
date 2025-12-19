@@ -219,7 +219,7 @@ class User extends Authenticatable implements FilamentUser
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);
     }
 
-    public function allowsNotificationFrom(User $actor): bool
+    public function allowsNotificationFrom(User $actor, ?string $type = null): bool
     {
         if ($this->id === $actor->id) {
             return false;
@@ -229,7 +229,7 @@ class User extends Authenticatable implements FilamentUser
             return false;
         }
 
-        if ($this->hasMuted($actor)) {
+        if ($type !== 'dms' && $this->hasMuted($actor)) {
             return false;
         }
 

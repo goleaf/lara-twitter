@@ -102,15 +102,12 @@ class TrendingService
             ->withCount(['likes', 'reposts', 'replies'])
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->where('created_at', '>=', $since);
+            ->where('posts.created_at', '>=', $since);
 
         $location = is_string($location) ? trim($location) : null;
         if ($location) {
             $needle = '%'.mb_strtolower($location).'%';
-            $query
-                ->join('users', 'users.id', '=', 'posts.user_id')
-                ->whereRaw('lower(users.location) like ?', [$needle])
-                ->select('posts.*');
+            $query->whereHas('user', fn ($q) => $q->whereRaw('lower(location) like ?', [$needle]));
         }
 
         if ($viewer) {
@@ -124,7 +121,7 @@ class TrendingService
 
         return $query
             ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
-            ->orderByDesc('created_at')
+            ->orderByDesc('posts.created_at')
             ->limit($limit)
             ->get();
     }
@@ -137,8 +134,8 @@ class TrendingService
         $postsQuery = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->where('created_at', '>=', $since)
-            ->latest()
+            ->where('posts.created_at', '>=', $since)
+            ->latest('posts.created_at')
             ->limit(800)
             ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
 

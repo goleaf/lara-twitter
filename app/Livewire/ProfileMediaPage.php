@@ -27,7 +27,9 @@ class ProfileMediaPage extends Component
     {
         return Post::query()
             ->where('user_id', $this->user->id)
-            ->whereHas('images')
+            ->where(function ($q) {
+                $q->whereHas('images')->orWhereNotNull('video_path');
+            })
             ->with([
                 'user',
                 'images',
@@ -43,4 +45,3 @@ class ProfileMediaPage extends Component
         return view('livewire.profile-media-page')->layout('layouts.app');
     }
 }
-

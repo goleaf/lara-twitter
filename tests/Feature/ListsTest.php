@@ -67,7 +67,7 @@ class ListsTest extends TestCase
             ->assertDontSee('From other');
     }
 
-    public function test_private_list_is_only_visible_to_owner_or_members(): void
+    public function test_private_list_is_only_visible_to_owner(): void
     {
         $owner = User::factory()->create(['username' => 'owner']);
         $member = User::factory()->create(['username' => 'member']);
@@ -81,10 +81,9 @@ class ListsTest extends TestCase
 
         $list->members()->attach($member->id);
 
-        $this->get(route('lists.show', $list))->assertForbidden();
-        $this->actingAs($outsider)->get(route('lists.show', $list))->assertForbidden();
-        $this->actingAs($member)->get(route('lists.show', $list))->assertOk();
-        $this->actingAs($owner)->get(route('lists.show', $list))->assertOk();
+        Livewire::test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(403);
+        Livewire::actingAs($outsider)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(403);
+        Livewire::actingAs($member)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(403);
+        Livewire::actingAs($owner)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(200);
     }
 }
-

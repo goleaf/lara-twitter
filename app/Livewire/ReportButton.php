@@ -8,8 +8,8 @@ use App\Models\Message;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\Space;
-use App\Models\UserList;
 use App\Models\User;
+use App\Models\UserList;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -17,14 +17,18 @@ use Livewire\Component;
 class ReportButton extends Component
 {
     public string $reportableType;
+
     public int $reportableId;
 
     public bool $open = false;
 
     public string $reason = '';
+
     public string $details = '';
 
     public string $label = 'Report';
+
+    public ?string $submittedCaseNumber = null;
 
     public function mount(string $reportableType, int $reportableId, string $label = 'Report'): void
     {
@@ -45,6 +49,11 @@ class ReportButton extends Component
         $this->reset(['reason', 'details']);
     }
 
+    public function clearNotice(): void
+    {
+        $this->submittedCaseNumber = null;
+    }
+
     public function submit(): void
     {
         abort_unless(Auth::check(), 403);
@@ -55,7 +64,7 @@ class ReportButton extends Component
         $this->authorizeReportable($reportable);
         $this->ensureNotSelfReport($reportable);
 
-        Report::query()->updateOrCreate(
+        $report = Report::query()->updateOrCreate(
             [
                 'reporter_id' => Auth::id(),
                 'reportable_type' => $this->reportableType,
@@ -67,6 +76,8 @@ class ReportButton extends Component
                 'status' => Report::STATUS_OPEN,
             ],
         );
+
+        $this->submittedCaseNumber = $report->case_number;
 
         $this->closeModal();
         $this->dispatch('report-submitted');
@@ -98,7 +109,7 @@ class ReportButton extends Component
             return Space::query()->findOrFail($this->reportableId);
         }
 
-        throw new ModelNotFoundException();
+        throw new ModelNotFoundException;
     }
 
     private function ensureNotSelfReport(Post|User|Hashtag|Message|UserList|Space $reportable): void

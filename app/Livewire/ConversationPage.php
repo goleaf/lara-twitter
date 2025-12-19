@@ -173,7 +173,7 @@ class ConversationPage extends Component
                 continue;
             }
 
-            if (! $recipient->allowsNotificationFrom(Auth::user())) {
+            if (! $recipient->allowsNotificationFrom(Auth::user(), 'dms')) {
                 continue;
             }
 

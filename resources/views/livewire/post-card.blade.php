@@ -49,6 +49,14 @@
             {!! $this->bodyHtml() !!}
         </div>
 
+        @if ($primary->video_path)
+            <div class="pt-2">
+                <video class="w-full rounded-box border" controls preload="metadata">
+                    <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($primary->video_path) }}" type="{{ $primary->video_mime_type ?? 'video/mp4' }}" />
+                </video>
+            </div>
+        @endif
+
         @php($urls = $this->imageUrls())
         @if (count($urls))
             <div class="grid grid-cols-2 gap-2 pt-2">
@@ -75,6 +83,14 @@
                         <div class="prose max-w-none">
                             {!! app(\App\Services\PostBodyRenderer::class)->render($post->repostOf->body, $post->repostOf->id) !!}
                         </div>
+
+                        @if ($post->repostOf->video_path)
+                            <div class="pt-2">
+                                <video class="w-full rounded-box border" controls preload="metadata">
+                                    <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($post->repostOf->video_path) }}" type="{{ $post->repostOf->video_mime_type ?? 'video/mp4' }}" />
+                                </video>
+                            </div>
+                        @endif
 
                         @if ($post->repostOf->images->count())
                             <div class="grid grid-cols-2 gap-2 pt-2">

@@ -24,7 +24,7 @@
 
                     <div class="flex-none gap-2">
                         @auth
-                            @php($unreadNotificationsCount = auth()->user()->unreadNotifications()->count())
+                            @php($unreadNotificationsCount = app(\App\Services\NotificationVisibilityService::class)->visibleUnreadCount(auth()->user()))
                             <a class="btn btn-ghost btn-sm" href="{{ route('search') }}" wire:navigate>Search</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('trending') }}" wire:navigate>Trending</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
@@ -40,6 +40,7 @@
                                 </a>
                             </div>
                             <a class="btn btn-ghost btn-sm" href="{{ route('bookmarks') }}" wire:navigate>Bookmarks</a>
+                            <a class="btn btn-ghost btn-sm" href="{{ route('reports.index') }}" wire:navigate>Reports</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('mentions') }}" wire:navigate>Mentions</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('messages.index') }}" wire:navigate>Messages</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('lists.index') }}" wire:navigate>Lists</a>

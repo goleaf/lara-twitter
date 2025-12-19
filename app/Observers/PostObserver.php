@@ -87,7 +87,7 @@ class PostObserver
                     continue;
                 }
 
-                if (! $user->allowsNotificationFrom($post->user)) {
+                if (! $user->allowsNotificationFrom($post->user, 'mentions')) {
                     continue;
                 }
 
@@ -107,7 +107,7 @@ class PostObserver
                 if ($original->user->wantsNotification('reposts')) {
                     $post->loadMissing('user');
 
-                    if (! $original->user->allowsNotificationFrom($post->user)) {
+                    if (! $original->user->allowsNotificationFrom($post->user, 'reposts')) {
                         return;
                     }
 
@@ -155,7 +155,7 @@ class PostObserver
             return;
         }
 
-        if (! $original->user->allowsNotificationFrom($post->user)) {
+        if (! $original->user->allowsNotificationFrom($post->user, 'replies')) {
             return;
         }
 
@@ -190,7 +190,7 @@ class PostObserver
                 continue;
             }
 
-            if (! $follower->allowsNotificationFrom($author)) {
+            if (! $follower->allowsNotificationFrom($author, 'followed_posts')) {
                 continue;
             }
 

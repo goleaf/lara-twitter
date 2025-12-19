@@ -2,15 +2,18 @@
 
 namespace App\Livewire;
 
-use App\Models\Post;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class BookmarksPage extends Component
 {
     use WithPagination;
+
+    protected $listeners = [
+        'bookmark-toggled' => '$refresh',
+    ];
 
     public function mount(): void
     {

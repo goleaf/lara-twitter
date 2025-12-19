@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Post;
 use App\Models\Space;
+use App\Services\TrendingService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
@@ -129,23 +130,27 @@ class TimelinePage extends Component
                 $needle = '#'.ltrim($needle, '#');
             }
 
-            $matchSql = null;
             $matchArg = null;
 
             if ($term->whole_word && preg_match('/^[a-z0-9_]+$/i', $needle)) {
-                $matchSql = "(' ' || lower(posts.body) || ' ') like ?";
+                $postMatchSql = "(' ' || lower(posts.body) || ' ') like ?";
+                $originalMatchSql = "(' ' || lower(original.body) || ' ') like ?";
                 $matchArg = '% '.$needle.' %';
             } else {
-                $matchSql = 'lower(posts.body) like ?';
+                $postMatchSql = 'lower(posts.body) like ?';
+                $originalMatchSql = 'lower(original.body) like ?';
                 $matchArg = '%'.$needle.'%';
             }
 
+            $repostMatchSql = "exists (select 1 from posts as original where original.id = posts.repost_of_id and ($originalMatchSql))";
+            $combinedMatchSql = "($postMatchSql) or ($repostMatchSql)";
+
             if ($term->only_non_followed && count($followingIds)) {
-                $query->where(function ($q) use ($followingIds, $matchSql, $matchArg): void {
-                    $q->whereIn('user_id', $followingIds)->orWhereRaw($matchSql.' = 0', [$matchArg]);
+                $query->where(function ($q) use ($followingIds, $combinedMatchSql, $matchArg): void {
+                    $q->whereIn('user_id', $followingIds)->orWhereRaw('('.$combinedMatchSql.') = 0', [$matchArg, $matchArg]);
                 });
             } else {
-                $query->whereRaw($matchSql.' = 0', [$matchArg]);
+                $query->whereRaw('('.$combinedMatchSql.') = 0', [$matchArg, $matchArg]);
             }
         }
     }
@@ -201,6 +206,27 @@ class TimelinePage extends Component
             ->latest('started_at')
             ->limit(8)
             ->get();
+    }
+
+    private function normalizedViewerLocation(): ?string
+    {
+        if (! Auth::check()) {
+            return null;
+        }
+
+        $value = trim((string) (Auth::user()->location ?? ''));
+
+        return $value === '' ? null : mb_substr($value, 0, 60);
+    }
+
+    public function getTrendingHashtagsProperty()
+    {
+        return app(TrendingService::class)->trendingHashtags(Auth::user(), 8, $this->normalizedViewerLocation());
+    }
+
+    public function getTrendingKeywordsProperty()
+    {
+        return app(TrendingService::class)->trendingKeywords(Auth::user(), 8, $this->normalizedViewerLocation());
     }
 
     public function checkForNewPosts(): void
