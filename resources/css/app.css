@@ -25,6 +25,18 @@
         @apply bg-primary/10 text-primary font-semibold;
     }
 
+    .menu a:not(.active) {
+        @apply hover:bg-base-200/70;
+    }
+
+    .tabs.tabs-boxed {
+        @apply bg-base-200/50 border border-base-200 p-1 rounded-box;
+    }
+
+    .tabs.tabs-boxed .tab {
+        @apply font-medium;
+    }
+
     .prose {
         @apply text-sm leading-relaxed text-base-content;
     }
