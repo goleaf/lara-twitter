@@ -146,7 +146,9 @@
                                 <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
                             </a>
                         @empty
-                            <div class="opacity-70 text-sm">No hashtags yet.</div>
+                            <x-empty-state>
+                                No hashtags yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
 
@@ -159,7 +161,9 @@
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
                         @empty
-                            <div class="opacity-70 text-sm">No keywords yet.</div>
+                            <x-empty-state>
+                                No keywords yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>

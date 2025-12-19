@@ -85,7 +85,9 @@
                             <span class="opacity-60 ms-1">{{ $tag->uses_count }}</span>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No trending tags yet.</div>
+                        <x-empty-state class="w-full">
+                            No trending tags yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -126,7 +128,9 @@
                             <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No users found.</div>
+                        <x-empty-state>
+                            No users found.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -143,7 +147,9 @@
                             #{{ $tag->tag }}
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No hashtags found.</div>
+                        <x-empty-state>
+                            No hashtags found.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -185,7 +191,9 @@
                             <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No lists found.</div>
+                        <x-empty-state>
+                            No lists found.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
