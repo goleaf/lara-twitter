@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -122,7 +123,7 @@ class NotificationsPage extends Component
             ->values()
             ->all();
 
-        $verifiedIds = \App\Models\User::query()
+        $verifiedIds = User::query()
             ->whereIn('id', $actorIds ?: [-1])
             ->where('is_verified', true)
             ->pluck('id')
@@ -138,6 +139,22 @@ class NotificationsPage extends Component
 
     public function render()
     {
-        return view('livewire.notifications-page')->layout('layouts.app');
+        $notifications = $this->notifications;
+
+        $actorIds = collect($notifications->items())
+            ->map(fn ($n) => $this->actorUserId($n->data ?? []))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $actorUsers = User::query()
+            ->whereIn('id', $actorIds ?: [-1])
+            ->get()
+            ->keyBy('id');
+
+        return view('livewire.notifications-page', [
+            'actorUsers' => $actorUsers,
+        ])->layout('layouts.app');
     }
 }
