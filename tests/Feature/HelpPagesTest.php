@@ -13,6 +13,7 @@ class HelpPagesTest extends TestCase
             ->assertSee('Help')
             ->assertSee('Block')
             ->assertSee('Direct Messages')
+            ->assertSee('Replies')
             ->assertSee('Hashtags')
             ->assertSee('Profile');
 
@@ -39,5 +40,12 @@ class HelpPagesTest extends TestCase
             ->assertSee('Direct Messages')
             ->assertSee('Message requests')
             ->assertSee('Read receipts');
+
+        $this->get(route('help.replies'))
+            ->assertOk()
+            ->assertSee('Replies')
+            ->assertSee('Conversation threads')
+            ->assertSee('Reply permissions')
+            ->assertSee('No one');
     }
 }
