@@ -17,35 +17,35 @@
         </div>
     </div>
 
-	    <div class="space-y-2">
-	        @forelse ($this->notifications as $notification)
-	            @php($data = $notification->data ?? [])
-	            @php($type = $data['type'] ?? null)
-	            @php($isUnread = is_null($notification->read_at))
+    <div class="space-y-2">
+        @forelse ($this->notifications as $notification)
+            @php($data = $notification->data ?? [])
+            @php($type = $data['type'] ?? null)
+            @php($isUnread = is_null($notification->read_at))
 
-	            @php($actorUserId = is_numeric($data['actor_user_id'] ?? null) ? (int) $data['actor_user_id'] : null)
-	            @php($actor = $actorUserId ? ($actorUsers->get($actorUserId)) : null)
-	            @php($actorUsername = $data['actor_username'] ?? $data['follower_username'] ?? $data['sender_username'] ?? 'someone')
-	            @php($avatarLabel = $actor?->name ?? $actorUsername)
-	            @php($avatarInitial = mb_strtoupper(mb_substr($avatarLabel, 0, 1)))
+            @php($actorUserId = is_numeric($data['actor_user_id'] ?? null) ? (int) $data['actor_user_id'] : null)
+            @php($actor = $actorUserId ? ($actorUsers->get($actorUserId)) : null)
+            @php($actorUsername = $data['actor_username'] ?? $data['follower_username'] ?? $data['sender_username'] ?? 'someone')
+            @php($avatarLabel = $actor?->name ?? $actorUsername)
+            @php($avatarInitial = mb_strtoupper(mb_substr($avatarLabel, 0, 1)))
 
-	            @php($iconClass = match ($type) {
-	                'post_liked' => 'bg-error text-error-content',
-	                'post_reposted' => 'bg-success text-success-content',
-	                'post_replied' => 'bg-info text-info-content',
-	                'post_mentioned' => 'bg-info text-info-content',
-	                'user_followed' => 'bg-primary text-primary-content',
-	                'message_received' => 'bg-secondary text-secondary-content',
-	                'added_to_list' => 'bg-accent text-accent-content',
-	                'followed_user_posted' => 'bg-neutral text-neutral-content',
-	                default => 'bg-base-200 text-base-content',
-	            })
+            @php($iconClass = match ($type) {
+                'post_liked' => 'bg-error text-error-content',
+                'post_reposted' => 'bg-success text-success-content',
+                'post_replied' => 'bg-info text-info-content',
+                'post_mentioned' => 'bg-info text-info-content',
+                'user_followed' => 'bg-primary text-primary-content',
+                'message_received' => 'bg-secondary text-secondary-content',
+                'added_to_list' => 'bg-accent text-accent-content',
+                'followed_user_posted' => 'bg-neutral text-neutral-content',
+                default => 'bg-base-200 text-base-content',
+            })
 
-	            @php($postId = $data['post_id'] ?? $data['original_post_id'] ?? null)
-	            @php($conversationId = $data['conversation_id'] ?? null)
-	            @php($profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null)
+            @php($postId = $data['post_id'] ?? $data['original_post_id'] ?? null)
+            @php($conversationId = $data['conversation_id'] ?? null)
+            @php($profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null)
 
-	            @php($href = '#')
+            @php($href = '#')
 
             @if ($type === 'message_received' && $conversationId)
                 @php($href = route('messages.show', $conversationId))
