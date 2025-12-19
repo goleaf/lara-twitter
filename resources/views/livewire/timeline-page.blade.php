@@ -1,7 +1,7 @@
 <div class="max-w-5xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 space-y-4">
-            <div class="tabs tabs-boxed">
+            <div class="tabs tabs-boxed bg-base-100/70 border border-base-200 p-1">
                 <a
                     class="tab {{ $feed === 'following' ? 'tab-active' : '' }}"
                     href="{{ route('timeline', ['feed' => 'following']) }}"
@@ -85,7 +85,7 @@
 
                     <div class="space-y-1 pt-3">
                         @forelse ($this->trendingHashtags as $tag)
-                            <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
                                 <div class="font-medium">#{{ $tag->tag }}</div>
                                 <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
                             </a>
@@ -98,7 +98,7 @@
 
                     <div class="space-y-1">
                         @forelse ($this->trendingKeywords as $row)
-                            <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
                                 <div class="font-medium">{{ $row['keyword'] }}</div>
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
