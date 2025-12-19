@@ -7,15 +7,15 @@
                     <span class="badge badge-outline badge-sm">Private</span>
                     <span class="badge badge-ghost badge-sm">{{ $this->bookmarks->total() }}</span>
                 </div>
-                    <div class="flex items-center gap-3">
-                        @if ($this->bookmarks->total())
-                            <button type="button" class="btn btn-ghost btn-sm" wire:click="clearAll" wire:loading.attr="disabled" wire:target="clearAll">
-                                Clear all
-                            </button>
-                        @endif
-                    </div>
+                <div class="flex items-center gap-3">
+                    @if ($this->bookmarks->total())
+                        <button type="button" class="btn btn-ghost btn-sm" wire:click="clearAll" wire:loading.attr="disabled" wire:target="clearAll">
+                            Clear all
+                        </button>
+                    @endif
                 </div>
             </div>
+        </div>
     </div>
 
     <div class="space-y-3">
@@ -33,18 +33,18 @@
                 <livewire:post-card :post="$post" :key="'bookmark-post-'.$bookmark->post_id" />
             @else
                 <div class="card bg-base-100 border">
-                            <div class="card-body gap-3">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <div class="font-semibold">This post is no longer available</div>
-                                        <div class="text-sm opacity-70">Bookmarked {{ $bookmark->created_at?->diffForHumans() }}</div>
-                                    </div>
-                                    <button type="button" class="btn btn-ghost btn-sm" wire:click="remove({{ (int) $bookmark->post_id }})" wire:loading.attr="disabled" wire:target="remove({{ (int) $bookmark->post_id }})">
-                                        Remove
-                                    </button>
-                                </div>
+                    <div class="card-body gap-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="font-semibold">This post is no longer available</div>
+                                <div class="text-sm opacity-70">Bookmarked {{ $bookmark->created_at?->diffForHumans() }}</div>
                             </div>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="remove({{ (int) $bookmark->post_id }})" wire:loading.attr="disabled" wire:target="remove({{ (int) $bookmark->post_id }})">
+                                Remove
+                            </button>
                         </div>
+                    </div>
+                </div>
             @endif
         @empty
             <div class="card bg-base-100 border">
