@@ -24,7 +24,7 @@
                     <div class="text-xl font-bold">
                         {{ $user->name }}
                         @if ($user->is_verified)
-                            <span class="badge badge-primary badge-sm align-middle ms-1">Verified</span>
+                            <x-verified-icon class="ms-1 align-middle" />
                         @endif
                     </div>
                     <div class="opacity-60">&#64;{{ $user->username }}</div>
