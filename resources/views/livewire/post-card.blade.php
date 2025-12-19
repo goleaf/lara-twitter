@@ -76,10 +76,10 @@
                                             <path d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
                                         </svg>
                                     </div>
-                                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border">
+                                    <ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-52 p-2">
                                         @if ($this->canDelete())
                                             <li>
-                                                <button type="button" wire:click="deletePost" class="text-error">
+                                                <button type="button" wire:click="deletePost" wire:loading.attr="disabled" wire:target="deletePost" class="text-error">
                                                     Delete
                                                 </button>
                                             </li>
@@ -146,6 +146,8 @@
                                         type="button"
                                         class="btn btn-outline btn-sm w-full justify-start"
                                         wire:click="voteInPoll({{ $option->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="voteInPoll({{ $option->id }})"
                                     >
                                         {{ $option->option_text }}
                                     </button>
@@ -191,7 +193,7 @@
 
         @if ($primary->video_path)
             <div class="pt-2">
-                <video class="w-full rounded-box border" controls preload="metadata">
+                <video class="w-full rounded-box border border-base-200" controls preload="metadata">
                     <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($primary->video_path) }}" type="{{ $primary->video_mime_type ?? 'video/mp4' }}" />
                 </video>
             </div>
@@ -271,15 +273,17 @@
                                         @else
                                             <div class="space-y-2">
                                                 @foreach ($options as $option)
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-outline btn-sm w-full justify-start"
-                                                        wire:click="voteInPoll({{ $option->id }})"
-                                                    >
-                                                        {{ $option->option_text }}
-                                                    </button>
-                                                @endforeach
-                                            </div>
+	                            <button
+	                                type="button"
+	                                class="btn btn-outline btn-sm w-full justify-start"
+	                                wire:click="voteInPoll({{ $option->id }})"
+	                                wire:loading.attr="disabled"
+	                                wire:target="voteInPoll({{ $option->id }})"
+	                            >
+	                                {{ $option->option_text }}
+	                            </button>
+	                        @endforeach
+	                    </div>
 
                                             <div class="text-xs opacity-70">Poll ends {{ $poll->ends_at->diffForHumans() }}</div>
                                         @endif
@@ -318,33 +322,33 @@
                             </div>
                         @endif
 
-                        @if ($post->repostOf->video_path)
-                            <div class="pt-2">
-                                <video class="w-full rounded-box border" controls preload="metadata">
-                                    <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($post->repostOf->video_path) }}" type="{{ $post->repostOf->video_mime_type ?? 'video/mp4' }}" />
-                                </video>
-                            </div>
-                        @endif
-
-                            @php($repostImagesCount = $post->repostOf->images->count())
-                            @if ($repostImagesCount)
-                                @php($gridClass = $repostImagesCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
-                                <div class="grid {{ $gridClass }} gap-2 pt-2">
-                                    @foreach ($post->repostOf->images as $image)
-                                        @php($isWide = $repostImagesCount === 1 || ($repostImagesCount === 3 && $loop->last))
-                                        @php($spanClass = $repostImagesCount === 3 && $loop->last ? 'col-span-2' : '')
-                                        @php($ratio = $isWide ? '16 / 9' : '1 / 1')
-    
-                                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" decoding="async" />
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                    </div>
-                </div>
-            </div>
-        @endif
+	                        @if ($post->repostOf->video_path)
+	                            <div class="pt-2">
+	                                <video class="w-full rounded-box border border-base-200" controls preload="metadata">
+	                                    <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($post->repostOf->video_path) }}" type="{{ $post->repostOf->video_mime_type ?? 'video/mp4' }}" />
+	                                </video>
+	                            </div>
+	                        @endif
+	
+	                        @php($repostImagesCount = $post->repostOf->images->count())
+	                        @if ($repostImagesCount)
+	                            @php($gridClass = $repostImagesCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
+	                            <div class="grid {{ $gridClass }} gap-2 pt-2">
+	                                @foreach ($post->repostOf->images as $image)
+	                                    @php($isWide = $repostImagesCount === 1 || ($repostImagesCount === 3 && $loop->last))
+	                                    @php($spanClass = $repostImagesCount === 3 && $loop->last ? 'col-span-2' : '')
+	                                    @php($ratio = $isWide ? '16 / 9' : '1 / 1')
+	
+	                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+	                                        <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" decoding="async" />
+	                                    </div>
+	                                @endforeach
+	                            </div>
+	                        @endif
+	                    </div>
+	                </div>
+	            </div>
+	        @endif
 
         @php($likesCount = (int) ($primary->likes_count ?? $primary->likes()->count()))
         @php($repostsCount = (int) ($primary->reposts_count ?? $primary->reposts()->count()))
@@ -355,12 +359,14 @@
         @php($repliesBadge = ($repliesCount ?? 0) ? 'badge-neutral' : 'badge-ghost')
 
         <div class="flex flex-wrap items-center gap-1 pt-2">
-            @auth
-                <button
-                    wire:click="toggleReplyComposer"
-                    class="btn btn-ghost btn-sm btn-square {{ $isReplying ? 'text-primary' : '' }}"
-                    aria-label="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
-                    title="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+	            @auth
+	                <button
+	                    wire:click="toggleReplyComposer"
+	                    wire:loading.attr="disabled"
+	                    wire:target="toggleReplyComposer"
+	                    class="btn btn-ghost btn-sm btn-square {{ $isReplying ? 'text-primary' : '' }}"
+	                    aria-label="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+	                    title="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
                     aria-pressed="{{ $isReplying ? 'true' : 'false' }}"
                 >
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -390,11 +396,13 @@
 
             <div class="w-px h-6 bg-base-200 mx-1"></div>
 
-            <button
-                wire:click="toggleRepost"
-                class="btn btn-ghost btn-sm btn-square {{ $this->hasRetweeted() ? 'text-success' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
+	            <button
+	                wire:click="toggleRepost"
+	                wire:loading.attr="disabled"
+	                wire:target="toggleRepost"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasRetweeted() ? 'text-success' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
                 title="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
                 aria-pressed="{{ $this->hasRetweeted() ? 'true' : 'false' }}"
             >
@@ -411,11 +419,13 @@
                 <span class="badge badge-sm {{ $repostsBadge }} tabular-nums">{{ $repostsCount }}</span>
             </a>
 
-            <button
-                wire:click="openQuote"
-                class="btn btn-ghost btn-sm btn-square {{ $isQuoting ? 'text-primary' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="Quote"
+	            <button
+	                wire:click="openQuote"
+	                wire:loading.attr="disabled"
+	                wire:target="openQuote"
+	                class="btn btn-ghost btn-sm btn-square {{ $isQuoting ? 'text-primary' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="Quote"
                 title="Quote"
                 aria-pressed="{{ $isQuoting ? 'true' : 'false' }}"
             >
@@ -425,11 +435,13 @@
                 </svg>
             </button>
 
-            <button
-                wire:click="toggleLike"
-                class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
+	            <button
+	                wire:click="toggleLike"
+	                wire:loading.attr="disabled"
+	                wire:target="toggleLike"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
             >
@@ -449,11 +461,13 @@
                 <span class="badge badge-sm {{ $likesBadge }} tabular-nums">{{ $likesCount }}</span>
             </a>
 
-            <button
-                wire:click="toggleBookmark"
-                class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="Bookmark"
+	            <button
+	                wire:click="toggleBookmark"
+	                wire:loading.attr="disabled"
+	                wire:target="toggleBookmark"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="Bookmark"
                 title="{{ $this->hasBookmarked() ? 'Remove bookmark' : 'Bookmark' }}"
                 aria-pressed="{{ $this->hasBookmarked() ? 'true' : 'false' }}"
             >
@@ -494,15 +508,15 @@
                         <div class="text-sm opacity-60">No replies yet.</div>
                     @endif
 
-                    <div class="flex items-center justify-between gap-2">
-                        <a class="link link-primary text-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>
-                            View full thread
-                        </a>
-                        <button type="button" wire:click="hideThread" class="btn btn-ghost btn-xs">Hide</button>
-                    </div>
-                @endif
-            </div>
-        @endif
+	                    <div class="flex items-center justify-between gap-2">
+	                        <a class="link link-primary text-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>
+	                            View full thread
+	                        </a>
+	                        <button type="button" wire:click="hideThread" wire:loading.attr="disabled" wire:target="hideThread" class="btn btn-ghost btn-xs">Hide</button>
+	                    </div>
+	                @endif
+	            </div>
+	        @endif
 
         @if ($isQuoting)
             <div class="pt-3">
@@ -521,13 +535,13 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('quote_body')" />
                             </div>
 
-                            <div class="flex justify-end gap-2">
-                                <button type="button" wire:click="cancelQuote" class="btn btn-ghost btn-sm">Cancel</button>
-                                <button type="submit" class="btn btn-primary btn-sm">Post</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+	                            <div class="flex justify-end gap-2">
+	                                <button type="button" wire:click="cancelQuote" wire:loading.attr="disabled" wire:target="cancelQuote" class="btn btn-ghost btn-sm">Cancel</button>
+	                                <button type="submit" wire:loading.attr="disabled" wire:target="quoteRepost" class="btn btn-primary btn-sm">Post</button>
+	                            </div>
+	                        </form>
+	                    </div>
+	                </div>
             </div>
         @endif
             </div>

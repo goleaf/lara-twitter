@@ -37,7 +37,7 @@
     }
 
     .menu a:not(.active) {
-        @apply hover:bg-base-200/70;
+        @apply hover:bg-base-200/50;
     }
 
     .tabs.tabs-boxed {
