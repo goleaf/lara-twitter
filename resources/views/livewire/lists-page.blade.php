@@ -33,7 +33,7 @@
             <div class="font-semibold">Subscribed</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->subscribedLists as $list)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('lists.show', $list) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('lists.show', $list) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">
@@ -58,7 +58,7 @@
             <div class="font-semibold">Your lists</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->ownedLists as $list)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('lists.show', $list) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('lists.show', $list) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">
@@ -85,7 +85,7 @@
             <div class="font-semibold">Lists you’re on</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->memberLists as $list)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('lists.show', $list) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('lists.show', $list) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">

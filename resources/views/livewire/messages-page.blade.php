@@ -33,7 +33,7 @@
             @php($meParticipant = $conversation->participants->firstWhere('user_id', auth()->id()))
             @php($isUnread = $last && $last->user_id !== auth()->id() && (! $meParticipant?->last_read_at || $meParticipant->last_read_at->lt($last->created_at)))
 
-            <a class="card bg-base-100 border hover:border-base-300 transition" href="{{ route('messages.show', $conversation) }}" wire:navigate>
+            <a class="card bg-base-100 card-hover" href="{{ route('messages.show', $conversation) }}" wire:navigate>
                 <div class="card-body py-4">
                     <div class="flex items-center justify-between gap-4">
                         <div class="min-w-0">

@@ -72,7 +72,7 @@
                 <div class="font-semibold">Your Moments</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->moments as $moment)
-                        <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                        <a class="card bg-base-200 card-hover" href="{{ route('moments.show', $moment) }}" wire:navigate>
                             <div class="card-body py-4">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
@@ -100,7 +100,7 @@
             <div class="font-semibold">Public Moments</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->publicMoments as $moment)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('moments.show', $moment) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">

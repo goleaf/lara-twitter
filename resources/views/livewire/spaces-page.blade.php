@@ -71,7 +71,7 @@
             <div class="font-semibold">Live now</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->liveSpaces as $space)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('spaces.show', $space) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('spaces.show', $space) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="font-semibold">{{ $space->title }}</div>
                             <div class="text-sm opacity-70">Host: &#64;{{ $space->host->username }}</div>
@@ -89,7 +89,7 @@
             <div class="font-semibold">Upcoming</div>
             <div class="space-y-2 pt-2">
                 @forelse ($this->upcomingSpaces as $space)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('spaces.show', $space) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('spaces.show', $space) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">

@@ -15,7 +15,7 @@
         <div class="card-body">
             <div class="space-y-2">
                 @forelse ($this->lists as $list)
-                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('lists.show', $list) }}" wire:navigate>
+                    <a class="card bg-base-200 card-hover" href="{{ route('lists.show', $list) }}" wire:navigate>
                         <div class="card-body py-4">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">
@@ -40,4 +40,3 @@
         {{ $this->lists->links() }}
     </div>
 </div>
-
