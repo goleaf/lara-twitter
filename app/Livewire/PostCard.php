@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Http\Requests\Posts\QuoteRepostRequest;
 use App\Models\Bookmark;
 use App\Models\Post;
+use App\Models\PostPollOption;
+use App\Models\PostPollVote;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +38,10 @@ class PostCard extends Component
 
     public function mount(Post $post): void
     {
-        $this->post = $post;
+        $this->post = $post->loadMissing([
+            'poll.options' => fn ($q) => $q->withCount('votes'),
+            'repostOf.poll.options' => fn ($q) => $q->withCount('votes'),
+        ]);
         $this->primaryId = ($post->repost_of_id && $post->body === '') ? (int) $post->repost_of_id : (int) $post->id;
 
         if (Auth::check()) {
