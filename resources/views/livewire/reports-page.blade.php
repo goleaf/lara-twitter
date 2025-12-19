@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="card bg-base-100 border">
+    <div class="card bg-base-100 border overflow-hidden">
         <div class="card-body p-0">
             <div class="overflow-x-auto">
                 <table class="table table-zebra table-sm">

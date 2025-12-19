@@ -58,41 +58,41 @@
                 <div class="pt-3">
                     <div class="overflow-x-auto rounded-box border border-base-200">
                         <table class="table table-zebra table-sm">
-                        <thead>
-                            <tr>
-                                <th>Post</th>
-                                <th class="text-right tabular-nums">Impressions</th>
-                                <th class="text-right tabular-nums">Engagements</th>
-                                <th class="text-right tabular-nums">Rate</th>
-                                <th class="text-right tabular-nums">Links</th>
-                                <th class="text-right tabular-nums">Profile</th>
-                                <th class="text-right tabular-nums">Media</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($this->tweetRows as $post)
+                            <thead>
                                 <tr>
-                                    <td class="min-w-[16rem] max-w-md">
-                                        <a class="link link-hover" href="{{ route('posts.show', $post) }}" wire:navigate>
-                                            {{ \Illuminate\Support\Str::limit($post->body, 120) }}
-                                        </a>
-                                        <div class="text-xs opacity-60">{{ $post->created_at->diffForHumans() }}</div>
-                                    </td>
-                                    <td class="text-right tabular-nums">{{ $post->analytics_impressions }}</td>
-                                    <td class="text-right tabular-nums">{{ $post->analytics_engagements }}</td>
-                                    <td class="text-right tabular-nums">{{ number_format($post->analytics_engagement_rate * 100, 1) }}%</td>
-                                    <td class="text-right tabular-nums">{{ $post->analytics_link_clicks }}</td>
-                                    <td class="text-right tabular-nums">{{ $post->analytics_profile_clicks }}</td>
-                                    <td class="text-right tabular-nums">{{ $post->analytics_media_views }}</td>
+                                    <th>Post</th>
+                                    <th class="text-right tabular-nums">Impressions</th>
+                                    <th class="text-right tabular-nums">Engagements</th>
+                                    <th class="text-right tabular-nums">Rate</th>
+                                    <th class="text-right tabular-nums">Links</th>
+                                    <th class="text-right tabular-nums">Profile</th>
+                                    <th class="text-right tabular-nums">Media</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="opacity-70">No posts in this range.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                        </div>
+                            </thead>
+                            <tbody>
+                                @forelse ($this->tweetRows as $post)
+                                    <tr>
+                                        <td class="min-w-[16rem] max-w-md">
+                                            <a class="link link-hover" href="{{ route('posts.show', $post) }}" wire:navigate>
+                                                {{ \Illuminate\Support\Str::limit($post->body, 120) }}
+                                            </a>
+                                            <div class="text-xs opacity-60">{{ $post->created_at->diffForHumans() }}</div>
+                                        </td>
+                                        <td class="text-right tabular-nums">{{ $post->analytics_impressions }}</td>
+                                        <td class="text-right tabular-nums">{{ $post->analytics_engagements }}</td>
+                                        <td class="text-right tabular-nums">{{ number_format($post->analytics_engagement_rate * 100, 1) }}%</td>
+                                        <td class="text-right tabular-nums">{{ $post->analytics_link_clicks }}</td>
+                                        <td class="text-right tabular-nums">{{ $post->analytics_profile_clicks }}</td>
+                                        <td class="text-right tabular-nums">{{ $post->analytics_media_views }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="opacity-70">No posts in this range.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="text-xs opacity-60 pt-2">Shows up to 100 posts published in the selected range.</div>
