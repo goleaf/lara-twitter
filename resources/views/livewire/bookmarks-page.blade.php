@@ -2,9 +2,11 @@
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="flex items-center justify-between gap-3">
-                <div class="text-xl font-semibold">Bookmarks</div>
+                <div class="flex items-center gap-2">
+                    <div class="text-xl font-semibold">Bookmarks</div>
+                    <span class="badge badge-outline badge-sm">Private</span>
+                </div>
                 <div class="flex items-center gap-3">
-                    <div class="text-sm opacity-70">Private</div>
                     @if ($this->bookmarks->total())
                         <button type="button" class="btn btn-ghost btn-sm" wire:click="clearAll">
                             Clear all
