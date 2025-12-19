@@ -41,6 +41,7 @@ class User extends Authenticatable implements FilamentUser
         'is_verified',
         'dm_policy',
         'dm_allow_requests',
+        'dm_read_receipts',
         'timeline_settings',
         'pinned_post_id',
     ];
@@ -70,6 +71,7 @@ class User extends Authenticatable implements FilamentUser
             'is_premium' => 'boolean',
             'is_verified' => 'boolean',
             'dm_allow_requests' => 'boolean',
+            'dm_read_receipts' => 'boolean',
             'timeline_settings' => 'array',
             'notification_settings' => 'array',
             'interest_hashtags' => 'array',
