@@ -112,14 +112,14 @@ new class extends Component
 
         <div class="flex items-center gap-4">
             <div class="avatar">
-	                <div class="w-16 rounded-full">
-	                    @if (auth()->user()->avatar_url)
-	                        <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
-	                    @else
-	                        <div class="bg-base-200 grid place-items-center h-full w-full text-lg font-semibold">
-	                            {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
-	                        </div>
-	                    @endif
+                    <div class="w-16 rounded-full">
+                        @if (auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                        @else
+                            <div class="bg-base-200 grid place-items-center h-full w-full text-lg font-semibold">
+                                {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                        @endif
                 </div>
             </div>
 

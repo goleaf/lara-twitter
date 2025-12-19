@@ -69,7 +69,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l3-3 4 4 7-7" />
                                         </svg>
                                     </a>
-	
+    
                                 <a class="btn btn-ghost btn-square {{ request()->routeIs('explore') ? 'btn-active text-primary' : '' }}" href="{{ route('explore') }}" wire:navigate aria-label="Explore">
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
@@ -92,14 +92,14 @@
                                 <div class="dropdown dropdown-end">
                                     <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Account menu">
                                         <div class="avatar">
-	                                            <div class="w-8 rounded-full border border-base-200 bg-base-100">
-	                                                @if (auth()->user()->avatar_url)
-	                                                    <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
-	                                                @else
-	                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
-	                                                        {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
-	                                                    </div>
-	                                                @endif
+                                                <div class="w-8 rounded-full border border-base-200 bg-base-100">
+                                                    @if (auth()->user()->avatar_url)
+                                                        <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                                    @else
+                                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                            {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                                                        </div>
+                                                    @endif
                                             </div>
                                         </div>
                                     </div>
@@ -358,14 +358,14 @@
                             <div class="mt-4 pt-4 border-t border-base-200">
                                 <a class="flex items-center gap-3 p-2 rounded-btn hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
                                     <div class="avatar shrink-0">
-	                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                            @if (auth()->user()->avatar_url)
-	                                                <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
-	                                            @else
-	                                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-	                                                    {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
-	                                                </div>
-	                                            @endif
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if (auth()->user()->avatar_url)
+                                                    <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                                @else
+                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                                        {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
                                         </div>
                                     </div>
                                     <div class="min-w-0">

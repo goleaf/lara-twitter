@@ -55,15 +55,15 @@ new class extends Component
             <div class="flex items-center justify-between gap-3 border rounded-box p-3 bg-base-100">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="avatar">
-	                        <div class="w-10 rounded-full border border-base-200 bg-base-100">
-	                            @if ($user->avatar_url)
-	                                <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
-	                            @else
-	                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-	                                    {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
-	                                </div>
-	                            @endif
-	                        </div>
+                            <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                                @if ($user->avatar_url)
+                                    <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                @else
+                                    <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                        {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            </div>
                     </div>
 
                     <div class="min-w-0">
