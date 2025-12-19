@@ -20,7 +20,10 @@
                 @php($myFollowers = $minFollowers > 0 ? auth()->user()->followers()->count() : 0)
 
                 @if ($minFollowers > 0 && $myFollowers < $minFollowers)
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning" role="alert">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm.75 6a.75.75 0 0 0-1.5 0v5a.75.75 0 0 0 1.5 0V8ZM12 17a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clip-rule="evenodd" />
+                        </svg>
                         <div class="text-sm">
                             You need at least {{ $minFollowers }} followers to host a Space.
                             You currently have {{ $myFollowers }}.

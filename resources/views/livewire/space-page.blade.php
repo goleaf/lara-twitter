@@ -29,7 +29,13 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <livewire:report-button :reportable-type="\App\Models\Space::class" :reportable-id="$space->id" label="Report" :key="'report-space-'.$space->id" />
+                    <livewire:report-button
+                        :reportable-type="\App\Models\Space::class"
+                        :reportable-id="$space->id"
+                        label="Report"
+                        button-class="btn btn-ghost btn-sm"
+                        :key="'report-space-'.$space->id"
+                    />
                     <a class="btn btn-ghost btn-sm" href="{{ route('spaces.index') }}" wire:navigate>Back</a>
                 </div>
             </div>
@@ -85,7 +91,10 @@
                 </div>
             @endif
 
-            <div class="alert mt-2">
+            <div class="alert alert-info mt-2" role="note">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" clip-rule="evenodd" />
+                </svg>
                 <div>
                     <div class="font-semibold">Audio not implemented</div>
                     <div class="text-sm opacity-70">This is a MVP placeholder for Spaces. To add live audio we need WebRTC signaling + TURN/STUN or a provider (Twilio/Agora).</div>
