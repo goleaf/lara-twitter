@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\InteractsWithUserProfile;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class ProfileMediaPage extends Component
 {
     use WithPagination;
+    use InteractsWithUserProfile;
 
     public User $user;
 
