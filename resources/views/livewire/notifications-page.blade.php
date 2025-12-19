@@ -29,19 +29,17 @@
 	            @php($avatarLabel = $actor?->name ?? $actorUsername)
 	            @php($avatarInitial = mb_strtoupper(mb_substr($avatarLabel, 0, 1)))
 
-            @php
-                $iconClass = match ($type) {
-                    'post_liked' => 'bg-error text-error-content',
-                    'post_reposted' => 'bg-success text-success-content',
-                    'post_replied' => 'bg-info text-info-content',
-                    'post_mentioned' => 'bg-info text-info-content',
-                    'user_followed' => 'bg-primary text-primary-content',
-                    'message_received' => 'bg-secondary text-secondary-content',
-                    'added_to_list' => 'bg-accent text-accent-content',
-                    'followed_user_posted' => 'bg-neutral text-neutral-content',
-                    default => 'bg-base-200 text-base-content',
-                };
-            @endphp
+	            @php($iconClass = match ($type) {
+	                'post_liked' => 'bg-error text-error-content',
+	                'post_reposted' => 'bg-success text-success-content',
+	                'post_replied' => 'bg-info text-info-content',
+	                'post_mentioned' => 'bg-info text-info-content',
+	                'user_followed' => 'bg-primary text-primary-content',
+	                'message_received' => 'bg-secondary text-secondary-content',
+	                'added_to_list' => 'bg-accent text-accent-content',
+	                'followed_user_posted' => 'bg-neutral text-neutral-content',
+	                default => 'bg-base-200 text-base-content',
+	            })
 
 	            @php($postId = $data['post_id'] ?? $data['original_post_id'] ?? null)
 	            @php($conversationId = $data['conversation_id'] ?? null)
