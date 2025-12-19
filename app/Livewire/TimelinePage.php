@@ -27,14 +27,14 @@ class TimelinePage extends Component
     public function mount(): void
     {
         $value = $this->baseQuery()->max('created_at');
-        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+        $this->latestSeenAt = $value ? (string) $value : null;
     }
 
     public function updatedFeed(): void
     {
         $this->resetPage();
         $value = $this->baseQuery()->max('created_at');
-        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+        $this->latestSeenAt = $value ? (string) $value : null;
         $this->hasNewPosts = false;
     }
 
@@ -145,7 +145,7 @@ class TimelinePage extends Component
     {
         $this->resetPage();
         $value = $this->baseQuery()->max('created_at');
-        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+        $this->latestSeenAt = $value ? (string) $value : null;
         $this->hasNewPosts = false;
     }
 
