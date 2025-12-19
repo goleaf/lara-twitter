@@ -12,6 +12,7 @@ A small Twitter-like app built with:
 - Timeline (shows your posts + people you follow)
 - Profiles (`/@username`), follow/unfollow
 - Likes
+- Direct Messages (1:1 + groups, requests, rich media)
 - Hashtags (`/tags/{tag}`) and mentions (`/mentions`)
 - Post threads (`/posts/{id}`) with replies
 - Image uploads for posts (up to 4) + avatar upload
