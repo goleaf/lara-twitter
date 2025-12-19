@@ -60,7 +60,10 @@ class PostComposer extends Component
             $this->scheduled_for = null;
         }
 
-        $validated = $this->validate(StorePostRequest::rulesFor(Auth::user()));
+        $validated = $this->validate(array_merge(StorePostRequest::rulesFor(Auth::user()), [
+            'scheduled_for' => ['nullable', 'date', 'after_or_equal:now'],
+            'location' => ['nullable', 'string', 'max:80'],
+        ]));
 
         $scheduledFor = isset($validated['scheduled_for']) && is_string($validated['scheduled_for'])
             ? Carbon::createFromFormat('Y-m-d\\TH:i', $validated['scheduled_for'], config('app.timezone'))
