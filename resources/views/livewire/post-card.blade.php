@@ -20,20 +20,34 @@
 
             <div class="min-w-0 flex-1 flex flex-col gap-2">
         @if ($this->isRepost())
-            <div class="text-sm opacity-70">
-                Retweeted by
-                <a class="link link-hover" href="{{ route('profile.show', ['user' => $post->user->username]) }}" wire:navigate>
-                    &#64;{{ $post->user->username }}
-                </a>
+            <div class="flex items-center gap-2 text-xs opacity-70">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 1l4 4-4 4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 11V9a4 4 0 0 1 4-4h14" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 23l-4-4 4-4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
+                <span>
+                    Retweeted by
+                    <a class="link link-hover" href="{{ route('profile.show', ['user' => $post->user->username]) }}" wire:navigate>
+                        &#64;{{ $post->user->username }}
+                    </a>
+                </span>
             </div>
         @endif
 
         @if ($replyingTo)
-            <div class="text-sm opacity-70">
-                Replying to
-                <a class="link link-hover" href="{{ route('profile.show', ['user' => $replyingTo]) }}" wire:navigate>
-                    &#64;{{ $replyingTo }}
-                </a>
+            <div class="flex items-center gap-2 text-xs opacity-70">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.418-4.03 8-9 8a10.3 10.3 0 0 1-4-.78L3 20l1.3-3.9A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+                </svg>
+                <span>
+                    Replying to
+                    <a class="link link-hover" href="{{ route('profile.show', ['user' => $replyingTo]) }}" wire:navigate>
+                        &#64;{{ $replyingTo }}
+                    </a>
+                </span>
             </div>
         @endif
 
