@@ -8,7 +8,7 @@
                 <div class="avatar">
                     <div class="w-10 rounded-full border border-base-200 bg-base-100">
                         @if ($primary->user->avatar_url)
-                            <img src="{{ $primary->user->avatar_url }}" alt="" />
+                            <img src="{{ $primary->user->avatar_url }}" alt="" loading="lazy" decoding="async" />
                         @else
                             <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
                                 {{ mb_strtoupper(mb_substr($primary->user->name, 0, 1)) }}
@@ -172,7 +172,7 @@
                     <div class="card bg-base-200 shadow-none overflow-hidden">
                         @if ($preview->image_url)
                             <figure>
-                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
+                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" decoding="async" />
                             </figure>
                         @endif
 
@@ -207,7 +207,7 @@
                         @php($ratio = $isWide ? '16 / 9' : '1 / 1')
     
                         <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-                            <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" />
+                            <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" decoding="async" />
                         </div>
                     @endforeach
                 </div>
@@ -301,7 +301,7 @@
                                     <div class="card bg-base-100 shadow-none overflow-hidden">
                                         @if ($preview->image_url)
                                             <figure>
-                                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
+                                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" decoding="async" />
                                             </figure>
                                         @endif
 
@@ -335,7 +335,7 @@
                                         @php($ratio = $isWide ? '16 / 9' : '1 / 1')
     
                                         <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" />
+                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" decoding="async" />
                                         </div>
                                     @endforeach
                                 </div>
