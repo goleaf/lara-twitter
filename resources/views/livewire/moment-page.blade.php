@@ -24,19 +24,19 @@
                     <form wire:submit="updateMoment" class="space-y-3">
                         <div>
                             <x-input-label for="moment_title" value="Title" />
-                            <x-text-input id="moment_title" class="mt-1 block w-full" wire:model="title" />
+                            <x-text-input id="moment_title" class="mt-1 block w-full input-sm" wire:model="title" />
                             <x-input-error class="mt-2" :messages="$errors->get('title')" />
                         </div>
 
                         <div>
                             <x-input-label for="moment_description" value="Description" />
-                            <textarea id="moment_description" class="textarea textarea-bordered mt-1 block w-full" rows="3" wire:model="description"></textarea>
+                            <textarea id="moment_description" class="textarea textarea-bordered textarea-sm mt-1 block w-full" rows="3" wire:model="description"></textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('description')" />
                         </div>
 
                         <div>
                             <x-input-label for="moment_cover_image" value="Cover image (optional)" />
-                            <input id="moment_cover_image" type="file" class="file-input file-input-bordered w-full mt-1" wire:model="cover_image" />
+                            <input id="moment_cover_image" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" wire:model="cover_image" />
                             <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
                         </div>
 
@@ -54,12 +54,12 @@
 
                     <form wire:submit="addPost" class="space-y-2">
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input class="input input-bordered w-full" placeholder="Post ID or URL (e.g. 123 or /posts/123)" wire:model="post_id" />
+                            <input class="input input-bordered input-sm w-full" placeholder="Post ID or URL (e.g. 123 or /posts/123)" wire:model="post_id" />
                             <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
                         </div>
 
                         <textarea
-                            class="textarea textarea-bordered w-full"
+                            class="textarea textarea-bordered textarea-sm w-full"
                             rows="2"
                             placeholder="Context (optional)"
                             wire:model="caption"
@@ -80,9 +80,9 @@
                         <div class="card-body py-4 space-y-2">
                             <div class="font-semibold">Caption</div>
 
-                            <form wire:submit="saveCaption" class="space-y-2">
-                                <textarea class="textarea textarea-bordered w-full" rows="3" wire:model="editing_caption"></textarea>
-                                <x-input-error class="mt-2" :messages="$errors->get('editing_caption')" />
+	                            <form wire:submit="saveCaption" class="space-y-2">
+	                                <textarea class="textarea textarea-bordered textarea-sm w-full" rows="3" wire:model="editing_caption"></textarea>
+	                                <x-input-error class="mt-2" :messages="$errors->get('editing_caption')" />
 
                                 <div class="flex justify-end gap-2">
                                     <button type="button" class="btn btn-ghost btn-sm" wire:click="cancelEditingCaption">Cancel</button>

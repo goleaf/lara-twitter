@@ -2,7 +2,7 @@
 
 <div class="max-w-2xl mx-auto space-y-4">
     <div>
-        <a class="link link-hover opacity-70" href="{{ route('posts.show', $primary) }}" wire:navigate>← Back to post</a>
+        <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>← Back to post</a>
     </div>
 
     <div class="card bg-base-100 border">
@@ -38,12 +38,14 @@
             <div class="card-body">
                 <div class="space-y-3">
                     @forelse ($this->retweeters as $retweet)
-                        <a class="flex items-center justify-between link link-hover" href="{{ route('profile.show', ['user' => $retweet->user->username]) }}" wire:navigate>
-                            <span>
-                                <span class="font-semibold">{{ $retweet->user->name }}</span>
-                                <span class="opacity-60 font-normal">&#64;{{ $retweet->user->username }}</span>
-                            </span>
-                            <span class="text-sm opacity-60">{{ $retweet->created_at->diffForHumans() }}</span>
+                        <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $retweet->user->username]) }}" wire:navigate>
+                            <div class="min-w-0">
+                                <div class="font-semibold truncate">
+                                    {{ $retweet->user->name }}
+                                    <span class="opacity-60 font-normal">&#64;{{ $retweet->user->username }}</span>
+                                </div>
+                            </div>
+                            <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
                         </a>
                     @empty
                         <div class="opacity-70">No retweets yet.</div>
@@ -57,4 +59,3 @@
         </div>
     @endif
 </div>
-

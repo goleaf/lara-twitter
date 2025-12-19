@@ -23,8 +23,9 @@
             @auth
                 @if (! $list->is_private && auth()->id() !== $list->owner_id)
                     <div>
-                        <button class="btn btn-outline btn-sm" wire:click="toggleSubscribe">
-                            {{ $this->isSubscribed() ? 'Unsubscribe' : 'Subscribe' }}
+                        @php($isSubscribed = $this->isSubscribed())
+                        <button class="btn btn-sm {{ $isSubscribed ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleSubscribe">
+                            {{ $isSubscribed ? 'Unsubscribe' : 'Subscribe' }}
                         </button>
                     </div>
                 @endif
@@ -32,7 +33,7 @@
 
             <div class="flex flex-wrap gap-2">
                 @foreach ($this->members as $member)
-                    <a class="badge badge-outline" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
+                    <a class="badge badge-outline badge-sm" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
                         &#64;{{ $member->username }}
                     </a>
                 @endforeach
@@ -43,14 +44,14 @@
                     <div class="divider">Manage members</div>
 
                     <form wire:submit="addMember" class="flex flex-col sm:flex-row gap-2">
-                        <input class="input input-bordered w-full" placeholder="@username" wire:model="member_username" />
+                        <input class="input input-bordered input-sm w-full" placeholder="@username" wire:model="member_username" />
                         <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
                     </form>
                     <x-input-error class="mt-2" :messages="$errors->get('member_username')" />
 
                     <div class="flex flex-wrap gap-2 pt-2">
                         @foreach ($this->members as $member)
-                            <button type="button" class="badge badge-neutral" wire:click="removeMember({{ $member->id }})">
+                            <button type="button" class="badge badge-sm badge-neutral" wire:click="removeMember({{ $member->id }})">
                                 Remove &#64;{{ $member->username }}
                             </button>
                         @endforeach

@@ -1,7 +1,8 @@
 <div class="max-w-2xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="text-2xl font-bold">#{{ $tag }}</div>
+            <div class="text-xl font-semibold">#{{ $tag }}</div>
+            <div class="text-sm opacity-70">Posts with this hashtag.</div>
 
             <div class="tabs tabs-boxed mt-4">
                 <button type="button" class="tab {{ $sort === 'latest' ? 'tab-active' : '' }}" wire:click="$set('sort', 'latest')">
