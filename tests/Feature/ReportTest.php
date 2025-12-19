@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\ReportButton;
+use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -96,6 +97,28 @@ class ReportTest extends TestCase
         ]);
     }
 
+    public function test_user_can_report_a_hashtag(): void
+    {
+        $reporter = User::factory()->create();
+        $hashtag = Hashtag::factory()->create(['tag' => 'laravel']);
+
+        Livewire::actingAs($reporter)
+            ->test(ReportButton::class, [
+                'reportableType' => Hashtag::class,
+                'reportableId' => $hashtag->id,
+            ])
+            ->set('reason', 'spam')
+            ->set('details', 'Looks like spam tag.')
+            ->call('submit');
+
+        $this->assertDatabaseHas('reports', [
+            'reporter_id' => $reporter->id,
+            'reportable_type' => Hashtag::class,
+            'reportable_id' => $hashtag->id,
+            'reason' => 'spam',
+        ]);
+    }
+
     public function test_user_cannot_report_themselves(): void
     {
         $user = User::factory()->create();
@@ -123,4 +146,3 @@ class ReportTest extends TestCase
             ->assertStatus(403);
     }
 }
-

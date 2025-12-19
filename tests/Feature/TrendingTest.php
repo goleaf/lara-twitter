@@ -28,6 +28,22 @@ class TrendingTest extends TestCase
             ->assertSee('#php');
     }
 
+    public function test_trending_hashtags_can_be_filtered_by_location(): void
+    {
+        $berliner = User::factory()->create(['username' => 'berliner', 'location' => 'Berlin']);
+        $parisian = User::factory()->create(['username' => 'parisian', 'location' => 'Paris']);
+
+        Post::query()->create(['user_id' => $berliner->id, 'body' => 'Hello #berlin']);
+        Post::query()->create(['user_id' => $parisian->id, 'body' => 'Hello #paris']);
+
+        $response = $this->get(route('trending', ['loc' => 'berlin']));
+
+        $response
+            ->assertOk()
+            ->assertSee('#berlin')
+            ->assertDontSee('#paris');
+    }
+
     public function test_trending_keywords_shows_keywords_tab(): void
     {
         $alice = User::factory()->create(['username' => 'alice']);
@@ -61,4 +77,3 @@ class TrendingTest extends TestCase
             ->assertSeeInOrder(['#php', '#laravel']);
     }
 }
-

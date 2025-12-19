@@ -68,7 +68,7 @@ class ReportButton extends Component
         $this->dispatch('report-submitted');
     }
 
-    private function resolveReportable(): Post|User
+    private function resolveReportable(): Post|User|Hashtag
     {
         if ($this->reportableType === Post::class) {
             return Post::query()->with('user')->findOrFail($this->reportableId);

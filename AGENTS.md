@@ -6,9 +6,11 @@
   - `app/Livewire/`: Livewire v3 page/components (e.g., timeline, profile, posts).
   - `app/Filament/`: Filament admin panel resources.
   - `app/Models/`, `app/Services/`, `app/Observers/`: domain logic and model lifecycle.
+-  `app/Http/Requests/`: FormRequest validation for app actions (prefer adding rules here, not inline).
 - `routes/`: route definitions (`routes/web.php`, `routes/auth.php` using Livewire Volt pages).
 - `resources/`: frontend source.
   - `resources/views/`: Blade templates + Livewire/Volt views (see `resources/views/livewire/pages/auth/`).
+  - Layout: use `resources/views/layouts/app.blade.php` as the single shared layout.
   - `resources/css/`, `resources/js/`: Vite entrypoints (`resources/css/app.css`, `resources/js/app.js`).
 - `database/`: migrations, factories, seeders, and local SQLite file (`database/database.sqlite`).
 - `tests/`: PHPUnit tests (`tests/Feature/`, `tests/Unit/`).
@@ -26,6 +28,7 @@
 - Indentation: 4 spaces (see `.editorconfig`); keep files LF-terminated.
 - PHP: follow Laravel conventions; classes `PascalCase`, methods/vars `camelCase`.
 - Blade views: keep templates in `resources/views/` and name files descriptively (e.g., `post-card.blade.php`).
+- UI/theme: Tailwind 3 + daisyUI, light theme only (`tailwind.config.js`, `<html data-theme="light">`).
 - Formatting: use Laravel Pint: `./vendor/bin/pint`.
 
 ## Testing Guidelines
@@ -36,7 +39,7 @@
 
 ## Commit & Pull Request Guidelines
 
-- Commit messages: this workspace snapshot has no `.git` history; use a consistent convention like `type(scope): summary` (e.g., `fix(posts): handle empty reply`).
+- Commit messages: follow existing history style (imperative summaries like “Add …”, “Enhance …”, “Refactor …”).
 - PRs: include a short summary, reproduction/verification steps, and screenshots for UI changes; note any migrations or config changes.
 
 ## Security & Configuration Tips
