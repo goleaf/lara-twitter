@@ -9,13 +9,24 @@
                 <a class="btn btn-ghost btn-sm" href="{{ route('messages.index') }}" wire:navigate>Back</a>
             </div>
 
-            <form wire:submit="addRecipient" class="flex flex-col sm:flex-row gap-2">
-                <input
-                    class="input input-bordered input-sm w-full"
-                    placeholder="@username"
-                    wire:model="recipientUsername"
-                />
-                <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
+            <form wire:submit="addRecipient">
+                <div class="join w-full">
+                    <input
+                        class="input input-bordered input-sm join-item w-full"
+                        placeholder="@username"
+                        wire:model="recipientUsername"
+                        wire:loading.attr="disabled"
+                        wire:target="addRecipient"
+                    />
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm join-item"
+                        wire:loading.attr="disabled"
+                        wire:target="addRecipient"
+                    >
+                        Add
+                    </button>
+                </div>
             </form>
             <x-input-error class="mt-2" :messages="$errors->get('recipientUsername')" />
 
@@ -56,7 +67,13 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-ghost btn-xs" wire:click="removeRecipient({{ $user->id }})">
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs"
+                                wire:click="removeRecipient({{ $user->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="removeRecipient({{ $user->id }})"
+                            >
                                 Remove
                             </button>
                         </div>
@@ -82,7 +99,13 @@
                 @endif
 
                 <div class="flex justify-end">
-                    <button type="submit" class="btn btn-primary btn-sm" @disabled(count($recipientUserIds) === 0)>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="create"
+                        @disabled(count($recipientUserIds) === 0)
+                    >
                         Start conversation
                     </button>
                 </div>

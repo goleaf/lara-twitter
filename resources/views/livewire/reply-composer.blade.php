@@ -13,14 +13,14 @@
             @endif
 
             <div class="avatar">
-                    <div class="w-10 rounded-full border border-base-200 bg-base-100">
-                        @if ($me?->avatar_url)
-                            <img src="{{ $me->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                        @else
-                            <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-                                {{ $avatarInitial }}
-                            </div>
-                        @endif
+                <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                    @if ($me?->avatar_url)
+                        <img src="{{ $me->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                    @else
+                        <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                            {{ $avatarInitial }}
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -32,7 +32,7 @@
         <div class="min-w-0 flex-1 space-y-3">
             <div class="flex items-center justify-between gap-3">
                 <div class="text-xs opacity-70">Reply</div>
-                <div class="text-xs {{ $isTooLong ? 'text-error' : 'opacity-70' }}">
+                <div class="text-xs tabular-nums {{ $isTooLong ? 'text-error' : 'opacity-70' }}">
                     {{ $bodyLength }}/{{ $maxLength }}
                 </div>
             </div>
@@ -48,26 +48,57 @@
                 <x-input-error class="mt-2" :messages="$errors->get('body')" />
             </div>
 
-            <div class="space-y-2">
+            <div class="rounded-box border border-base-200 bg-base-200/40 p-3 space-y-2">
                 <div class="flex flex-wrap items-center gap-3">
-                    <input wire:model="images" type="file" multiple accept="image/*" class="file-input file-input-bordered file-input-sm w-full max-w-xs" />
-                    <input wire:model="video" type="file" accept="video/mp4,video/webm,video/*" class="file-input file-input-bordered file-input-sm w-full max-w-xs" />
-                </div>
+                    <input
+                        wire:model="images"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        class="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                        wire:loading.attr="disabled"
+                        wire:target="images"
+                    />
 
-                <div class="flex items-center justify-between gap-2">
-                    <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
+                    <input
+                        wire:model="video"
+                        type="file"
+                        accept="video/mp4,video/webm,video/*"
+                        class="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                        wire:loading.attr="disabled"
+                        wire:target="video"
+                    />
+
                     @if ($video)
-                        <button type="button" wire:click="removeVideo" class="btn btn-ghost btn-xs">Remove video</button>
+                        <button
+                            type="button"
+                            wire:click="removeVideo"
+                            class="btn btn-ghost btn-xs"
+                            wire:loading.attr="disabled"
+                            wire:target="removeVideo"
+                        >
+                            Remove video
+                        </button>
                     @endif
                 </div>
 
-                <x-input-error class="mt-2" :messages="$errors->get('images')" />
-                <x-input-error class="mt-2" :messages="$errors->get('images.*')" />
-                <x-input-error class="mt-2" :messages="$errors->get('video')" />
+                <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
             </div>
 
+            <x-input-error class="mt-2" :messages="$errors->get('images')" />
+            <x-input-error class="mt-2" :messages="$errors->get('images.*')" />
+            <x-input-error class="mt-2" :messages="$errors->get('video')" />
+
             <div class="flex items-center justify-end gap-2">
-                <button class="btn btn-primary btn-sm" type="submit" @disabled(trim($body) === '' || $isTooLong)>Reply</button>
+                <button
+                    class="btn btn-primary btn-sm"
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    wire:target="save,images,video,removeVideo"
+                    @disabled(trim($body) === '' || $isTooLong)
+                >
+                    Reply
+                </button>
             </div>
         </div>
     </div>
