@@ -121,19 +121,33 @@
                 <div class="font-semibold">Lists</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->lists as $list)
-                        <a class="flex items-center justify-between gap-4 hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('lists.show', $list) }}" wire:navigate>
-                            <div class="min-w-0">
-                                <div class="font-semibold truncate">{{ $list->name }}</div>
-                                <div class="text-sm opacity-70 truncate">
-                                    by &#64;{{ $list->owner->username }}
-                                    · {{ $list->members_count }} members
-                                    · {{ $list->subscribers_count }} subscribers
+                        <a class="flex items-center justify-between gap-3 hover:bg-base-200/70 transition rounded-box px-3 py-2" href="{{ route('lists.show', $list) }}" wire:navigate>
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="avatar shrink-0">
+                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                        @if ($list->owner->avatar_url)
+                                            <img src="{{ $list->owner->avatar_url }}" alt="" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                {{ mb_strtoupper(mb_substr($list->owner->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @if ($list->description)
-                                    <div class="text-sm opacity-70 truncate">{{ $list->description }}</div>
-                                @endif
+
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate">{{ $list->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">
+                                        by &#64;{{ $list->owner->username }}
+                                        · {{ $list->members_count }} members
+                                        · {{ $list->subscribers_count }} subscribers
+                                    </div>
+                                    @if ($list->description)
+                                        <div class="text-sm opacity-70 truncate">{{ $list->description }}</div>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="text-sm opacity-60">View</div>
+                            <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
                         <div class="opacity-70 text-sm">No lists found.</div>
