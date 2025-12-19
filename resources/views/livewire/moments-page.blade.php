@@ -1,51 +1,66 @@
 <div class="max-w-2xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="text-xl font-semibold">Moments</div>
-            <div class="text-sm opacity-70 pt-1">Curated collections of posts.</div>
+            <div class="text-xl font-semibold">Moments <span class="badge badge-ghost badge-sm align-middle">Legacy</span></div>
+            <div class="text-sm opacity-70 pt-1">Curated collections of posts with a title, description, and cover image.</div>
         </div>
     </div>
 
     @auth
-        <div class="card bg-base-100 border">
-            <div class="card-body space-y-3">
-                <div class="font-semibold">Create a Moment</div>
-                <form wire:submit="create" class="space-y-3">
-                    <div>
-                        <x-input-label for="title" value="Title" />
-                        <x-text-input id="title" class="mt-1 block w-full" wire:model="title" />
-                        <x-input-error class="mt-2" :messages="$errors->get('title')" />
+        @if ($this->canCreate)
+            <div class="card bg-base-100 border">
+                <div class="card-body space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="font-semibold">Create a Moment</div>
+                        <div class="badge badge-outline badge-sm">Verified only</div>
                     </div>
 
-                    <div>
-                        <x-input-label for="description" value="Description" />
-                        <textarea id="description" class="textarea textarea-bordered mt-1 block w-full" rows="3" wire:model="description"></textarea>
-                        <x-input-error class="mt-2" :messages="$errors->get('description')" />
-                    </div>
+                    <form wire:submit="create" class="space-y-3">
+                        <div>
+                            <x-input-label for="title" value="Title" />
+                            <x-text-input id="title" class="mt-1 block w-full" wire:model="title" />
+                            <x-input-error class="mt-2" :messages="$errors->get('title')" />
+                        </div>
 
-                    <div>
-                        <x-input-label for="cover_image" value="Cover image (optional)" />
-                        <input id="cover_image" type="file" class="file-input file-input-bordered w-full mt-1" wire:model="cover_image" />
-                        <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
-                    </div>
+                        <div>
+                            <x-input-label for="description" value="Description" />
+                            <textarea id="description" class="textarea textarea-bordered mt-1 block w-full" rows="3" wire:model="description"></textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
+                        </div>
 
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" class="checkbox checkbox-sm" wire:model="is_public" />
-                        <span class="text-sm">Public</span>
-                    </label>
+                        <div>
+                            <x-input-label for="cover_image" value="Cover image (optional)" />
+                            <input id="cover_image" type="file" class="file-input file-input-bordered w-full mt-1" wire:model="cover_image" />
+                            <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
+                        </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit" class="btn btn-primary btn-sm">Create</button>
-                    </div>
-                </form>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="checkbox checkbox-sm" wire:model="is_public" />
+                            <span class="text-sm">Public</span>
+                        </label>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-primary btn-sm">Create</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        @else
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Create a Moment</div>
+                    <div class="text-sm opacity-70 pt-2">
+                        Moments are a legacy feature; creation is limited to verified accounts.
+                    </div>
+                </div>
+            </div>
+        @endif
     @else
         <div class="card bg-base-100 border">
             <div class="card-body">
                 <div class="font-semibold">Create a Moment</div>
                 <div class="text-sm opacity-70 pt-2">
-                    <a class="link link-hover" href="{{ route('login') }}" wire:navigate>Login</a> to create and manage your own Moments.
+                    <a class="link link-hover" href="{{ route('login') }}" wire:navigate>Login</a> to browse and (if verified) create Moments.
                 </div>
             </div>
         </div>
