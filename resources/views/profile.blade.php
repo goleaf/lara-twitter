@@ -38,6 +38,12 @@
 
         <div class="card bg-base-100 border">
             <div class="card-body">
+                <livewire:profile.muted-users-form />
+            </div>
+        </div>
+
+        <div class="card bg-base-100 border">
+            <div class="card-body">
                 <livewire:profile.blocked-users-form />
             </div>
         </div>

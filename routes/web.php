@@ -37,6 +37,9 @@ Route::get('/', TimelinePage::class)->name('timeline');
 
 Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::view('help', 'help.index')->name('help.index');
+Route::view('help/hashtags', 'help.hashtags')->name('help.hashtags');
+
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');
 Route::get('/@{user}/lists', ProfileListsPage::class)->name('profile.lists');
