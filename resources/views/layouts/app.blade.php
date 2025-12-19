@@ -17,6 +17,10 @@
     <body class="font-sans antialiased bg-gradient-to-b from-base-200 via-base-200 to-base-300/40 text-base-content">
         @php($unreadNotificationsCount = auth()->check() ? app(\App\Services\NotificationVisibilityService::class)->visibleUnreadCount(auth()->user()) : 0)
 
+        <div class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5">
+            <div id="navigate-progress-bar" class="h-full w-0 bg-primary opacity-0 transition-[width,opacity] duration-300"></div>
+        </div>
+
         <div class="drawer lg:drawer-open">
             <input id="app-drawer" type="checkbox" class="drawer-toggle" />
 
