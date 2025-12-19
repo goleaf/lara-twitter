@@ -48,13 +48,25 @@
                         <div class="flex items-center gap-2 shrink-0">
                             @auth
                                 @if (auth()->id() === $user->id && $follower->id !== $user->id)
-                                    <button type="button" class="btn btn-ghost btn-sm" wire:click="removeFollower({{ $follower->id }})" wire:loading.attr="disabled">
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-sm"
+                                        wire:click="removeFollower({{ $follower->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="removeFollower({{ $follower->id }})"
+                                    >
                                         Remove
                                     </button>
                                 @endif
 
                                 @if (auth()->id() !== $follower->id)
-                                    <button type="button" class="btn btn-sm {{ $this->isFollowing($follower->id) ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleFollow({{ $follower->id }})" wire:loading.attr="disabled">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm {{ $this->isFollowing($follower->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        wire:click="toggleFollow({{ $follower->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="toggleFollow({{ $follower->id }})"
+                                    >
                                         {{ $this->isFollowing($follower->id) ? 'Unfollow' : 'Follow' }}
                                     </button>
                                 @endif
@@ -62,8 +74,8 @@
                         </div>
                     </div>
                 @empty
-                    <div class="alert">
-                        <span class="opacity-70">No followers yet.</span>
+                    <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
+                        <div class="text-sm opacity-70">No followers yet.</div>
                     </div>
                 @endforelse
             </div>

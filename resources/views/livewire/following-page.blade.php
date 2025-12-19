@@ -48,7 +48,13 @@
                         <div class="flex items-center gap-2 shrink-0">
                             @auth
                                 @if (auth()->id() !== $followed->id)
-                                    <button type="button" class="btn btn-sm {{ $this->isFollowing($followed->id) ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleFollow({{ $followed->id }})" wire:loading.attr="disabled">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm {{ $this->isFollowing($followed->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        wire:click="toggleFollow({{ $followed->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="toggleFollow({{ $followed->id }})"
+                                    >
                                         {{ $this->isFollowing($followed->id) ? 'Unfollow' : 'Follow' }}
                                     </button>
                                 @endif
@@ -56,8 +62,8 @@
                         </div>
                     </div>
                 @empty
-                    <div class="alert">
-                        <span class="opacity-70">Not following anyone yet.</span>
+                    <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
+                        <div class="text-sm opacity-70">Not following anyone yet.</div>
                     </div>
                 @endforelse
             </div>
