@@ -12,9 +12,29 @@
         <aside class="lg:col-span-4">
             <div class="card bg-base-100 border lg:sticky lg:top-24">
                 <div class="card-body">
+                    <div class="flex items-center gap-3">
+                        <div class="avatar shrink-0">
+                            <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                                @if (auth()->user()->avatar_url)
+                                    <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                @else
+                                    <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                        {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-semibold truncate">{{ auth()->user()->name }}</div>
+                            <div class="text-sm opacity-70 truncate">&#64;{{ auth()->user()->username }}</div>
+                        </div>
+                    </div>
+
+                    <div class="divider my-3"></div>
+
                     <div class="font-semibold">Jump to</div>
 
-                    <ul class="menu menu-sm -mx-2 mt-2">
+                    <ul class="menu menu-sm mt-3 rounded-box border border-base-200 bg-base-200/40 p-2">
                         <li class="menu-title"><span>Account</span></li>
                         <li>
                             <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#profile-information">Profile information</a>

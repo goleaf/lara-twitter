@@ -11,7 +11,14 @@
                         placeholder="Search posts, people, hashtags"
                         wire:model="q"
                     />
-                    <button type="submit" class="btn btn-primary btn-sm join-item">Search</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm join-item"
+                        wire:loading.attr="disabled"
+                        wire:target="search"
+                    >
+                        Search
+                    </button>
                 </div>
             </form>
 
