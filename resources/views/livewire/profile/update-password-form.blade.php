@@ -36,17 +36,17 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Update Password') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
     </header>
 
-    <form wire:submit="updatePassword" class="mt-6 space-y-6">
+    <form wire:submit="updatePassword" class="mt-6 space-y-4">
         <div>
             <x-input-label for="update_password_current_password" :value="__('Current Password')" />
             <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full input-sm" autocomplete="current-password" />
@@ -65,7 +65,7 @@ new class extends Component
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="password-updated">

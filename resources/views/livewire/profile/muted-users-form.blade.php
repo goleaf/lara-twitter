@@ -35,12 +35,12 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Muted accounts') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __('Muted accounts can still follow and message you, but you will not see their posts in your timeline or post-related notifications.') }}
         </p>
     </header>
@@ -52,18 +52,18 @@ new class extends Component
                 @continue
             @endif
 
-            <div class="flex items-center justify-between gap-3 border rounded-box p-3 bg-base-100">
+            <div class="flex items-center justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="avatar">
-                            <div class="w-10 rounded-full border border-base-200 bg-base-100">
-                                @if ($user->avatar_url)
-                                    <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                @else
-                                    <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-                                        {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                            </div>
+                        <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                            @if ($user->avatar_url)
+                                <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                            @else
+                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                    {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="min-w-0">

@@ -39,12 +39,12 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Interests') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __('Used to prioritize trends and discovery (hashtags only).') }}
         </p>
     </header>
@@ -62,10 +62,10 @@ new class extends Component
                 autocomplete="off"
             />
             <x-input-error class="mt-2" :messages="$errors->get('interest_hashtags')" />
-            <div class="text-xs opacity-70 mt-1">Up to 20 tags. Letters/numbers/underscore only.</div>
+            <div class="mt-1 text-xs opacity-70">Up to 20 tags. Letters/numbers/underscore only.</div>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="interest-hashtags-updated">

@@ -41,14 +41,21 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">Pinned post</h2>
-        <p class="mt-1 text-sm opacity-70">Pin one of your posts to the top of your profile.</p>
+    <header class="space-y-1">
+        <div class="flex items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold text-base-content">{{ __('Pinned post') }}</h2>
+
+            @if ($pinned_post_id)
+                <span class="badge badge-outline">{{ __('Pinned') }} #{{ $pinned_post_id }}</span>
+            @endif
+        </div>
+
+        <p class="text-sm opacity-70">{{ __('Pin one of your posts to the top of your profile.') }}</p>
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-4">
         <div>
-            <x-input-label for="pinned_post_id" value="Post ID" />
+            <x-input-label for="pinned_post_id" :value="__('Post ID')" />
             <input
                 wire:model="pinned_post_id"
                 id="pinned_post_id"
@@ -63,10 +70,20 @@ new class extends Component
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
-            <x-primary-button>Save</x-primary-button>
-            <button type="button" wire:click="clear" class="btn btn-ghost btn-sm">Unpin</button>
-            <x-action-message class="me-3" on="pinned-post-updated">Saved.</x-action-message>
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+            <x-primary-button>{{ __('Save') }}</x-primary-button>
+
+            <button type="button" wire:click="clear" class="btn btn-ghost btn-sm" @disabled(! $pinned_post_id)>
+                {{ __('Unpin') }}
+            </button>
+
+            @if ($pinned_post_id)
+                <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', ['post' => $pinned_post_id]) }}" wire:navigate>
+                    {{ __('Open post') }}
+                </a>
+            @endif
+
+            <x-action-message class="me-3" on="pinned-post-updated">{{ __('Saved.') }}</x-action-message>
         </div>
     </form>
 </section>

@@ -93,53 +93,78 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
 
-    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
-        <div>
-            <x-input-label for="header" :value="__('Header image')" />
-            <input wire:model="header" id="header" name="header" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
-            <x-input-error class="mt-2" :messages="$errors->get('header')" />
-        </div>
+    @php
+        $user = auth()->user();
+        $headerPreviewUrl = $header ? $header->temporaryUrl() : $user->header_url;
+        $avatarPreviewUrl = $avatar ? $avatar->temporaryUrl() : $user->avatar_url;
+    @endphp
 
-        <div class="flex items-center gap-4">
-            <div class="avatar">
-                    <div class="w-16 rounded-full">
-                        @if (auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+        <div class="rounded-box border border-base-200 overflow-hidden">
+            @if ($headerPreviewUrl)
+                <div class="h-28 sm:h-32 bg-cover bg-center bg-base-200" style="background-image: url('{{ $headerPreviewUrl }}')">
+                    <div class="h-full w-full bg-gradient-to-t from-base-100/90 via-base-100/20 to-transparent"></div>
+                </div>
+            @else
+                <div class="h-28 sm:h-32 bg-gradient-to-r from-primary/15 via-accent/10 to-secondary/10"></div>
+            @endif
+
+            <div class="-mt-10 px-4 pb-4 flex items-end gap-4">
+                <div class="avatar">
+                    <div class="w-20 rounded-full border border-base-200 bg-base-100 ring-4 ring-base-100 shadow-sm">
+                        @if ($avatarPreviewUrl)
+                            <img src="{{ $avatarPreviewUrl }}" alt="" loading="lazy" decoding="async" />
                         @else
-                            <div class="bg-base-200 grid place-items-center h-full w-full text-lg font-semibold">
-                                {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                            <div class="bg-base-200 grid place-items-center h-full w-full text-xl font-semibold">
+                                {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
                             </div>
                         @endif
+                    </div>
+                </div>
+
+                <div class="min-w-0">
+                    <div class="font-semibold truncate">{{ $user->name }}</div>
+                    <div class="text-sm opacity-70 truncate">&#64;{{ $user->username }}</div>
                 </div>
             </div>
+        </div>
 
-            <div class="w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="header" :value="__('Header image')" />
+                <input wire:model="header" id="header" name="header" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
+                <x-input-error class="mt-2" :messages="$errors->get('header')" />
+            </div>
+
+            <div>
                 <x-input-label for="avatar" :value="__('Avatar')" />
                 <input wire:model="avatar" id="avatar" name="avatar" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
                 <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
         </div>
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full input-sm" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="name" :value="__('Name')" />
+                <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full input-sm" required autofocus autocomplete="name" />
+                <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            </div>
 
-        <div>
-            <x-input-label for="username" :value="__('Username')" />
-            <x-text-input wire:model="username" id="username" name="username" type="text" class="mt-1 block w-full input-sm" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('username')" />
+            <div>
+                <x-input-label for="username" :value="__('Username')" />
+                <x-text-input wire:model="username" id="username" name="username" type="text" class="mt-1 block w-full input-sm" required autocomplete="username" />
+                <x-input-error class="mt-2" :messages="$errors->get('username')" />
+            </div>
         </div>
 
         <div>
@@ -147,21 +172,25 @@ new class extends Component
             <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full input-sm" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2">
-                        {{ __('Your email address is unverified.') }}
-
+            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                <div class="mt-3 alert alert-warning">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.401 3.003a3 3 0 0 1 5.198 0l7.355 12.747A3 3 0 0 1 19.355 20H4.645a3 3 0 0 1-2.599-4.25L9.401 3.003ZM12 8.25a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold">{{ __('Your email address is unverified.') }}</div>
                         <button wire:click.prevent="sendVerification" class="link link-primary text-sm">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
-                    </p>
 
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-success">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+                        @if (session('status') === 'verification-link-sent')
+                            <div class="mt-2">
+                                <span class="badge badge-success badge-sm">
+                                    {{ __('A new verification link has been sent to your email address.') }}
+                                </span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>
@@ -172,35 +201,39 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
-        <div>
-            <x-input-label for="location" :value="__('Location')" />
-            <x-text-input wire:model="location" id="location" name="location" type="text" class="mt-1 block w-full input-sm" autocomplete="off" />
-            <x-input-error class="mt-2" :messages="$errors->get('location')" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="location" :value="__('Location')" />
+                <x-text-input wire:model="location" id="location" name="location" type="text" class="mt-1 block w-full input-sm" autocomplete="off" />
+                <x-input-error class="mt-2" :messages="$errors->get('location')" />
+            </div>
+
+            <div>
+                <x-input-label for="website" :value="__('Website')" />
+                <x-text-input wire:model="website" id="website" name="website" type="url" class="mt-1 block w-full input-sm" placeholder="https://example.com" autocomplete="off" />
+                <x-input-error class="mt-2" :messages="$errors->get('website')" />
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="website" :value="__('Website')" />
-            <x-text-input wire:model="website" id="website" name="website" type="url" class="mt-1 block w-full input-sm" placeholder="https://example.com" autocomplete="off" />
-            <x-input-error class="mt-2" :messages="$errors->get('website')" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="birth_date" :value="__('Birth date')" />
+                <input wire:model="birth_date" id="birth_date" name="birth_date" type="date" class="input input-bordered input-sm mt-1 block w-full" />
+                <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
+            </div>
+
+            <div>
+                <x-input-label for="birth_date_visibility" :value="__('Birth date visibility')" />
+                <select wire:model="birth_date_visibility" id="birth_date_visibility" class="select select-bordered select-sm w-full mt-1">
+                    <option value="{{ \App\Models\User::BIRTH_DATE_PUBLIC }}">Public</option>
+                    <option value="{{ \App\Models\User::BIRTH_DATE_FOLLOWERS }}">Followers</option>
+                    <option value="{{ \App\Models\User::BIRTH_DATE_PRIVATE }}">Only you</option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('birth_date_visibility')" />
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="birth_date" :value="__('Birth date')" />
-            <input wire:model="birth_date" id="birth_date" name="birth_date" type="date" class="input input-bordered input-sm mt-1 block w-full" />
-            <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
-        </div>
-
-        <div>
-            <x-input-label for="birth_date_visibility" :value="__('Birth date visibility')" />
-            <select wire:model="birth_date_visibility" id="birth_date_visibility" class="select select-bordered select-sm w-full mt-1">
-                <option value="{{ \App\Models\User::BIRTH_DATE_PUBLIC }}">Public</option>
-                <option value="{{ \App\Models\User::BIRTH_DATE_FOLLOWERS }}">Followers</option>
-                <option value="{{ \App\Models\User::BIRTH_DATE_PRIVATE }}">Only you</option>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('birth_date_visibility')" />
-        </div>
-
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="profile-updated">

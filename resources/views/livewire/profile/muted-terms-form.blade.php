@@ -77,12 +77,12 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Muted words') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __('Hide posts containing specific words, phrases, or #hashtags. Applies to your timeline and (optionally) notifications.') }}
         </p>
     </header>
@@ -116,29 +116,32 @@ new class extends Component
             </div>
         </div>
 
-        <div class="divider my-2"></div>
+        <div class="space-y-2">
+            <div class="font-semibold text-sm">{{ __('Options') }}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_timeline" />
+                    <span class="text-sm">{{ __('Mute in timeline') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_timeline" />
-            <span class="text-sm">{{ __('Mute in timeline') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_notifications" />
+                    <span class="text-sm">{{ __('Mute in notifications') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_notifications" />
-            <span class="text-sm">{{ __('Mute in notifications') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="whole_word" />
+                    <span class="text-sm">{{ __('Whole word (best effort)') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="whole_word" />
-            <span class="text-sm">{{ __('Whole word (best effort)') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_non_followed" />
+                    <span class="text-sm">{{ __('Only apply to people you do not follow') }}</span>
+                </label>
+            </div>
+        </div>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_non_followed" />
-            <span class="text-sm">{{ __('Only apply to people you do not follow') }}</span>
-        </label>
-
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>{{ __('Add') }}</x-primary-button>
 
             <x-action-message class="me-3" on="muted-terms-updated">
@@ -151,7 +154,7 @@ new class extends Component
 
     <div class="space-y-2">
         @forelse ($this->mutedTerms as $row)
-            <div class="flex items-start justify-between gap-3 border rounded-box p-3 bg-base-100">
+            <div class="flex items-start justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40">
                 <div class="min-w-0">
                     <div class="font-semibold truncate">{{ $row->term }}</div>
                     <div class="text-xs opacity-70">

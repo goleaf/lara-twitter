@@ -27,7 +27,7 @@ new class extends Component
 
 <section>
     <header class="space-y-1">
-        <h2 class="text-lg font-medium text-base-content">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Analytics') }}
         </h2>
 
