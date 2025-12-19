@@ -23,6 +23,9 @@ class SearchPage extends Component
     public string $type = 'all';
 
     #[Url]
+    public string $sort = 'latest';
+
+    #[Url]
     public string $user = '';
 
     #[Url]
@@ -41,6 +44,7 @@ class SearchPage extends Component
         $this->validate(SearchRequest::rulesFor());
 
         $this->type = $this->normalizedType();
+        $this->sort = $this->normalizedSort();
         $this->q = trim($this->q);
         $this->user = trim($this->user);
     }
@@ -53,6 +57,11 @@ class SearchPage extends Component
     private function normalizedQuery(): string
     {
         return trim($this->q);
+    }
+
+    private function normalizedSort(): string
+    {
+        return in_array($this->sort, ['latest', 'top'], true) ? $this->sort : 'latest';
     }
 
     private function normalizedUsernameFilter(): ?string
@@ -78,6 +87,166 @@ class SearchPage extends Component
         }
 
         return [$from, $to];
+    }
+
+    /**
+     * @return array{
+     *   from_user: ?string,
+     *   to_user: ?string,
+     *   since: ?\Carbon\CarbonImmutable,
+     *   until: ?\Carbon\CarbonImmutable,
+     *   min_likes: ?int,
+     *   min_reposts: ?int,
+     *   has_images: bool,
+     *   has_links: bool,
+     *   sort: ?string,
+     *   terms: array<int, string>,
+     *   phrases: array<int, string>,
+     *   exclude: array<int, string>,
+     *   tags: array<int, string>,
+     *   mentions: array<int, string>,
+     * }
+     */
+    private function parseOperators(string $raw): array
+    {
+        $q = trim($raw);
+
+        $phrases = [];
+        if ($q !== '') {
+            $q = preg_replace_callback('/"([^"]+)"/', function (array $m) use (&$phrases) {
+                $phrase = trim($m[1]);
+                if ($phrase !== '') {
+                    $phrases[] = $phrase;
+                }
+                return ' ';
+            }, $q) ?? $q;
+        }
+
+        $tokens = $q === '' ? [] : preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY);
+
+        $fromUser = null;
+        $toUser = null;
+        $since = null;
+        $until = null;
+        $minLikes = null;
+        $minReposts = null;
+        $hasImages = false;
+        $hasLinks = false;
+        $sort = null;
+
+        $terms = [];
+        $exclude = [];
+        $tags = [];
+        $mentions = [];
+
+        foreach ($tokens as $token) {
+            $negated = str_starts_with($token, '-');
+            $t = $negated ? substr($token, 1) : $token;
+
+            if ($t === '') {
+                continue;
+            }
+
+            if (preg_match('/^from:([A-Za-z0-9_]{1,30})$/i', $t, $m)) {
+                $fromUser = mb_strtolower($m[1]);
+                continue;
+            }
+
+            if (preg_match('/^to:([A-Za-z0-9_]{1,30})$/i', $t, $m)) {
+                $toUser = mb_strtolower($m[1]);
+                continue;
+            }
+
+            if (preg_match('/^since:(\d{4}-\d{2}-\d{2})$/', $t, $m)) {
+                try {
+                    $since = CarbonImmutable::parse($m[1])->startOfDay();
+                } catch (\Throwable) {
+                    $since = null;
+                }
+                continue;
+            }
+
+            if (preg_match('/^until:(\d{4}-\d{2}-\d{2})$/', $t, $m)) {
+                try {
+                    $until = CarbonImmutable::parse($m[1])->endOfDay();
+                } catch (\Throwable) {
+                    $until = null;
+                }
+                continue;
+            }
+
+            if (preg_match('/^min_(?:likes|faves):(\d+)$/', $t, $m)) {
+                $minLikes = (int) $m[1];
+                continue;
+            }
+
+            if (preg_match('/^min_(?:retweets|reposts):(\d+)$/', $t, $m)) {
+                $minReposts = (int) $m[1];
+                continue;
+            }
+
+            if (preg_match('/^has:(images|media)$/i', $t)) {
+                $hasImages = true;
+                continue;
+            }
+
+            if (preg_match('/^has:links$/i', $t)) {
+                $hasLinks = true;
+                continue;
+            }
+
+            if (preg_match('/^sort:(latest|top)$/i', $t, $m)) {
+                $sort = mb_strtolower($m[1]);
+                continue;
+            }
+
+            if (str_starts_with($t, '#')) {
+                $tag = mb_strtolower(ltrim($t, '#'));
+                if ($tag !== '') {
+                    if ($negated) {
+                        $exclude[] = '#'.$tag;
+                    } else {
+                        $tags[] = $tag;
+                    }
+                }
+                continue;
+            }
+
+            if (str_starts_with($t, '@')) {
+                $mention = mb_strtolower(ltrim($t, '@'));
+                if ($mention !== '') {
+                    if ($negated) {
+                        $exclude[] = '@'.$mention;
+                    } else {
+                        $mentions[] = $mention;
+                    }
+                }
+                continue;
+            }
+
+            if ($negated) {
+                $exclude[] = $t;
+            } else {
+                $terms[] = $t;
+            }
+        }
+
+        return [
+            'from_user' => $fromUser,
+            'to_user' => $toUser,
+            'since' => $since,
+            'until' => $until,
+            'min_likes' => $minLikes,
+            'min_reposts' => $minReposts,
+            'has_images' => $hasImages,
+            'has_links' => $hasLinks,
+            'sort' => $sort,
+            'terms' => $terms,
+            'phrases' => $phrases,
+            'exclude' => $exclude,
+            'tags' => array_values(array_unique($tags)),
+            'mentions' => array_values(array_unique($mentions)),
+        ];
     }
 
     public function getTrendingHashtagsProperty()
@@ -147,8 +316,14 @@ class SearchPage extends Component
             return null;
         }
 
+        $ops = $this->parseOperators($this->normalizedQuery());
+
         [$from, $to] = $this->parsedDates();
-        $username = $this->normalizedUsernameFilter();
+        $from = $from ?? $ops['since'];
+        $to = $to ?? $ops['until'];
+
+        $username = $this->normalizedUsernameFilter() ?? $ops['from_user'];
+        $effectiveSort = in_array($ops['sort'], ['latest', 'top'], true) ? $ops['sort'] : $this->normalizedSort();
 
         $query = Post::query()
             ->whereNull('reply_to_id')
@@ -175,23 +350,76 @@ class SearchPage extends Component
             $query->where('created_at', '<=', $to);
         }
 
-        $q = $this->normalizedQuery();
-        if ($q !== '') {
-            if (str_starts_with($q, '@')) {
-                $mention = mb_strtolower(ltrim($q, '@'));
-                $mentionedUserId = User::query()->where('username', $mention)->value('id');
-                if ($mentionedUserId) {
-                    $query->whereHas('mentions', fn ($mq) => $mq->where('mentioned_user_id', $mentionedUserId));
-                } else {
-                    $query->whereRaw('1 = 0');
-                }
-            } elseif (str_starts_with($q, '#')) {
-                $tag = mb_strtolower(ltrim($q, '#'));
-                $query->whereHas('hashtags', fn ($hq) => $hq->where('tag', $tag));
+        if ($ops['has_images']) {
+            $query->whereHas('images');
+        }
+
+        if ($ops['has_links']) {
+            $query->where(function ($q) {
+                $q->whereRaw('lower(body) like ?', ['%http://%'])
+                    ->orWhereRaw('lower(body) like ?', ['%https://%']);
+            });
+        }
+
+        if ($ops['min_likes'] !== null) {
+            $query->whereRaw('(select count(*) from likes where likes.post_id = posts.id) >= ?', [$ops['min_likes']]);
+        }
+
+        if ($ops['min_reposts'] !== null) {
+            $query->whereRaw('(select count(*) from posts as rp where rp.repost_of_id = posts.id and rp.reply_to_id is null) >= ?', [$ops['min_reposts']]);
+        }
+
+        if ($ops['to_user']) {
+            $mentionedUserId = User::query()->where('username', $ops['to_user'])->value('id');
+            if ($mentionedUserId) {
+                $query->whereHas('mentions', fn ($mq) => $mq->where('mentioned_user_id', $mentionedUserId));
             } else {
-                $needle = '%'.mb_strtolower($q).'%';
-                $query->whereRaw('lower(body) like ?', [$needle]);
+                $query->whereRaw('1 = 0');
             }
+        }
+
+        foreach ($ops['mentions'] as $mention) {
+            $mentionedUserId = User::query()->where('username', $mention)->value('id');
+            if (! $mentionedUserId) {
+                return $query->whereRaw('1 = 0')->paginate(15);
+            }
+
+            $query->whereHas('mentions', fn ($mq) => $mq->where('mentioned_user_id', $mentionedUserId));
+        }
+
+        foreach ($ops['tags'] as $tag) {
+            $query->whereHas('hashtags', fn ($hq) => $hq->where('tag', $tag));
+        }
+
+        $needles = [];
+        foreach (array_merge($ops['terms'], $ops['phrases']) as $term) {
+            $t = trim($term);
+            if ($t === '') {
+                continue;
+            }
+
+            $needles[] = '%'.mb_strtolower($t).'%';
+        }
+
+        foreach ($needles as $needle) {
+            $query->whereRaw('lower(body) like ?', [$needle]);
+        }
+
+        foreach ($ops['exclude'] as $term) {
+            $t = trim($term);
+            if ($t === '') {
+                continue;
+            }
+
+            $needle = '%'.mb_strtolower($t).'%';
+            $query->whereRaw('lower(body) not like ?', [$needle]);
+        }
+
+        if ($effectiveSort === 'top') {
+            return $query
+                ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
+                ->orderByDesc('created_at')
+                ->paginate(15);
         }
 
         return $query->latest()->paginate(15);

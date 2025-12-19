@@ -19,6 +19,11 @@
                         <option value="tags">Hashtags</option>
                     </select>
 
+                    <select class="select select-bordered w-full" wire:model.live="sort">
+                        <option value="latest">Latest</option>
+                        <option value="top">Top</option>
+                    </select>
+
                     <input
                         class="input input-bordered w-full"
                         type="text"
@@ -31,7 +36,7 @@
                 </div>
 
                 <div class="text-xs opacity-70">
-                    Tips: try `#laravel` (tag), `@alice` (mentions), or plain keywords. Location filters aren’t supported yet.
+                    Tips: `from:alice`, `to:alice`, `since:2025-01-01`, `until:2025-01-31`, `min_likes:10`, `min_retweets:5`, `has:images`, `has:links`, `\"exact phrase\"`, `-exclude`.
                 </div>
             </div>
         </div>
