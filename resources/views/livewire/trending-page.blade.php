@@ -41,7 +41,9 @@
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
                         @empty
-                            <div class="opacity-70 text-sm">No keywords yet.</div>
+                            <x-empty-state>
+                                No keywords yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>
@@ -60,7 +62,9 @@
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
                         @empty
-                            <div class="opacity-70 text-sm">No topics yet.</div>
+                            <x-empty-state>
+                                No topics yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>
@@ -70,11 +74,9 @@
                 @forelse ($this->trendingConversations as $post)
                     <livewire:post-card :post="$post" :key="$post->id" />
                 @empty
-                    <div class="card bg-base-100 border">
-                        <div class="card-body">
-                            <div class="opacity-70 text-sm">No conversations yet.</div>
-                        </div>
-                    </div>
+                    <x-empty-state>
+                        No conversations yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         @else
@@ -100,7 +102,9 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="opacity-70 text-sm">No hashtags yet.</div>
+                            <x-empty-state>
+                                No hashtags yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>
