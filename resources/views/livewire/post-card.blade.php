@@ -461,13 +461,13 @@
                 <span class="badge badge-sm {{ $likesBadge }} tabular-nums">{{ $likesCount }}</span>
             </a>
 
-                <button
-                    wire:click="toggleBookmark"
-                    wire:loading.attr="disabled"
-                    wire:target="toggleBookmark"
-                    class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
-                    @disabled(!auth()->check())
-                    aria-label="Bookmark"
+            <button
+                wire:click="toggleBookmark"
+                wire:loading.attr="disabled"
+                wire:target="toggleBookmark"
+                class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="Bookmark"
                 title="{{ $this->hasBookmarked() ? 'Remove bookmark' : 'Bookmark' }}"
                 aria-pressed="{{ $this->hasBookmarked() ? 'true' : 'false' }}"
             >
@@ -508,13 +508,13 @@
                         <div class="text-sm opacity-60">No replies yet.</div>
                     @endif
 
-                        <div class="flex items-center justify-between gap-2">
-                            <a class="link link-primary text-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>
-                                View full thread
-                            </a>
-                            <button type="button" wire:click="hideThread" wire:loading.attr="disabled" wire:target="hideThread" class="btn btn-ghost btn-xs">Hide</button>
-                        </div>
-                    @endif
+                    <div class="flex items-center justify-between gap-2">
+                        <a class="link link-primary text-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>
+                            View full thread
+                        </a>
+                        <button type="button" wire:click="hideThread" wire:loading.attr="disabled" wire:target="hideThread" class="btn btn-ghost btn-xs">Hide</button>
+                    </div>
+                @endif
                 </div>
             @endif
 
@@ -535,13 +535,13 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('quote_body')" />
                             </div>
 
-                                <div class="flex justify-end gap-2">
-                                    <button type="button" wire:click="cancelQuote" wire:loading.attr="disabled" wire:target="cancelQuote" class="btn btn-ghost btn-sm">Cancel</button>
-                                    <button type="submit" wire:loading.attr="disabled" wire:target="quoteRepost" class="btn btn-primary btn-sm">Post</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" wire:click="cancelQuote" wire:loading.attr="disabled" wire:target="cancelQuote" class="btn btn-ghost btn-sm">Cancel</button>
+                                <button type="submit" wire:loading.attr="disabled" wire:target="quoteRepost" class="btn btn-primary btn-sm">Post</button>
+                            </div>
+                        </form>
                     </div>
+                </div>
             </div>
         @endif
             </div>
