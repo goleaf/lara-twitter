@@ -131,14 +131,14 @@
                                 <div class="font-semibold truncate">{{ $moment->title }}</div>
                                 <div class="flex items-center gap-2 text-xs opacity-60 min-w-0">
                                     <div class="avatar shrink-0">
-                                    <div class="w-6 rounded-full border border-base-200 bg-base-100">
-                                        @if ($moment->owner->avatar_url)
-                                            <img src="{{ $moment->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                        @else
-                                            <div class="bg-base-200 grid place-items-center h-full w-full text-[10px] font-semibold">
-                                                {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
-                                            </div>
-                                        @endif
+                                        <div class="w-6 rounded-full border border-base-200 bg-base-100">
+                                            @if ($moment->owner->avatar_url)
+                                                <img src="{{ $moment->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                            @else
+                                                <div class="bg-base-200 grid place-items-center h-full w-full text-[10px] font-semibold">
+                                                    {{ mb_strtoupper(mb_substr($moment->owner->name, 0, 1)) }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="truncate min-w-0">
