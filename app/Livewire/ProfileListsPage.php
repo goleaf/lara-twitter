@@ -29,7 +29,7 @@ class ProfileListsPage extends Component
             ->where('is_private', false)
             ->whereHas('members', fn ($q) => $q->where('users.id', $this->user->id))
             ->with('owner')
-            ->withCount('members')
+            ->withCount(['members', 'subscribers'])
             ->latest()
             ->paginate(20);
     }
@@ -39,4 +39,3 @@ class ProfileListsPage extends Component
         return view('livewire.profile-lists-page')->layout('layouts.app');
     }
 }
-

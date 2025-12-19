@@ -40,7 +40,8 @@ class ListsPage extends Component
     {
         return Auth::user()
             ->listsOwned()
-            ->withCount('members')
+            ->with('owner')
+            ->withCount(['members', 'subscribers'])
             ->latest()
             ->get();
     }
@@ -51,7 +52,7 @@ class ListsPage extends Component
             ->listsMemberOf()
             ->where('user_lists.is_private', false)
             ->with('owner')
-            ->withCount('members')
+            ->withCount(['members', 'subscribers'])
             ->latest()
             ->get();
     }
@@ -61,7 +62,7 @@ class ListsPage extends Component
         return Auth::user()
             ->listsSubscribed()
             ->with('owner')
-            ->withCount('members')
+            ->withCount(['members', 'subscribers'])
             ->latest('user_list_subscriptions.created_at')
             ->get();
     }
