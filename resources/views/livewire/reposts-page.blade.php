@@ -58,7 +58,12 @@
                                 </div>
 
                                 <div class="min-w-0">
-                                    <div class="font-semibold truncate">{{ $user->name }}</div>
+                                    <div class="font-semibold truncate">
+                                        {{ $user->name }}
+                                        @if ($user->is_verified)
+                                            <x-verified-icon class="ms-1 align-middle" />
+                                        @endif
+                                    </div>
                                     <div class="text-xs opacity-60 truncate">&#64;{{ $user->username }}</div>
                                 </div>
                             </div>
