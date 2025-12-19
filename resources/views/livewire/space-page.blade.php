@@ -98,6 +98,30 @@
             </div>
 
             @auth
+                @if ($participant && $participant->left_at === null && ! $space->isEnded())
+                    <div class="pt-2" wire:poll.5s>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="text-sm opacity-70">Reactions</div>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👍')">👍</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('❤️')">❤️</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😂')">😂</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👏')">👏</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🔥')">🔥</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🎉')">🎉</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😮')">😮</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😢')">😢</button>
+
+                            @if ($this->reactionCounts->isNotEmpty())
+                                <div class="flex flex-wrap items-center gap-1">
+                                    @foreach ($this->reactionCounts as $r)
+                                        <span class="badge badge-ghost">{{ $r->emoji }} {{ $r->count }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
                 @if ($participant && $participant->left_at === null && $participant->role === 'listener' && ! $space->isEnded())
                     <div class="flex items-center gap-2 pt-2">
                         <button class="btn btn-outline btn-sm" wire:click="requestToSpeak">Request to speak</button>

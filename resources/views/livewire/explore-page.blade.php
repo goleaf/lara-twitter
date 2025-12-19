@@ -89,6 +89,34 @@
                     </div>
                 @endif
 
+                @if ($this->trendingConversations->isNotEmpty())
+                    <div class="card bg-base-100 border">
+                        <div class="card-body">
+                            <div class="font-semibold">Trending conversations</div>
+                            <div class="space-y-2 pt-2">
+                                @foreach ($this->trendingConversations as $post)
+                                    @php($primary = $post->repostOf && $post->body === '' ? $post->repostOf : $post)
+                                    <a
+                                        class="block rounded-box bg-base-200 border border-base-200 hover:border-base-300 transition px-3 py-3"
+                                        href="{{ route('posts.show', ['post' => $primary]) }}"
+                                        wire:navigate
+                                    >
+                                        <div class="text-xs opacity-70 truncate">
+                                            {{ $primary->user->name }} · &#64;{{ $primary->user->username }}
+                                        </div>
+                                        <div class="font-medium pt-1">
+                                            {{ \Illuminate\Support\Str::limit($primary->body, 140) }}
+                                        </div>
+                                        <div class="text-xs opacity-60 pt-1">
+                                            {{ $primary->created_at->diffForHumans() }}
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="card bg-base-100 border">
                     <div class="card-body">
                         <div class="font-semibold">Trending hashtags (24h)</div>
@@ -112,7 +140,12 @@
                             @forelse ($this->trendingKeywords as $row)
                                 <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
                                     <div class="font-medium">{{ $row['keyword'] }}</div>
-                                    <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                                    <div class="text-right">
+                                        <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                                        @if ((int) ($row['recent_count'] ?? 0) > 0)
+                                            <div class="text-xs opacity-60">{{ (int) $row['recent_count'] }} last hour</div>
+                                        @endif
+                                    </div>
                                 </a>
                             @empty
                                 <div class="opacity-70 text-sm">No keywords yet.</div>
@@ -197,6 +230,8 @@
                                         <div class="text-xs opacity-60 truncate">
                                             {{ $u->mutual_count }} mutual follow{{ $u->mutual_count === 1 ? '' : 's' }}
                                         </div>
+                                    @elseif (($u->interest_posts_count ?? 0) > 0)
+                                        <div class="text-xs opacity-60 truncate">Based on your interests</div>
                                     @elseif (! is_null($u->followers_count ?? null))
                                         <div class="text-xs opacity-60 truncate">
                                             {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}

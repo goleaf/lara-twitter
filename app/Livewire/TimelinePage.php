@@ -208,6 +208,29 @@ class TimelinePage extends Component
             ->get();
     }
 
+    public function getUpcomingSpacesProperty()
+    {
+        if (! Auth::check()) {
+            return collect();
+        }
+
+        $viewer = Auth::user();
+        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id);
+        $exclude = $viewer->excludedUserIds();
+
+        return Space::query()
+            ->whereNull('started_at')
+            ->whereNull('ended_at')
+            ->whereNotNull('scheduled_for')
+            ->where('scheduled_for', '>=', now())
+            ->whereIn('host_user_id', $followingIds)
+            ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
+            ->with(['host'])
+            ->orderBy('scheduled_for')
+            ->limit(8)
+            ->get();
+    }
+
     private function normalizedViewerLocation(): ?string
     {
         if (! Auth::check()) {

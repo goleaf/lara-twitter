@@ -68,6 +68,17 @@ class ExploreTest extends TestCase
         $response->assertOk()->assertSee('New')->assertDontSee('Matchday');
     }
 
+    public function test_explore_politics_category_shows_matching_posts(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Debate #politics']);
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Matchday #sports']);
+
+        $response = $this->get(route('explore', ['tab' => 'politics']));
+        $response->assertOk()->assertSee('Debate')->assertDontSee('Matchday');
+    }
+
     public function test_recommended_accounts_suggests_mutual_follow_graph(): void
     {
         $viewer = User::factory()->create(['username' => 'viewer']);

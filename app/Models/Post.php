@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,6 +19,10 @@ class Post extends Model
     public const REPLY_MENTIONED = 'mentioned';
     public const REPLY_NONE = 'none';
 
+    protected $attributes = [
+        'is_published' => true,
+    ];
+
     protected $fillable = [
         'user_id',
         'reply_to_id',
@@ -25,6 +30,9 @@ class Post extends Model
         'reply_policy',
         'is_reply_like',
         'body',
+        'location',
+        'is_published',
+        'scheduled_for',
         'video_path',
         'video_mime_type',
     ];
@@ -33,7 +41,16 @@ class Post extends Model
     {
         return [
             'is_reply_like' => 'boolean',
+            'is_published' => 'boolean',
+            'scheduled_for' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('published', function (Builder $builder): void {
+            $builder->where('is_published', true);
+        });
     }
 
     public static function replyPolicies(): array
