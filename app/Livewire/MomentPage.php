@@ -6,7 +6,6 @@ use App\Http\Requests\Moments\AddMomentItemRequest;
 use App\Http\Requests\Moments\UpdateMomentRequest;
 use App\Models\Moment;
 use App\Models\MomentItem;
-use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
