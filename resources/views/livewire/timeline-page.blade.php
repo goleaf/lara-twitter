@@ -30,12 +30,29 @@
                             <div class="flex gap-2 overflow-x-auto pt-2 pb-1">
                                 @foreach ($this->liveSpaces as $space)
                                     <a
-                                        class="shrink-0 rounded-full bg-secondary text-secondary-content px-4 py-2 border border-secondary/30 hover:opacity-90 transition max-w-[18rem]"
+                                        class="shrink-0 flex items-center gap-3 rounded-full bg-base-100 border border-base-200 px-3 py-2 hover:bg-base-200/70 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 max-w-[20rem]"
                                         href="{{ route('spaces.show', $space) }}"
                                         wire:navigate
                                     >
-                                        <div class="text-xs opacity-80">Live &middot; &#64;{{ $space->host->username }}</div>
-                                        <div class="font-semibold truncate">{{ $space->title }}</div>
+                                        <div class="avatar shrink-0">
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($space->host->avatar_url)
+                                                    <img src="{{ $space->host->avatar_url }}" alt="" />
+                                                @else
+                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                        {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="badge badge-primary badge-sm">Live</span>
+                                                <div class="text-xs opacity-60 truncate">&#64;{{ $space->host->username }}</div>
+                                            </div>
+                                            <div class="font-semibold truncate">{{ $space->title }}</div>
+                                        </div>
                                     </a>
                                 @endforeach
                             </div>
@@ -85,7 +102,7 @@
 
                     <div class="space-y-1 pt-3">
                         @forelse ($this->trendingHashtags as $tag)
-                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
                                 <div class="font-medium">#{{ $tag->tag }}</div>
                                 <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
                             </a>
@@ -98,7 +115,7 @@
 
                     <div class="space-y-1">
                         @forelse ($this->trendingKeywords as $row)
-                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                            <a class="flex items-center justify-between hover:bg-base-200/70 transition rounded-box px-2 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
                                 <div class="font-medium">{{ $row['keyword'] }}</div>
                                 <div class="text-sm opacity-60">{{ $row['count'] }}</div>
                             </a>
