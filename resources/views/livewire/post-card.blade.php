@@ -227,7 +227,7 @@
                 wire:click="toggleLike"
                 class="btn btn-ghost btn-sm {{ $this->hasLiked() ? 'text-error' : '' }}"
                 @disabled(!auth()->check())
-                aria-label="Like"
+                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
             >
