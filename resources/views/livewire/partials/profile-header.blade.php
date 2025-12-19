@@ -1,6 +1,8 @@
 <div class="card bg-base-100 border overflow-hidden">
     @if ($user->header_url)
-        <div class="h-32 sm:h-40 bg-cover bg-center" style="background-image: url('{{ $user->header_url }}')"></div>
+        <div class="h-32 sm:h-40 bg-cover bg-center bg-base-200" style="background-image: url('{{ $user->header_url }}')">
+            <div class="h-full w-full bg-gradient-to-t from-base-100/90 via-base-100/20 to-transparent"></div>
+        </div>
     @else
         <div class="h-32 sm:h-40 bg-gradient-to-r from-primary/15 via-accent/10 to-secondary/10"></div>
     @endif
@@ -9,9 +11,9 @@
         <div class="-mt-12 flex items-end justify-between gap-4">
             <div class="flex items-end gap-3">
                 <div class="avatar">
-                    <div class="w-20 rounded-full border border-base-200 bg-base-100">
+                    <div class="w-20 rounded-full border border-base-200 bg-base-100 ring-4 ring-white shadow-sm">
                         @if ($user->avatar_url)
-                            <img src="{{ $user->avatar_url }}" alt="" />
+                            <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
                         @else
                             <div class="bg-base-200 grid place-items-center h-full w-full text-xl font-semibold">
                                 {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
@@ -72,36 +74,51 @@
         </div>
 
         @if ($user->bio)
-            <div class="pt-3">{{ $user->bio }}</div>
+            <div class="pt-3 text-sm leading-relaxed">{{ $user->bio }}</div>
         @endif
 
-        <div class="pt-3 flex flex-wrap gap-3 text-sm opacity-70">
+        <div class="pt-4 flex flex-wrap gap-2">
             @if ($user->location)
-                <span>{{ $user->location }}</span>
+                <span class="badge badge-ghost badge-sm">{{ $user->location }}</span>
             @endif
 
             @if ($user->website)
-                <a class="link link-hover" href="{{ $user->website }}" target="_blank" rel="noreferrer">
+                <a class="badge badge-outline badge-sm" href="{{ $user->website }}" target="_blank" rel="noreferrer">
                     {{ preg_replace('#^https?://#', '', $user->website) }}
                 </a>
             @endif
 
-            <span>Joined {{ $user->created_at->format('M Y') }}</span>
+            <span class="badge badge-ghost badge-sm">Joined {{ $user->created_at->format('M Y') }}</span>
 
             @if ($user->birth_date && $user->canShowBirthDateTo(auth()->user()))
-                <span>Born {{ $user->birth_date->format('M j, Y') }}</span>
+                <span class="badge badge-ghost badge-sm">Born {{ $user->birth_date->format('M j, Y') }}</span>
             @endif
         </div>
 
-        <div class="pt-3 flex gap-2 text-sm opacity-70">
-            <a class="link link-hover" href="{{ route('profile.followers', ['user' => $user]) }}" wire:navigate>
-                {{ $user->followers_count }} followers
+        <div class="pt-4 grid grid-cols-3 gap-2">
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.followers', ['user' => $user]) }}"
+                wire:navigate
+            >
+                <div class="font-semibold leading-none">{{ $user->followers_count }}</div>
+                <div class="text-xs opacity-70">followers</div>
             </a>
-            <a class="link link-hover" href="{{ route('profile.following', ['user' => $user]) }}" wire:navigate>
-                {{ $user->following_count }} following
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.following', ['user' => $user]) }}"
+                wire:navigate
+            >
+                <div class="font-semibold leading-none">{{ $user->following_count }}</div>
+                <div class="text-xs opacity-70">following</div>
             </a>
-            <a class="link link-hover" href="{{ route('profile.lists', ['user' => $user]) }}" wire:navigate>
-                {{ $this->listsCount }} lists
+            <a
+                class="rounded-box border border-base-200 bg-base-200/40 px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                href="{{ route('profile.lists', ['user' => $user]) }}"
+                wire:navigate
+            >
+                <div class="font-semibold leading-none">{{ $this->listsCount }}</div>
+                <div class="text-xs opacity-70">lists</div>
             </a>
         </div>
 
