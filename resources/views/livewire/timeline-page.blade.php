@@ -1,10 +1,10 @@
 <div class="max-w-5xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 space-y-4">
-	            <div class="tabs tabs-boxed">
-	                <a
-	                    class="tab {{ $feed === 'following' ? 'tab-active' : '' }}"
-	                    href="{{ route('timeline', ['feed' => 'following']) }}"
+                <div class="tabs tabs-boxed">
+                    <a
+                        class="tab {{ $feed === 'following' ? 'tab-active' : '' }}"
+                        href="{{ route('timeline', ['feed' => 'following']) }}"
                     wire:navigate
                 >
                     Following
@@ -28,12 +28,12 @@
                             </div>
 
                             <div class="flex gap-2 overflow-x-auto pt-2 pb-1">
-	                                @foreach ($this->liveSpaces as $space)
-	                                    <a
-	                                        class="shrink-0 flex items-center gap-3 rounded-full bg-base-100 border border-base-200 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 max-w-[20rem]"
-	                                        href="{{ route('spaces.show', $space) }}"
-	                                        wire:navigate
-	                                    >
+                                    @foreach ($this->liveSpaces as $space)
+                                        <a
+                                            class="shrink-0 flex items-center gap-3 rounded-full bg-base-100 border border-base-200 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 max-w-[20rem]"
+                                            href="{{ route('spaces.show', $space) }}"
+                                            wire:navigate
+                                        >
                                         <div class="avatar shrink-0">
                                             <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                                 @if ($space->host->avatar_url)
