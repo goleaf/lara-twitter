@@ -81,110 +81,123 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">
             {{ __('Notifications') }}
         </h2>
 
-        <p class="mt-1 text-sm opacity-70">
+        <p class="text-sm opacity-70">
             {{ __('Choose which activity should notify you.') }}
         </p>
     </header>
 
-    <form wire:submit="save" class="mt-6 space-y-4">
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="likes" />
-            <span class="text-sm">{{ __('Likes') }}</span>
-        </label>
+    <form wire:submit="save" class="mt-6 space-y-6">
+        <div class="space-y-2">
+            <div class="font-semibold">{{ __('Activity') }}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="likes" />
+                    <span class="text-sm">{{ __('Likes') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="reposts" />
-            <span class="text-sm">{{ __('Retweets / Quotes') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="reposts" />
+                    <span class="text-sm">{{ __('Retweets / Quotes') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="replies" />
-            <span class="text-sm">{{ __('Replies') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="replies" />
+                    <span class="text-sm">{{ __('Replies') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="mentions" />
-            <span class="text-sm">{{ __('Mentions') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mentions" />
+                    <span class="text-sm">{{ __('Mentions') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="follows" />
-            <span class="text-sm">{{ __('New followers') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="follows" />
+                    <span class="text-sm">{{ __('New followers') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="dms" />
-            <span class="text-sm">{{ __('Direct messages') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="dms" />
+                    <span class="text-sm">{{ __('Direct messages') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="lists" />
-            <span class="text-sm">{{ __('Lists (added to a public list)') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="lists" />
+                    <span class="text-sm">{{ __('Lists (added to a public list)') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="followed_posts" />
-            <span class="text-sm">{{ __('Posts from people you follow') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="followed_posts" />
+                    <span class="text-sm">{{ __('Posts from people you follow') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="high_engagement" />
-            <span class="text-sm">{{ __('Significant engagement ("getting more attention than usual")') }}</span>
-        </label>
-
-        <div class="divider my-2"></div>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="email_enabled" />
-            <span class="text-sm">{{ __('Email alerts') }}</span>
-        </label>
-
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="quiet_hours_enabled" />
-            <span class="text-sm">{{ __('Quiet hours (pause email alerts)') }}</span>
-        </label>
-
-        @if ($quiet_hours_enabled)
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="label">
-                        <span class="label-text">From</span>
-                    </label>
-                    <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_start" />
-                    <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_start')" />
-                </div>
-
-                <div>
-                    <label class="label">
-                        <span class="label-text">To</span>
-                    </label>
-                    <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_end" />
-                    <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_end')" />
-                </div>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer sm:col-span-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="high_engagement" />
+                    <span class="text-sm">{{ __('Significant engagement ("getting more attention than usual")') }}</span>
+                </label>
             </div>
-        @endif
+        </div>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="quality_filter" />
-            <span class="text-sm">{{ __('Quality filter (requires avatar + verified email)') }}</span>
-        </label>
+        <div class="space-y-2">
+            <div class="font-semibold">{{ __('Email') }}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="email_enabled" />
+                    <span class="text-sm">{{ __('Email alerts') }}</span>
+                </label>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_following" />
-            <span class="text-sm">{{ __('Only notify from accounts you follow') }}</span>
-        </label>
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quiet_hours_enabled" />
+                    <span class="text-sm">{{ __('Quiet hours (pause email alerts)') }}</span>
+                </label>
+            </div>
 
-        <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_verified" />
-            <span class="text-sm">{{ __('Only notify from verified accounts') }}</span>
-        </label>
+            @if ($quiet_hours_enabled)
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                        <label class="label">
+                            <span class="label-text">From</span>
+                        </label>
+                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_start" />
+                        <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_start')" />
+                    </div>
 
-        <div class="flex items-center gap-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text">To</span>
+                        </label>
+                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_end" />
+                        <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_end')" />
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        <div class="space-y-2">
+            <div class="font-semibold">{{ __('Filters') }}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer sm:col-span-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quality_filter" />
+                    <span class="text-sm">{{ __('Quality filter (requires avatar + verified email)') }}</span>
+                </label>
+
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_following" />
+                    <span class="text-sm">{{ __('Only notify from accounts you follow') }}</span>
+                </label>
+
+                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_verified" />
+                    <span class="text-sm">{{ __('Only notify from verified accounts') }}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="notification-preferences-updated">
