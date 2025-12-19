@@ -79,8 +79,24 @@
                 <div class="text-sm opacity-70">Accept to reply and move this conversation to your inbox.</div>
 
                 <div class="pt-3 flex justify-end gap-2">
-                    <button type="button" wire:click="declineRequest" class="btn btn-ghost btn-sm">Decline</button>
-                    <button type="button" wire:click="acceptRequest" class="btn btn-primary btn-sm">Accept</button>
+                    <button
+                        type="button"
+                        wire:click="declineRequest"
+                        class="btn btn-ghost btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="acceptRequest,declineRequest"
+                    >
+                        Decline
+                    </button>
+                    <button
+                        type="button"
+                        wire:click="acceptRequest"
+                        class="btn btn-primary btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="acceptRequest,declineRequest"
+                    >
+                        Accept
+                    </button>
                 </div>
             </div>
         </div>
@@ -91,7 +107,15 @@
             <div class="card-body space-y-3">
                 <div class="flex items-center justify-between gap-4">
                     <div class="font-semibold">Group</div>
-                    <button type="button" wire:click="leaveGroup" class="btn btn-ghost btn-sm">Leave</button>
+                    <button
+                        type="button"
+                        wire:click="leaveGroup"
+                        class="btn btn-ghost btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="leaveGroup"
+                    >
+                        Leave
+                    </button>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
@@ -110,20 +134,40 @@
 
                     <form wire:submit="updateGroupTitle" class="flex flex-col sm:flex-row gap-2">
                         <input class="input input-bordered input-sm w-full" placeholder="Group title" wire:model="groupTitle" />
-                        <button type="submit" class="btn btn-primary btn-sm shrink-0">Save</button>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-sm shrink-0"
+                            wire:loading.attr="disabled"
+                            wire:target="updateGroupTitle"
+                        >
+                            Save
+                        </button>
                     </form>
                     <x-input-error class="mt-2" :messages="$errors->get('groupTitle')" />
 
                     <form wire:submit="addMember" class="flex flex-col sm:flex-row gap-2">
                         <input class="input input-bordered input-sm w-full" placeholder="@username" wire:model="memberUsername" />
-                        <button type="submit" class="btn btn-primary btn-sm shrink-0">Add</button>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-sm shrink-0"
+                            wire:loading.attr="disabled"
+                            wire:target="addMember"
+                        >
+                            Add
+                        </button>
                     </form>
                     <x-input-error class="mt-2" :messages="$errors->get('memberUsername')" />
 
                     <div class="flex flex-wrap gap-2 pt-2">
                         @foreach ($conversation->participants as $participant)
                             @if ($participant->user_id !== $me->id)
-                                <button type="button" class="badge badge-sm badge-neutral" wire:click="removeMember({{ $participant->user_id }})">
+                                <button
+                                    type="button"
+                                    class="badge badge-sm badge-neutral"
+                                    wire:click="removeMember({{ $participant->user_id }})"
+                                    wire:loading.attr="disabled"
+                                    wire:target="removeMember({{ $participant->user_id }})"
+                                >
                                     Remove &#64;{{ $participant->user->username }}
                                 </button>
                             @endif
@@ -141,7 +185,15 @@
                     &#64;{{ $message->user->username }}
                     <time class="ms-1">{{ $message->created_at->format('H:i') }}</time>
                     @if ($message->user_id === $me->id && $this->canUnsend($message))
-                        <button type="button" wire:click="unsend({{ $message->id }})" class="link link-hover ms-2">Unsend</button>
+                        <button
+                            type="button"
+                            wire:click="unsend({{ $message->id }})"
+                            class="link link-hover ms-2"
+                            wire:loading.attr="disabled"
+                            wire:target="unsend({{ $message->id }})"
+                        >
+                            Unsend
+                        </button>
                     @endif
                 </div>
                 <div class="chat-bubble {{ $message->user_id === $me->id ? 'chat-bubble-primary' : '' }}">
@@ -199,6 +251,8 @@
                                 type="button"
                                 class="badge badge-sm {{ $mine ? 'badge-primary' : 'badge-ghost' }}"
                                 wire:click="toggleReaction({{ $message->id }}, @js($emoji))"
+                                wire:loading.attr="disabled"
+                                wire:target="toggleReaction({{ $message->id }}, @js($emoji))"
                                 @disabled($myParticipant?->is_request)
                             >
                                 {{ $emoji }} {{ $items->count() }}
@@ -211,13 +265,15 @@
                     <div class="pt-1">
                         <div class="dropdown {{ $message->user_id === $me->id ? 'dropdown-end' : 'dropdown-start' }}">
                             <div tabindex="0" role="button" class="btn btn-ghost btn-xs">React</div>
-                            <div tabindex="0" class="dropdown-content bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur border border-base-200 rounded-box shadow-lg p-2">
+                            <div tabindex="0" class="dropdown-content z-[1] bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur border border-base-200 rounded-box shadow-lg mt-2 p-2">
                                 <div class="flex gap-1">
                                     @foreach ($this->reactionEmojis() as $emoji)
                                         <button
                                             type="button"
                                             class="btn btn-ghost btn-xs"
                                             wire:click="toggleReaction({{ $message->id }}, @js($emoji))"
+                                            wire:loading.attr="disabled"
+                                            wire:target="toggleReaction({{ $message->id }}, @js($emoji))"
                                         >
                                             {{ $emoji }}
                                         </button>
@@ -262,14 +318,30 @@
                 </div>
 
                 <div>
-                    <input wire:model="attachments" type="file" multiple class="file-input file-input-bordered file-input-sm w-full" @disabled($myParticipant?->is_request) />
+                    <input
+                        wire:model="attachments"
+                        type="file"
+                        multiple
+                        class="file-input file-input-bordered file-input-sm w-full"
+                        wire:loading.attr="disabled"
+                        wire:target="attachments,send"
+                        @disabled($myParticipant?->is_request)
+                    />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments')" />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments.*')" />
                     <div class="text-xs opacity-70 mt-1">Up to 4 attachments (images/video/audio/GIF), 10MB each.</div>
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" class="btn btn-primary btn-sm" @disabled($myParticipant?->is_request)>Send</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="send,attachments"
+                        @disabled($myParticipant?->is_request)
+                    >
+                        Send
+                    </button>
                 </div>
             </form>
         </div>
