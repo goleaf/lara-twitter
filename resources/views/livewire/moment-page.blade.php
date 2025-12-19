@@ -187,11 +187,9 @@
                 @endauth
             </div>
         @empty
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="opacity-70">No posts in this moment yet.</div>
-                </div>
-            </div>
+            <x-empty-state>
+                No posts in this moment yet.
+            </x-empty-state>
         @endforelse
     </div>
 </div>

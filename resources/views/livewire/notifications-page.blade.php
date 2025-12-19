@@ -182,11 +182,9 @@
                 </div>
             </a>
         @empty
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="opacity-70">No notifications yet.</div>
-                </div>
-            </div>
+            <x-empty-state>
+                No notifications yet.
+            </x-empty-state>
         @endforelse
     </div>
 

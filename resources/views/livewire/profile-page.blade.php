@@ -15,11 +15,9 @@
             <livewire:post-card :post="$post" :key="$post->id" />
         @empty
             @if (! $user->pinnedPost)
-                <div class="card bg-base-100 border">
-                    <div class="card-body">
-                        <div class="opacity-70">No posts yet.</div>
-                    </div>
-                </div>
+                <x-empty-state>
+                    No posts yet.
+                </x-empty-state>
             @endif
         @endforelse
     </div>

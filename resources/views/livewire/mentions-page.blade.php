@@ -15,11 +15,9 @@
         @forelse ($this->posts as $post)
             <livewire:post-card :post="$post" :key="$post->id" />
         @empty
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="opacity-70">No mentions yet.</div>
-                </div>
-            </div>
+            <x-empty-state>
+                No mentions yet.
+            </x-empty-state>
         @endforelse
     </div>
 
