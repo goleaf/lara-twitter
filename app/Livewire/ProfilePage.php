@@ -2,11 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Models\Block;
-use App\Models\Mute;
+use App\Livewire\Concerns\InteractsWithUserProfile;
 use App\Models\Post;
 use App\Models\User;
-use App\Notifications\UserFollowed;
 use App\Services\AnalyticsService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -15,6 +13,7 @@ use Livewire\WithPagination;
 class ProfilePage extends Component
 {
     use WithPagination;
+    use InteractsWithUserProfile;
 
     public User $user;
 
@@ -24,89 +23,39 @@ class ProfilePage extends Component
 
         if (Auth::check() && Auth::id() !== $this->user->id) {
             abort_if(Auth::user()->isBlockedEitherWay($this->user), 403);
-            app(AnalyticsService::class)->recordUnique('profile_view', $this->user->id);
         }
+
+        if (! ($this->user->analytics_enabled || $this->user->is_admin)) {
+            return;
+        }
+
+        if (Auth::check() && Auth::id() === $this->user->id) {
+            return;
+        }
+
+        app(AnalyticsService::class)->recordUnique('profile_view', $this->user->id);
+        $this->recordProfileClickFromPost();
     }
 
-    public function toggleFollow(): void
+    private function recordProfileClickFromPost(): void
     {
-        abort_unless(Auth::check(), 403);
-        abort_if(Auth::id() === $this->user->id, 403);
-        abort_if(Auth::user()->isBlockedEitherWay($this->user), 403);
+        $fromPost = request()->query('from_post');
 
-        $isFollowing = Auth::user()
-            ->following()
-            ->where('followed_id', $this->user->id)
-            ->exists();
-
-        if ($isFollowing) {
-            Auth::user()->following()->detach($this->user->id);
-        } else {
-            Auth::user()->following()->attach($this->user->id);
-
-            if ($this->user->wantsNotification('follows') && $this->user->allowsNotificationFrom(Auth::user())) {
-                $this->user->notify(new UserFollowed(follower: Auth::user()));
-            }
+        $postId = filter_var($fromPost, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (! $postId) {
+            return;
         }
 
-        $this->user->loadCount(['followers', 'following']);
-    }
-
-    public function toggleMute(): void
-    {
-        abort_unless(Auth::check(), 403);
-        abort_if(Auth::id() === $this->user->id, 403);
-        abort_if(Auth::user()->isBlockedEitherWay($this->user), 403);
-
-        $existing = Mute::query()
-            ->where('muter_id', Auth::id())
-            ->where('muted_id', $this->user->id)
+        $belongsToProfile = Post::query()
+            ->where('id', $postId)
+            ->where('user_id', $this->user->id)
             ->exists();
 
-        if ($existing) {
-            Mute::query()
-                ->where('muter_id', Auth::id())
-                ->where('muted_id', $this->user->id)
-                ->delete();
-        } else {
-            Mute::query()->create([
-                'muter_id' => Auth::id(),
-                'muted_id' => $this->user->id,
-            ]);
-        }
-    }
-
-    public function toggleBlock(): void
-    {
-        abort_unless(Auth::check(), 403);
-        abort_if(Auth::id() === $this->user->id, 403);
-
-        $existing = Block::query()
-            ->where('blocker_id', Auth::id())
-            ->where('blocked_id', $this->user->id)
-            ->exists();
-
-        if ($existing) {
-            Block::query()
-                ->where('blocker_id', Auth::id())
-                ->where('blocked_id', $this->user->id)
-                ->delete();
-        } else {
-            Block::query()->create([
-                'blocker_id' => Auth::id(),
-                'blocked_id' => $this->user->id,
-            ]);
-
-            // Remove follow relationships in both directions.
-            Auth::user()->following()->detach($this->user->id);
-            Auth::user()->followers()->detach($this->user->id);
+        if (! $belongsToProfile) {
+            return;
         }
 
-        // If blocked, also remove mute entry for tidiness.
-        Mute::query()
-            ->where('muter_id', Auth::id())
-            ->where('muted_id', $this->user->id)
-            ->delete();
+        app(AnalyticsService::class)->recordUnique('post_profile_click', $postId);
     }
 
     public function getPostsProperty()
@@ -124,44 +73,6 @@ class ProfilePage extends Component
             ->withCount(['likes', 'reposts'])
             ->latest()
             ->paginate(15);
-    }
-
-    public function getIsFollowingProperty(): bool
-    {
-        if (! Auth::check() || Auth::id() === $this->user->id) {
-            return false;
-        }
-
-        if (Auth::user()->isBlockedEitherWay($this->user)) {
-            return false;
-        }
-
-        return Auth::user()
-            ->following()
-            ->where('followed_id', $this->user->id)
-            ->exists();
-    }
-
-    public function getIsMutedProperty(): bool
-    {
-        if (! Auth::check() || Auth::id() === $this->user->id) {
-            return false;
-        }
-
-        if (Auth::user()->isBlockedEitherWay($this->user)) {
-            return false;
-        }
-
-        return Auth::user()->hasMuted($this->user);
-    }
-
-    public function getHasBlockedProperty(): bool
-    {
-        if (! Auth::check() || Auth::id() === $this->user->id) {
-            return false;
-        }
-
-        return Auth::user()->hasBlocked($this->user);
     }
 
     public function render()

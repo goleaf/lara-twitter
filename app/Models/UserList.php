@@ -12,6 +12,10 @@ class UserList extends Model
 {
     use HasFactory;
 
+    public const MAX_MEMBERS = 5000;
+
+    public const MAX_LISTS_PER_OWNER = 1000;
+
     protected $table = 'user_lists';
 
     protected $fillable = [
@@ -49,15 +53,7 @@ class UserList extends Model
             return true;
         }
 
-        if (! $viewer) {
-            return false;
-        }
-
-        if ($viewer->id === $this->owner_id) {
-            return true;
-        }
-
-        return $this->members()->where('user_id', $viewer->id)->exists();
+        return $viewer && $viewer->id === $this->owner_id;
     }
 
     public function reports(): MorphMany

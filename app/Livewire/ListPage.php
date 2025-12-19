@@ -74,6 +74,20 @@ class ListPage extends Component
             return;
         }
 
+        $alreadyMember = $this->list->members()
+            ->where('user_list_user.user_id', $user->id)
+            ->exists();
+        if ($alreadyMember) {
+            $this->addError('member_username', 'User is already on this list.');
+            return;
+        }
+
+        $currentCount = (int) ($this->list->members_count ?? $this->list->members()->count());
+        if ($currentCount >= UserList::MAX_MEMBERS) {
+            $this->addError('member_username', 'This list already has the maximum number of members ('.UserList::MAX_MEMBERS.').');
+            return;
+        }
+
         $changes = $this->list->members()->syncWithoutDetaching([$user->id]);
 
         if (! $this->list->is_private && in_array($user->id, $changes['attached'] ?? [], true)) {

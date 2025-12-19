@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Reports\Tables;
 
+use App\Models\Report;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,6 +20,7 @@ class ReportsTable
                     ->badge()
                     ->sortable(),
                 TextColumn::make('reason')
+                    ->formatStateUsing(fn (?string $state): string => $state ? Report::reasonLabel($state) : '')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('reporter.username')
@@ -54,4 +56,3 @@ class ReportsTable
             ]);
     }
 }
-

@@ -46,6 +46,29 @@
                 <span>{{ $space->participants_count }} participants</span>
             </div>
 
+            @if ($space->pinnedPost)
+                <div class="pt-3 space-y-2">
+                    <div class="text-sm font-semibold opacity-70">Pinned post</div>
+                    <livewire:post-card :post="$space->pinnedPost" :key="'space-pin-'.$space->pinnedPost->id" />
+                </div>
+            @endif
+
+            @if ($isModerator)
+                <div class="pt-3">
+                    <form wire:submit="pinPost" class="flex flex-wrap items-end gap-2">
+                        <div class="grow min-w-[14rem]">
+                            <x-input-label for="pinned_post_id" value="Pin a post (ID or URL)" />
+                            <x-text-input id="pinned_post_id" class="mt-1 block w-full" wire:model="pinned_post_id" />
+                            <x-input-error class="mt-2" :messages="$errors->get('pinned_post_id')" />
+                        </div>
+                        <button type="submit" class="btn btn-outline btn-sm">Pin</button>
+                        @if ($space->pinned_post_id)
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="unpinPost">Unpin</button>
+                        @endif
+                    </form>
+                </div>
+            @endif
+
             <div class="alert mt-2">
                 <div>
                     <div class="font-semibold">Audio not implemented</div>

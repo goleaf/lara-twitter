@@ -41,7 +41,7 @@
         @endif
     @endauth
 
-    <div class="space-y-3">
+    <div class="pl-6 border-l border-base-300 space-y-3">
         @foreach ($this->replies as $reply)
             <livewire:post-card :post="$reply" :key="'reply-'.$reply->id" />
         @endforeach

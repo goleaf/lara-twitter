@@ -89,4 +89,84 @@ class SearchOperatorsTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder(['News A', 'News B']);
     }
+
+    public function test_search_supports_filter_verified(): void
+    {
+        $verified = User::factory()->create(['username' => 'alice', 'is_verified' => true]);
+        $unverified = User::factory()->create(['username' => 'bob', 'is_verified' => false]);
+
+        Post::query()->create(['user_id' => $verified->id, 'body' => 'Hello from verified']);
+        Post::query()->create(['user_id' => $unverified->id, 'body' => 'Hello from unverified']);
+
+        $response = $this->get(route('search', [
+            'type' => 'posts',
+            'q' => 'hello filter:verified',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertSee('Hello from verified')
+            ->assertDontSee('Hello from unverified');
+    }
+
+    public function test_search_supports_has_videos_and_has_media(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Hello plain']);
+
+        $video = Post::query()->create([
+            'user_id' => $alice->id,
+            'body' => 'Hello video',
+            'video_path' => 'posts/1/video.mp4',
+            'video_mime_type' => 'video/mp4',
+        ]);
+
+        $image = Post::query()->create(['user_id' => $alice->id, 'body' => 'Hello image']);
+        $image->images()->create(['path' => 'posts/1/x.jpg', 'sort_order' => 0]);
+
+        $responseVideos = $this->get(route('search', [
+            'type' => 'posts',
+            'q' => 'hello has:videos',
+        ]));
+
+        $responseVideos
+            ->assertOk()
+            ->assertSee('Hello video')
+            ->assertDontSee('Hello image')
+            ->assertDontSee('Hello plain');
+
+        $responseMedia = $this->get(route('search', [
+            'type' => 'posts',
+            'q' => 'hello has:media',
+        ]));
+
+        $responseMedia
+            ->assertOk()
+            ->assertSee('Hello video')
+            ->assertSee('Hello image')
+            ->assertDontSee('Hello plain');
+
+        $this->assertNotNull($video->id);
+    }
+
+    public function test_search_supports_or_operator_for_terms(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Hello Laravel']);
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Hello Symfony']);
+        Post::query()->create(['user_id' => $alice->id, 'body' => 'Hello Rails']);
+
+        $response = $this->get(route('search', [
+            'type' => 'posts',
+            'q' => 'laravel OR symfony',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertSee('Hello Laravel')
+            ->assertSee('Hello Symfony')
+            ->assertDontSee('Hello Rails');
+    }
 }

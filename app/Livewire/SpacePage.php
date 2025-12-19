@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Http\Requests\Spaces\DecideSpeakerRequestRequest;
+use App\Http\Requests\Spaces\PinSpacePostRequest;
 use App\Http\Requests\Spaces\SetSpaceParticipantRoleRequest;
 use App\Models\Space;
 use App\Models\SpaceParticipant;
@@ -15,13 +16,18 @@ class SpacePage extends Component
 {
     public Space $space;
 
+    public int|string $pinned_post_id = '';
+
     public function mount(Space $space): void
     {
-        $this->space = $space->load(['host'])->loadCount('participants');
+        $this->space = $space;
 
         if (Auth::check()) {
             $this->ensureHostParticipant();
         }
+
+        $this->loadSpace();
+        $this->pinned_post_id = (string) ($this->space->pinned_post_id ?? '');
     }
 
     public function start(): void
@@ -34,7 +40,7 @@ class SpacePage extends Component
             $this->space->update(['started_at' => now()]);
         }
 
-        $this->space->refresh();
+        $this->loadSpace(refresh: true);
     }
 
     public function end(): void
@@ -49,7 +55,7 @@ class SpacePage extends Component
         }
 
         $this->space->update($updates);
-        $this->space->refresh();
+        $this->loadSpace(refresh: true);
     }
 
     public function join(): void
@@ -91,6 +97,28 @@ class SpacePage extends Component
             ->update(['left_at' => now()]);
 
         $this->space->loadCount('participants');
+    }
+
+    public function pinPost(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless($this->isModerator(), 403);
+
+        $this->pinned_post_id = $this->normalizePostId($this->pinned_post_id);
+        $validated = $this->validate(PinSpacePostRequest::rulesFor());
+
+        $this->space->update(['pinned_post_id' => (int) $validated['pinned_post_id']]);
+        $this->loadSpace(refresh: true);
+    }
+
+    public function unpinPost(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless($this->isModerator(), 403);
+
+        $this->space->update(['pinned_post_id' => null]);
+        $this->loadSpace(refresh: true);
+        $this->pinned_post_id = '';
     }
 
     public function requestToSpeak(): void
@@ -272,6 +300,42 @@ class SpacePage extends Component
         $participant = $this->myParticipant();
 
         return $participant && $participant->left_at === null && $participant->role === 'cohost';
+    }
+
+    private function loadSpace(bool $refresh = false): void
+    {
+        if ($refresh) {
+            $this->space->refresh();
+        }
+
+        $this->space
+            ->load([
+                'host',
+                'pinnedPost.user',
+                'pinnedPost.images',
+                'pinnedPost.repostOf.user',
+                'pinnedPost.repostOf.images',
+            ])
+            ->loadCount('participants');
+    }
+
+    private function normalizePostId(int|string $value): int|string
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        $v = trim((string) $value);
+
+        if (preg_match('/\\bposts\\/(\\d+)\\b/', $v, $m)) {
+            return (int) $m[1];
+        }
+
+        if (ctype_digit($v)) {
+            return (int) $v;
+        }
+
+        return $value;
     }
 
     private function ensureSpeakerCapacityFor(int $userId): void

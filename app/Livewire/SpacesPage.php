@@ -21,6 +21,17 @@ class SpacesPage extends Component
     {
         abort_unless(Auth::check(), 403);
 
+        $minFollowers = Space::minFollowersToHost();
+        if ($minFollowers > 0) {
+            $myFollowers = Auth::user()->followers()->count();
+
+            if ($myFollowers < $minFollowers) {
+                $this->addError('host', "You need at least {$minFollowers} followers to host a Space.");
+
+                return;
+            }
+        }
+
         $validated = $this->validate(StoreSpaceRequest::rulesFor());
 
         $space = Space::query()->create([

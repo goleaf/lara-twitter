@@ -11,10 +11,9 @@ class PostTextParserTest extends TestCase
     {
         $parser = new PostTextParser();
 
-        $parsed = $parser->parse('Hello #Laravel #laravel @John_Doe and @john_doe');
+        $parsed = $parser->parse('Hello #Laravel #laravel #2025 @John_Doe and @john_doe');
 
-        $this->assertSame(['laravel'], $parsed['hashtags']);
+        $this->assertSame(['laravel', '2025'], $parsed['hashtags']);
         $this->assertSame(['john_doe'], $parsed['mentions']);
     }
 }
-

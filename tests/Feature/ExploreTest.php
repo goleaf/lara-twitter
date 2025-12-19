@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Like;
+use App\Models\Moment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ExploreTest extends TestCase
@@ -79,5 +81,38 @@ class ExploreTest extends TestCase
         $response = $this->actingAs($viewer)->get(route('explore'));
 
         $response->assertOk()->assertSee('Recommended accounts')->assertSee('bob');
+    }
+
+    public function test_recommended_accounts_falls_back_to_popular_users_when_no_mutuals(): void
+    {
+        $viewer = User::factory()->create(['username' => 'viewer']);
+        User::factory()->create(['username' => 'alice']);
+
+        $response = $this->actingAs($viewer)->get(route('explore'));
+
+        $response->assertOk()->assertSee('Recommended accounts')->assertSee('alice');
+    }
+
+    public function test_explore_news_tab_shows_top_stories_from_public_moments(): void
+    {
+        $owner = User::factory()->create(['username' => 'owner']);
+
+        Moment::query()->create([
+            'owner_id' => $owner->id,
+            'title' => 'Big Story',
+            'is_public' => true,
+        ]);
+
+        $response = $this->get(route('explore', ['tab' => 'news']));
+
+        $response->assertOk()->assertSee('Top stories')->assertSee('Big Story');
+    }
+
+    public function test_explore_search_redirects_to_search_page(): void
+    {
+        Livewire::test(\App\Livewire\ExplorePage::class)
+            ->set('q', 'laravel')
+            ->call('search')
+            ->assertRedirect(route('search', ['q' => 'laravel']));
     }
 }

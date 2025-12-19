@@ -18,6 +18,7 @@ class ReportForm
                     ->options(array_combine(Report::statuses(), Report::statuses()))
                     ->required(),
                 TextInput::make('reason')
+                    ->formatStateUsing(fn (?string $state): ?string => $state ? Report::reasonLabel($state) : null)
                     ->disabled(),
                 Textarea::make('details')
                     ->disabled()

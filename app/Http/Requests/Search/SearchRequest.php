@@ -11,7 +11,7 @@ class SearchRequest extends FormRequest
     {
         return [
             'q' => ['nullable', 'string', 'max:200'],
-            'type' => ['nullable', 'string', Rule::in(['all', 'posts', 'users', 'tags'])],
+            'type' => ['nullable', 'string', Rule::in(['all', 'posts', 'users', 'tags', 'lists'])],
             'sort' => ['nullable', 'string', Rule::in(['latest', 'top'])],
             'user' => ['nullable', 'string', 'max:31', 'regex:/^@?[A-Za-z0-9_-]{1,30}$/'],
             'from' => ['nullable', 'date'],

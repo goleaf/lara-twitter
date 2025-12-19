@@ -15,16 +15,21 @@
                     </label>
                     <select wire:model="reason" class="select select-bordered w-full">
                         <option value="">Select a reason</option>
-                        @foreach ($reasons as $r)
-                            <option value="{{ $r }}">{{ ucfirst($r) }}</option>
+                        @foreach ($reasonOptions as $group => $options)
+                            <optgroup label="{{ $group }}">
+                                @foreach ($options as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                 </div>
 
                 <div>
+                    @php($detailsRequired = in_array($reason, \App\Models\Report::reasonsRequiringDetails(), true))
                     <label class="label">
-                        <span class="label-text">Details (optional)</span>
+                        <span class="label-text">Details {{ $detailsRequired ? '(required)' : '(optional)' }}</span>
                     </label>
                     <textarea
                         wire:model="details"
@@ -47,4 +52,3 @@
         </form>
     </dialog>
 </div>
-

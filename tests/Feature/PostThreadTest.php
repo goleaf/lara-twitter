@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Post;
+use App\Models\Hashtag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -42,15 +43,19 @@ class PostThreadTest extends TestCase
 
         $post = Post::query()->create([
             'user_id' => $author->id,
-            'body' => 'Hey @bob check #Laravel',
+            'body' => 'Hey @bob check #Laravel #2025',
         ]);
 
         $this->assertDatabaseHas('hashtags', ['tag' => 'laravel']);
+        $this->assertDatabaseHas('hashtags', ['tag' => '2025']);
         $this->assertDatabaseHas('hashtag_post', ['post_id' => $post->id]);
+        $this->assertDatabaseHas('hashtag_post', [
+            'post_id' => $post->id,
+            'hashtag_id' => Hashtag::query()->where('tag', '2025')->value('id'),
+        ]);
         $this->assertDatabaseHas('mentions', [
             'post_id' => $post->id,
             'mentioned_user_id' => $mentioned->id,
         ]);
     }
 }
-

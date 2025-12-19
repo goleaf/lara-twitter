@@ -23,6 +23,8 @@ class ReplyComposer extends Component
     /** @var array<int, mixed> */
     public array $images = [];
 
+    public mixed $video = null;
+
     public function mount(Post $post): void
     {
         $this->post = $post->loadMissing(['user', 'mentions']);
@@ -45,6 +47,25 @@ class ReplyComposer extends Component
             ->values();
 
         $this->body = $usernames->map(fn (string $u) => "@{$u}")->implode(' ').' ';
+    }
+
+    public function updatedImages(): void
+    {
+        if (! empty($this->images)) {
+            $this->video = null;
+        }
+    }
+
+    public function updatedVideo(): void
+    {
+        if ($this->video) {
+            $this->images = [];
+        }
+    }
+
+    public function removeVideo(): void
+    {
+        $this->video = null;
     }
 
     public function save(): void
@@ -71,8 +92,18 @@ class ReplyComposer extends Component
             ]);
         }
 
-        $this->reset(['body', 'images']);
+        if (! empty($validated['video'])) {
+            $path = $validated['video']->storePublicly("posts/{$reply->id}", ['disk' => 'public']);
+
+            $reply->update([
+                'video_path' => $path,
+                'video_mime_type' => $validated['video']->getMimeType() ?? 'video/mp4',
+            ]);
+        }
+
+        $this->reset(['body', 'images', 'video']);
         $this->dispatch('reply-created');
+        $this->dispatch('reply-created.'.$this->post->id);
     }
 
     public function render()

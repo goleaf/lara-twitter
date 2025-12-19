@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LinkRedirectController;
 use App\Livewire\HashtagPage;
 use App\Livewire\BookmarksPage;
 use App\Livewire\ConversationPage;
@@ -43,6 +44,8 @@ Route::get('/@{user}/following', FollowingPage::class)->name('profile.following'
 Route::get('posts/{post}', PostPage::class)->name('posts.show');
 Route::get('posts/{post}/likes', PostLikesPage::class)->name('posts.likes');
 Route::get('posts/{post}/reposts', RepostsPage::class)->name('posts.reposts');
+
+Route::get('l/{post}', LinkRedirectController::class)->name('links.redirect');
 
 Route::get('tags/{tag}', HashtagPage::class)->name('hashtags.show');
 

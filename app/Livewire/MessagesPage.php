@@ -63,7 +63,7 @@ class MessagesPage extends Component
             })
             ->with([
                 'participants.user',
-                'messages' => fn ($q) => $q->latest()->limit(1),
+                'messages' => fn ($q) => $q->latest()->limit(1)->with('attachments'),
             ])
             ->orderByDesc('cp.is_pinned')
             ->orderByDesc('conversations.updated_at')

@@ -3,6 +3,18 @@
         <div class="card-body">
             <div class="text-xl font-semibold">Explore</div>
 
+            <form wire:submit="search" class="mt-4">
+                <div class="join w-full">
+                    <input
+                        type="text"
+                        class="input input-bordered join-item w-full"
+                        placeholder="Search posts, people, hashtags"
+                        wire:model="q"
+                    />
+                    <button type="submit" class="btn join-item">Search</button>
+                </div>
+            </form>
+
             <div class="tabs tabs-boxed mt-4">
                 <a class="tab {{ $tab === 'for-you' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'for-you']) }}" wire:navigate>For You</a>
                 <a class="tab {{ $tab === 'trending' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'trending']) }}" wire:navigate>Trending</a>
@@ -29,6 +41,44 @@
                     @endforelse
                 </div>
             @elseif ($tab === 'trending')
+                @if ($this->trendingTopicPosts->isNotEmpty())
+                    <div class="card bg-base-100 border">
+                        <div class="card-body">
+                            <div class="font-semibold">What's happening</div>
+                            <div class="space-y-4 pt-2">
+                                @foreach ($this->trendingTopicPosts as $tag => $posts)
+                                    <div class="space-y-2">
+                                        <a class="link link-hover font-semibold" href="{{ route('hashtags.show', ['tag' => $tag]) }}" wire:navigate>
+                                            #{{ $tag }}
+                                        </a>
+
+                                        <div class="space-y-2">
+                                            @foreach ($posts as $post)
+                                                @php($primary = $post->repostOf && $post->body === '' ? $post->repostOf : $post)
+                                                <a
+                                                    class="block rounded-box bg-base-200 border border-base-200 hover:border-base-300 transition px-3 py-3"
+                                                    href="{{ route('posts.show', ['post' => $primary]) }}"
+                                                    wire:navigate
+                                                >
+                                                    <div class="text-xs opacity-70 truncate">
+                                                        {{ $primary->user->name }} · &#64;{{ $primary->user->username }}
+                                                    </div>
+                                                    <div class="font-medium pt-1">
+                                                        {{ \Illuminate\Support\Str::limit($primary->body, 140) }}
+                                                    </div>
+                                                    <div class="text-xs opacity-60 pt-1">
+                                                        {{ $primary->created_at->diffForHumans() }}
+                                                    </div>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="card bg-base-100 border">
                     <div class="card-body">
                         <div class="font-semibold">Trending hashtags (24h)</div>
@@ -61,6 +111,35 @@
                     </div>
                 </div>
             @else
+                @if ($tab === 'news')
+                    <div class="card bg-base-100 border">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="font-semibold">Top stories</div>
+                                <a class="link link-hover text-sm" href="{{ route('moments.index') }}" wire:navigate>All Moments</a>
+                            </div>
+
+                            <div class="space-y-2 pt-2">
+                                @forelse ($this->topStories as $moment)
+                                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                                        <div class="card-body py-4">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <div class="font-semibold truncate">{{ $moment->title }}</div>
+                                                    <div class="text-sm opacity-70 truncate">by &#64;{{ $moment->owner->username }}</div>
+                                                </div>
+                                                <div class="text-sm opacity-60 shrink-0">{{ $moment->items_count }} posts</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="opacity-70 text-sm">No stories yet.</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="space-y-3">
                     @forelse ($this->categoryPosts as $post)
                         <livewire:post-card :post="$post" :key="$post->id" />
@@ -85,6 +164,15 @@
                                 <a class="min-w-0" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
                                     <div class="font-semibold truncate">{{ $u->name }}</div>
                                     <div class="text-sm opacity-70 truncate">&#64;{{ $u->username }}</div>
+                                    @if (($u->mutual_count ?? 0) > 0)
+                                        <div class="text-xs opacity-60 truncate">
+                                            {{ $u->mutual_count }} mutual follow{{ $u->mutual_count === 1 ? '' : 's' }}
+                                        </div>
+                                    @elseif (! is_null($u->followers_count ?? null))
+                                        <div class="text-xs opacity-60 truncate">
+                                            {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
+                                        </div>
+                                    @endif
                                 </a>
 
                                 @auth
@@ -104,8 +192,8 @@
                 <div class="card-body">
                     <div class="font-semibold">Tips</div>
                     <div class="text-sm opacity-70 pt-2">
-                        Try <a class="link link-hover" href="{{ route('search') }}" wire:navigate>Search</a> for accounts, hashtags, and posts.
-                        Save interest hashtags in Settings → Interests to personalize trends.
+                        Use the search bar above to find accounts, hashtags, and posts.
+                        Save interest hashtags in Settings → Interests to personalize trends, and browse <a class="link link-hover" href="{{ route('moments.index') }}" wire:navigate>Moments</a> for curated stories.
                     </div>
                 </div>
             </div>

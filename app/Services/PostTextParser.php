@@ -10,7 +10,7 @@ class PostTextParser
     public function parse(string $text): array
     {
         $hashtags = [];
-        if (preg_match_all('/(^|[^\pL\pN_])#([\pL][\pL\pN_]{0,49})/u', $text, $matches)) {
+        if (preg_match_all('/(^|[^\pL\pN_])#([\pL\pN][\pL\pN_]{0,49})/u', $text, $matches)) {
             $hashtags = array_map(
                 static fn (string $tag): string => mb_strtolower($tag),
                 $matches[2] ?? [],
@@ -33,4 +33,3 @@ class PostTextParser
         ];
     }
 }
-

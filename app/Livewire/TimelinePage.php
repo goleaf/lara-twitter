@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Post;
+use App\Models\Space;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
@@ -179,6 +180,27 @@ class TimelinePage extends Component
             ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
             ->orderByDesc('created_at')
             ->paginate(15);
+    }
+
+    public function getLiveSpacesProperty()
+    {
+        if (! Auth::check()) {
+            return collect();
+        }
+
+        $viewer = Auth::user();
+        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id);
+        $exclude = $viewer->excludedUserIds();
+
+        return Space::query()
+            ->whereNotNull('started_at')
+            ->whereNull('ended_at')
+            ->whereIn('host_user_id', $followingIds)
+            ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
+            ->with(['host'])
+            ->latest('started_at')
+            ->limit(8)
+            ->get();
     }
 
     public function checkForNewPosts(): void

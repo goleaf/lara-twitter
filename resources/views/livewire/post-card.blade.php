@@ -22,7 +22,7 @@
         @endif
 
         <div class="flex items-center justify-between">
-            <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $primary->user->username]) }}" wire:navigate>
+            <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate>
                 {{ $primary->user->name }}
                 <span class="opacity-60 font-normal">&#64;{{ $primary->user->username }}</span>
             </a>
@@ -63,7 +63,7 @@
                 <div class="card bg-base-200 border">
                     <div class="card-body gap-2">
                         <div class="flex items-center justify-between">
-                            <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $post->repostOf->user->username]) }}" wire:navigate>
+                            <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $post->repostOf->user->username, 'from_post' => $post->repostOf->id]) }}" wire:navigate>
                                 {{ $post->repostOf->user->name }}
                                 <span class="opacity-60 font-normal">&#64;{{ $post->repostOf->user->username }}</span>
                             </a>
@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="prose max-w-none">
-                            {!! app(\App\Services\PostBodyRenderer::class)->render($post->repostOf->body) !!}
+                            {!! app(\App\Services\PostBodyRenderer::class)->render($post->repostOf->body, $post->repostOf->id) !!}
                         </div>
 
                         @if ($post->repostOf->images->count())
@@ -103,8 +103,23 @@
                 Likes <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
             </a>
 
-            <button wire:click="toggleBookmark" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
-                {{ $this->hasBookmarked() ? 'Bookmarked' : 'Bookmark' }}
+            <button
+                wire:click="toggleBookmark"
+                class="btn btn-ghost btn-sm {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="Bookmark"
+                title="{{ $this->hasBookmarked() ? 'Remove bookmark' : 'Bookmark' }}"
+                aria-pressed="{{ $this->hasBookmarked() ? 'true' : 'false' }}"
+            >
+                @if ($this->hasBookmarked())
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 2a2 2 0 0 0-2 2v18l8-5 8 5V4a2 2 0 0 0-2-2H6Z" />
+                    </svg>
+                @else
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16Z" />
+                    </svg>
+                @endif
             </button>
 
             <button wire:click="toggleRepost" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>

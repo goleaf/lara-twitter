@@ -13,6 +13,7 @@ new class extends Component
     public bool $follows = true;
     public bool $dms = true;
     public bool $lists = true;
+    public bool $followed_posts = false;
 
     public bool $quality_filter = false;
     public bool $only_following = false;
@@ -30,6 +31,7 @@ new class extends Component
         $this->follows = (bool) ($settings['follows'] ?? true);
         $this->dms = (bool) ($settings['dms'] ?? true);
         $this->lists = (bool) ($settings['lists'] ?? true);
+        $this->followed_posts = (bool) ($settings['followed_posts'] ?? false);
 
         $this->quality_filter = (bool) ($settings['quality_filter'] ?? false);
         $this->only_following = (bool) ($settings['only_following'] ?? false);
@@ -49,6 +51,7 @@ new class extends Component
             'follows' => (bool) ($validated['follows'] ?? false),
             'dms' => (bool) ($validated['dms'] ?? false),
             'lists' => (bool) ($validated['lists'] ?? false),
+            'followed_posts' => (bool) ($validated['followed_posts'] ?? false),
             'quality_filter' => (bool) ($validated['quality_filter'] ?? false),
             'only_following' => (bool) ($validated['only_following'] ?? false),
             'only_verified' => (bool) ($validated['only_verified'] ?? false),
@@ -104,6 +107,11 @@ new class extends Component
         <label class="flex items-center gap-2">
             <input type="checkbox" class="checkbox checkbox-sm" wire:model="lists" />
             <span class="text-sm">{{ __('Lists (added to a public list)') }}</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" class="checkbox checkbox-sm" wire:model="followed_posts" />
+            <span class="text-sm">{{ __('Posts from people you follow') }}</span>
         </label>
 
         <div class="divider my-2"></div>

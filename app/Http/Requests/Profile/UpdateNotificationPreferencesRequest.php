@@ -19,6 +19,7 @@ class UpdateNotificationPreferencesRequest extends FormRequest
             'only_following' => ['boolean'],
             'only_verified' => ['boolean'],
             'lists' => ['boolean'],
+            'followed_posts' => ['boolean'],
         ];
     }
 

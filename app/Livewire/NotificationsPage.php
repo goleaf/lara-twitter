@@ -24,6 +24,41 @@ class NotificationsPage extends Component
         $this->tab = $this->normalizedTab();
     }
 
+    public function open(string $notificationId): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $notification = Auth::user()
+            ->notifications()
+            ->where('id', $notificationId)
+            ->firstOrFail();
+
+        if (is_null($notification->read_at)) {
+            $notification->markAsRead();
+        }
+
+        $data = $notification->data ?? [];
+        $type = $data['type'] ?? null;
+
+        $postId = $data['post_id'] ?? $data['original_post_id'] ?? null;
+        $conversationId = $data['conversation_id'] ?? null;
+        $profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null;
+
+        $href = route('notifications');
+
+        if ($type === 'message_received' && $conversationId) {
+            $href = route('messages.show', $conversationId);
+        } elseif ($type === 'user_followed' && $profileUsername) {
+            $href = route('profile.show', ['user' => $profileUsername]);
+        } elseif ($type === 'added_to_list' && ($data['list_id'] ?? null)) {
+            $href = route('lists.show', $data['list_id']);
+        } elseif ($postId) {
+            $href = route('posts.show', $postId);
+        }
+
+        $this->redirect($href, navigate: true);
+    }
+
     public function markAllRead(): void
     {
         abort_unless(Auth::check(), 403);

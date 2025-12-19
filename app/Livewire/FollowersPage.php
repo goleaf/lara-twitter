@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Follow;
 use App\Models\User;
+use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -48,16 +49,7 @@ class FollowersPage extends Component
         $target = User::query()->findOrFail($targetUserId);
         abort_if(Auth::user()->isBlockedEitherWay($target), 403);
 
-        $isFollowing = Auth::user()
-            ->following()
-            ->where('followed_id', $targetUserId)
-            ->exists();
-
-        if ($isFollowing) {
-            Auth::user()->following()->detach($targetUserId);
-        } else {
-            Auth::user()->following()->attach($targetUserId);
-        }
+        app(FollowService::class)->toggle(Auth::user(), $target);
     }
 
     public function isFollowing(int $targetUserId): bool
@@ -86,4 +78,3 @@ class FollowersPage extends Component
         return view('livewire.followers-page')->layout('layouts.app');
     }
 }
-

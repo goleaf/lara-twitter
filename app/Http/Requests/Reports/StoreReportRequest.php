@@ -13,17 +13,18 @@ class StoreReportRequest extends FormRequest
         return true;
     }
 
-    public static function rulesFor(): array
+    public static function rulesFor(?string $reason = null): array
     {
+        $detailsRequired = $reason !== null && in_array($reason, Report::reasonsRequiringDetails(), true);
+
         return [
             'reason' => ['required', 'string', Rule::in(Report::reasons())],
-            'details' => ['nullable', 'string', 'max:1000'],
+            'details' => [Rule::requiredIf($detailsRequired), 'nullable', 'string', 'max:1000'],
         ];
     }
 
     public function rules(): array
     {
-        return self::rulesFor();
+        return self::rulesFor($this->input('reason'));
     }
 }
-

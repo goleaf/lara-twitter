@@ -24,7 +24,7 @@ new class extends Component
 
         $tags = collect(preg_split('/[\\s,]+/', $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [])
             ->map(fn ($t) => mb_strtolower(ltrim($t, '#')))
-            ->filter(fn ($t) => $t !== '' && preg_match('/^[a-z0-9_\\-]{1,50}$/', $t))
+            ->filter(fn ($t) => $t !== '' && preg_match('/^[\\pL\\pN][\\pL\\pN_]{0,49}$/u', $t))
             ->unique()
             ->take(20)
             ->values()
@@ -62,7 +62,7 @@ new class extends Component
                 autocomplete="off"
             />
             <x-input-error class="mt-2" :messages="$errors->get('interest_hashtags')" />
-            <div class="text-xs opacity-70 mt-1">Up to 20 tags. Letters/numbers/underscore/dash only.</div>
+            <div class="text-xs opacity-70 mt-1">Up to 20 tags. Letters/numbers/underscore only.</div>
         </div>
 
         <div class="flex items-center gap-4">
@@ -74,4 +74,3 @@ new class extends Component
         </div>
     </form>
 </section>
-

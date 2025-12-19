@@ -84,6 +84,19 @@ class SearchTest extends TestCase
             ->assertDontSee('@bob');
     }
 
+    public function test_search_users_by_at_username(): void
+    {
+        User::factory()->create(['username' => 'alice', 'name' => 'Alice A']);
+        User::factory()->create(['username' => 'bob', 'name' => 'Bob B']);
+
+        $response = $this->get(route('search', ['q' => '@ali', 'type' => 'users']));
+
+        $response
+            ->assertOk()
+            ->assertSee('@alice')
+            ->assertDontSee('@bob');
+    }
+
     public function test_search_page_shows_trending_hashtags_when_empty_query(): void
     {
         $alice = User::factory()->create(['username' => 'alice']);
@@ -98,5 +111,30 @@ class SearchTest extends TestCase
             ->assertSee('Trending hashtags')
             ->assertSee('#laravel');
     }
-}
 
+    public function test_search_media_type_shows_only_posts_with_media(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+
+        $video = Post::query()->create([
+            'user_id' => $alice->id,
+            'body' => 'Hello from video',
+            'video_path' => 'posts/1/video.mp4',
+            'video_mime_type' => 'video/mp4',
+        ]);
+
+        Post::query()->create([
+            'user_id' => $alice->id,
+            'body' => 'Hello from text',
+        ]);
+
+        $response = $this->get(route('search', ['q' => 'hello', 'type' => 'media']));
+
+        $response
+            ->assertOk()
+            ->assertSee('Hello from video')
+            ->assertDontSee('Hello from text');
+
+        $this->assertNotNull($video->id);
+    }
+}

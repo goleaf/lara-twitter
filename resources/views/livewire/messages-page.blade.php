@@ -3,6 +3,7 @@
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <div class="text-xl font-semibold">Messages</div>
+                <a class="btn btn-primary btn-sm" href="{{ route('messages.compose') }}" wire:navigate>New</a>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
@@ -30,12 +31,17 @@
             @php($last = $conversation->messages->first())
             @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u->id !== auth()->id()))
             @php($meParticipant = $conversation->participants->firstWhere('user_id', auth()->id()))
+            @php($isUnread = $last && $last->user_id !== auth()->id() && (! $meParticipant?->last_read_at || $meParticipant->last_read_at->lt($last->created_at)))
 
             <a class="card bg-base-100 border hover:border-base-300 transition" href="{{ route('messages.show', $conversation) }}" wire:navigate>
                 <div class="card-body py-4">
                     <div class="flex items-center justify-between gap-4">
                         <div class="min-w-0">
                             <div class="font-semibold truncate">
+                                @if ($isUnread)
+                                    <span class="badge badge-primary badge-sm">New</span>
+                                @endif
+
                                 @if ($meParticipant?->is_pinned)
                                     <span class="badge badge-neutral badge-sm">Pinned</span>
                                 @endif
@@ -48,7 +54,7 @@
                                 @endif
                             </div>
                             <div class="text-sm opacity-70 truncate">
-                                {{ $last?->body ?? (optional($last)->attachments->count() ? 'Attachment' : 'No messages yet') }}
+                                {{ $last?->body ?? ($last?->attachments?->count() ? 'Attachment' : 'No messages yet') }}
                             </div>
                         </div>
 

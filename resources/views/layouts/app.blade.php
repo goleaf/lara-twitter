@@ -24,10 +24,21 @@
 
                     <div class="flex-none gap-2">
                         @auth
+                            @php($unreadNotificationsCount = auth()->user()->unreadNotifications()->count())
                             <a class="btn btn-ghost btn-sm" href="{{ route('search') }}" wire:navigate>Search</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('trending') }}" wire:navigate>Trending</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
-                            <a class="btn btn-ghost btn-sm" href="{{ route('notifications') }}" wire:navigate>Notifications</a>
+                            <div class="indicator">
+                                @if ($unreadNotificationsCount)
+                                    <span class="indicator-item badge badge-primary badge-sm">{{ $unreadNotificationsCount }}</span>
+                                @endif
+                                <a class="btn btn-ghost btn-sm" href="{{ route('notifications') }}" wire:navigate aria-label="Notifications">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <span class="hidden sm:inline">Notifications</span>
+                                </a>
+                            </div>
                             <a class="btn btn-ghost btn-sm" href="{{ route('bookmarks') }}" wire:navigate>Bookmarks</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('mentions') }}" wire:navigate>Mentions</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('messages.index') }}" wire:navigate>Messages</a>

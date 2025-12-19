@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Requests\Profile\UpdateProfileInformationRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Volt\Component;
@@ -16,6 +17,8 @@ new class extends Component
     public string $bio = '';
     public string $location = '';
     public string $website = '';
+    public ?string $birth_date = null;
+    public string $birth_date_visibility = User::BIRTH_DATE_PUBLIC;
     public $avatar;
     public $header;
 
@@ -30,6 +33,8 @@ new class extends Component
         $this->bio = Auth::user()->bio ?? '';
         $this->location = Auth::user()->location ?? '';
         $this->website = Auth::user()->website ?? '';
+        $this->birth_date = Auth::user()->birth_date?->format('Y-m-d');
+        $this->birth_date_visibility = Auth::user()->birth_date_visibility ?? User::BIRTH_DATE_PUBLIC;
     }
 
     /**
@@ -38,6 +43,10 @@ new class extends Component
     public function updateProfileInformation(): void
     {
         $user = Auth::user();
+
+        if ($this->birth_date === '') {
+            $this->birth_date = null;
+        }
 
         $validated = $this->validate(UpdateProfileInformationRequest::rulesFor($user));
 
@@ -173,6 +182,22 @@ new class extends Component
             <x-input-label for="website" :value="__('Website')" />
             <x-text-input wire:model="website" id="website" name="website" type="url" class="mt-1 block w-full" placeholder="https://example.com" autocomplete="off" />
             <x-input-error class="mt-2" :messages="$errors->get('website')" />
+        </div>
+
+        <div>
+            <x-input-label for="birth_date" :value="__('Birth date')" />
+            <input wire:model="birth_date" id="birth_date" name="birth_date" type="date" class="input input-bordered mt-1 block w-full" />
+            <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
+        </div>
+
+        <div>
+            <x-input-label for="birth_date_visibility" :value="__('Birth date visibility')" />
+            <select wire:model="birth_date_visibility" id="birth_date_visibility" class="select select-bordered w-full">
+                <option value="{{ \App\Models\User::BIRTH_DATE_PUBLIC }}">Public</option>
+                <option value="{{ \App\Models\User::BIRTH_DATE_FOLLOWERS }}">Followers</option>
+                <option value="{{ \App\Models\User::BIRTH_DATE_PRIVATE }}">Only you</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('birth_date_visibility')" />
         </div>
 
         <div class="flex items-center gap-4">

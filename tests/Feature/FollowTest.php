@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\ProfilePage;
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -43,5 +44,23 @@ class FollowTest extends TestCase
         Livewire::test(ProfilePage::class, ['user' => $bob])
             ->call('toggleFollow')
             ->assertStatus(403);
+    }
+
+    public function test_follow_sets_pivot_timestamps(): void
+    {
+        $alice = User::factory()->create(['username' => 'alice']);
+        $bob = User::factory()->create(['username' => 'bob']);
+
+        Livewire::actingAs($alice)
+            ->test(ProfilePage::class, ['user' => $bob])
+            ->call('toggleFollow');
+
+        $follow = Follow::query()
+            ->where('follower_id', $alice->id)
+            ->where('followed_id', $bob->id)
+            ->firstOrFail();
+
+        $this->assertNotNull($follow->created_at);
+        $this->assertNotNull($follow->updated_at);
     }
 }

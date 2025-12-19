@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,18 +50,35 @@ class DiscoverService
 
         $candidateIds = $mutuals->keys()->all();
 
-        if (empty($candidateIds)) {
-            return collect();
+        $users = collect();
+
+        if (! empty($candidateIds)) {
+            $users = User::query()
+                ->withCount('followers')
+                ->whereIn('id', $candidateIds)
+                ->get()
+                ->each(function (User $u) use ($mutuals) {
+                    $u->setAttribute('mutual_count', (int) ($mutuals[$u->id]->mutual_count ?? 0));
+                })
+                ->sortByDesc(fn (User $u) => (int) ($u->getAttribute('mutual_count') ?? 0))
+                ->values()
+                ->take($limit);
         }
 
-        $users = User::query()
-            ->whereIn('id', $candidateIds)
-            ->get()
-            ->sortByDesc(fn (User $u) => (int) ($mutuals[$u->id]->mutual_count ?? 0))
-            ->values()
-            ->take($limit);
+        $remaining = $limit - $users->count();
+        if ($remaining <= 0) {
+            return $users;
+        }
 
-        return $users;
+        $fallback = User::query()
+            ->withCount('followers')
+            ->whereNotIn('id', array_merge($excludeIds, $users->pluck('id')->all()))
+            ->orderByDesc('followers_count')
+            ->latest()
+            ->limit($remaining)
+            ->get();
+
+        return $users->concat($fallback)->values();
     }
 
     public function forYouPosts(?User $viewer, int $limit = 15)
@@ -79,10 +97,12 @@ class DiscoverService
         $this->applyViewerExclusions($query, $viewer);
 
         if ($viewer) {
-            $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+            $query->where('user_id', '!=', $viewer->id);
+
+            $followingIds = $viewer->following()->pluck('users.id')->all();
             $idsCsv = implode(',', array_map('intval', $followingIds));
             if ($idsCsv !== '') {
-                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end desc");
+                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
             }
         }
 
@@ -116,10 +136,12 @@ class DiscoverService
         }
 
         if ($viewer) {
-            $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+            $query->where('user_id', '!=', $viewer->id);
+
+            $followingIds = $viewer->following()->pluck('users.id')->all();
             $idsCsv = implode(',', array_map('intval', $followingIds));
             if ($idsCsv !== '') {
-                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end desc");
+                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
             }
         }
 
@@ -128,6 +150,65 @@ class DiscoverService
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();
+    }
+
+    public function topPostsForHashtags(array $tags, ?User $viewer, int $perTag = 2, int $limitTags = 5): Collection
+    {
+        $normalized = collect($tags)
+            ->filter(fn ($t) => is_string($t) && trim($t) !== '')
+            ->map(fn ($t) => mb_strtolower(ltrim(trim($t), '#')))
+            ->unique()
+            ->take($limitTags)
+            ->values();
+
+        if ($normalized->isEmpty()) {
+            return collect();
+        }
+
+        $hashtagIds = Hashtag::query()
+            ->whereIn('tag', $normalized->all())
+            ->pluck('id', 'tag');
+
+        if ($hashtagIds->isEmpty()) {
+            return collect();
+        }
+
+        $query = Post::query()
+            ->select('posts.*', 'hashtag_post.hashtag_id')
+            ->join('hashtag_post', 'hashtag_post.post_id', '=', 'posts.id')
+            ->whereIn('hashtag_post.hashtag_id', $hashtagIds->values()->all())
+            ->whereNull('posts.reply_to_id')
+            ->where('posts.is_reply_like', false)
+            ->where('posts.created_at', '>=', now()->subDay())
+            ->with([
+                'user',
+                'images',
+                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
+            ])
+            ->withCount(['likes', 'reposts', 'replies']);
+
+        $this->applyViewerExclusions($query, $viewer);
+
+        if ($viewer) {
+            $query->where('posts.user_id', '!=', $viewer->id);
+        }
+
+        $posts = $query
+            ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
+            ->orderByDesc('posts.created_at')
+            ->limit(250)
+            ->get();
+
+        $byHashtag = $posts->groupBy('hashtag_id');
+
+        return $normalized
+            ->mapWithKeys(function (string $tag) use ($hashtagIds, $byHashtag, $perTag) {
+                $id = (int) ($hashtagIds[$tag] ?? 0);
+
+                $items = $id ? ($byHashtag->get($id, collect())->take($perTag)->values()) : collect();
+
+                return [$tag => $items];
+            });
     }
 
     private function applyViewerExclusions(Builder $query, ?User $viewer): void

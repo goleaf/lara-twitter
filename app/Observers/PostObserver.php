@@ -6,6 +6,7 @@ use App\Models\Hashtag;
 use App\Models\Mention;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\FollowedUserPosted;
 use App\Notifications\PostMentioned;
 use App\Notifications\PostReposted;
 use App\Notifications\PostReplied;
@@ -123,6 +124,10 @@ class PostObserver
         }
 
         if (! $post->reply_to_id) {
+            if (! $post->repost_of_id) {
+                $this->notifyFollowersOfNewPost($post);
+            }
+
             return;
         }
 
@@ -159,6 +164,41 @@ class PostObserver
             replyPost: $post,
             replier: $post->user,
         ));
+    }
+
+    private function notifyFollowersOfNewPost(Post $post): void
+    {
+        if ($post->is_reply_like) {
+            return;
+        }
+
+        $post->loadMissing('user');
+
+        $author = $post->user;
+        $followers = $author->followers()->get();
+
+        foreach ($followers as $follower) {
+            if (! $follower->wantsNotification('followed_posts')) {
+                continue;
+            }
+
+            if ($author->isBlockedEitherWay($follower)) {
+                continue;
+            }
+
+            if ($follower->hasMuted($author)) {
+                continue;
+            }
+
+            if (! $follower->allowsNotificationFrom($author)) {
+                continue;
+            }
+
+            $follower->notify(new FollowedUserPosted(
+                post: $post,
+                author: $author,
+            ));
+        }
     }
 
     public function deleting(Post $post): void

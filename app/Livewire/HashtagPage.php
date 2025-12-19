@@ -25,7 +25,7 @@ class HashtagPage extends Component
         $this->sort = $this->normalizedSort();
 
         $clean = ltrim($this->tag, '#');
-        abort_unless((bool) preg_match('/^[A-Za-z0-9_]{1,50}$/', $clean), 404);
+        abort_unless((bool) preg_match('/^[\pL\pN][\pL\pN_]{0,49}$/u', $clean), 404);
         $this->tag = $clean;
     }
 

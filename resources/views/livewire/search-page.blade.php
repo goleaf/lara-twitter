@@ -7,7 +7,7 @@
                 <input
                     class="input input-bordered w-full"
                     type="text"
-                    placeholder="Search posts, users, #hashtags, @mentions…"
+                    placeholder="Search posts, users, #hashtags, @mentions, or URLs…"
                     wire:model.live.debounce.350ms="q"
                 />
 
@@ -15,6 +15,7 @@
                     <select class="select select-bordered w-full" wire:model.live="type">
                         <option value="all">All</option>
                         <option value="posts">Posts</option>
+                        <option value="media">Media</option>
                         <option value="users">Users</option>
                         <option value="tags">Hashtags</option>
                     </select>
@@ -36,7 +37,7 @@
                 </div>
 
                 <div class="text-xs opacity-70">
-                    Tips: `from:alice`, `to:alice`, `since:2025-01-01`, `until:2025-01-31`, `min_likes:10`, `min_retweets:5`, `has:images`, `has:links`, `\"exact phrase\"`, `-exclude`.
+                    Tips: `from:alice`, `to:alice`, `since:2025-01-01`, `until:2025-01-31`, `min_faves:10`, `min_retweets:5`, `filter:verified`, `has:media`, `has:images`, `has:videos`, `has:links`, `"exact phrase"`, `laravel OR symfony`, `-exclude`.
                 </div>
             </div>
         </div>
@@ -98,7 +99,7 @@
         </div>
     @endif
 
-    @if (in_array($type, ['all', 'posts'], true))
+    @if (in_array($type, ['all', 'posts', 'media'], true))
         <div class="space-y-3">
             @foreach (($this->posts ?? []) as $post)
                 <livewire:post-card :post="$post" :key="$post->id" />

@@ -49,7 +49,7 @@ class ReportButton extends Component
     {
         abort_unless(Auth::check(), 403);
 
-        $validated = $this->validate(StoreReportRequest::rulesFor());
+        $validated = $this->validate(StoreReportRequest::rulesFor($this->reason));
 
         $reportable = $this->resolveReportable();
         $this->authorizeReportable($reportable);
@@ -144,7 +144,7 @@ class ReportButton extends Component
     public function render()
     {
         return view('livewire.report-button', [
-            'reasons' => Report::reasons(),
+            'reasonOptions' => Report::reasonOptions(),
         ]);
     }
 }

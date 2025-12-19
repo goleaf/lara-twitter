@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 
@@ -15,9 +16,33 @@ class PostCard extends Component
 {
     public Post $post;
 
+    public int $primaryId;
+
+    public bool $bookmarked = false;
+
     public bool $isQuoting = false;
+    public bool $isReplying = false;
+    public bool $showThread = false;
 
     public string $quote_body = '';
+    public ?string $replyError = null;
+
+    protected $listeners = [
+        'reply-created.{primaryId}' => 'handleReplyCreated',
+    ];
+
+    public function mount(Post $post): void
+    {
+        $this->post = $post;
+        $this->primaryId = ($post->repost_of_id && $post->body === '') ? (int) $post->repost_of_id : (int) $post->id;
+
+        if (Auth::check()) {
+            $this->bookmarked = Bookmark::query()
+                ->where('user_id', Auth::id())
+                ->where('post_id', $this->primaryId)
+                ->exists();
+        }
+    }
 
     public function primaryPost(): Post
     {
@@ -77,20 +102,13 @@ class PostCard extends Component
                 'post_id' => $post->id,
             ]);
         }
+
+        $this->bookmarked = ! $existing;
     }
 
     public function hasBookmarked(): bool
     {
-        if (! Auth::check()) {
-            return false;
-        }
-
-        $post = $this->primaryPost();
-
-        return Bookmark::query()
-            ->where('user_id', Auth::id())
-            ->where('post_id', $post->id)
-            ->exists();
+        return $this->bookmarked;
     }
 
     public function toggleRepost(): void
@@ -169,7 +187,7 @@ class PostCard extends Component
 
     public function quoteBodyHtml(): HtmlString
     {
-        return app(\App\Services\PostBodyRenderer::class)->render($this->post->body);
+        return app(\App\Services\PostBodyRenderer::class)->render($this->post->body, $this->post->id);
     }
 
     public function replyingToUsername(): ?string
@@ -189,9 +207,74 @@ class PostCard extends Component
         return null;
     }
 
+    public function toggleReplyComposer(): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $post = $this->primaryPost();
+        $post->loadMissing('user');
+
+        if (! $post->canBeRepliedBy(Auth::user())) {
+            $this->replyError = 'Replies are limited by the author.';
+            $this->isReplying = false;
+
+            return;
+        }
+
+        $this->replyError = null;
+        $this->isQuoting = false;
+        $this->isReplying = ! $this->isReplying;
+        $this->showThread = $this->showThread || $this->isReplying;
+    }
+
+    public function hideThread(): void
+    {
+        $this->showThread = false;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getThreadRepliesProperty(): Collection
+    {
+        $limit = 3;
+
+        $query = Post::query()
+            ->where('reply_to_id', $this->primaryId)
+            ->with([
+                'user',
+                'images',
+                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+            ])
+            ->withCount(['likes', 'reposts'])
+            ->latest()
+            ->limit($limit);
+
+        if (Auth::check()) {
+            $exclude = Auth::user()->excludedUserIds();
+            if ($exclude->isNotEmpty()) {
+                $query->whereNotIn('user_id', $exclude);
+            }
+        }
+
+        return $query->get()->reverse()->values();
+    }
+
+    public function handleReplyCreated(): void
+    {
+        if ($this->isReplying) {
+            $this->isReplying = false;
+            $this->showThread = true;
+        }
+
+        $this->replyError = null;
+    }
+
     public function bodyHtml(): HtmlString
     {
-        return app(\App\Services\PostBodyRenderer::class)->render($this->primaryPost()->body);
+        $primary = $this->primaryPost();
+
+        return app(\App\Services\PostBodyRenderer::class)->render($primary->body, $primary->id);
     }
 
     public function imageUrls(): array

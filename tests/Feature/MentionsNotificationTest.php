@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Block;
+use App\Models\Mute;
 use App\Notifications\PostMentioned;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -69,5 +71,44 @@ class MentionsNotificationTest extends TestCase
 
         Notification::assertNothingSent();
     }
-}
 
+    public function test_mention_does_not_notify_when_mentioned_user_muted_author(): void
+    {
+        Notification::fake();
+
+        $author = User::factory()->create(['username' => 'alice']);
+        $mentioned = User::factory()->create(['username' => 'bob']);
+
+        Mute::query()->create([
+            'muter_id' => $mentioned->id,
+            'muted_id' => $author->id,
+        ]);
+
+        Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'Hi @bob',
+        ]);
+
+        Notification::assertNotSentTo($mentioned, PostMentioned::class);
+    }
+
+    public function test_mention_does_not_notify_when_mentioned_user_blocked_author(): void
+    {
+        Notification::fake();
+
+        $author = User::factory()->create(['username' => 'alice']);
+        $mentioned = User::factory()->create(['username' => 'bob']);
+
+        Block::query()->create([
+            'blocker_id' => $mentioned->id,
+            'blocked_id' => $author->id,
+        ]);
+
+        Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'Hi @bob',
+        ]);
+
+        Notification::assertNotSentTo($mentioned, PostMentioned::class);
+    }
+}

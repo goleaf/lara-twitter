@@ -49,6 +49,7 @@ class ListsPage extends Component
     {
         return Auth::user()
             ->listsMemberOf()
+            ->where('user_lists.is_private', false)
             ->with('owner')
             ->withCount('members')
             ->latest()

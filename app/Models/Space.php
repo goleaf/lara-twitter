@@ -13,11 +13,13 @@ class Space extends Model
     use HasFactory;
 
     public const MAX_SPEAKERS = 13; // includes host/co-hosts
+    public const DEFAULT_MIN_FOLLOWERS_TO_HOST = 0;
 
     protected $fillable = [
         'host_user_id',
         'title',
         'description',
+        'pinned_post_id',
         'scheduled_for',
         'recording_enabled',
         'started_at',
@@ -36,9 +38,19 @@ class Space extends Model
         ];
     }
 
+    public static function minFollowersToHost(): int
+    {
+        return (int) config('spaces.min_followers_to_host', self::DEFAULT_MIN_FOLLOWERS_TO_HOST);
+    }
+
     public function host(): BelongsTo
     {
         return $this->belongsTo(User::class, 'host_user_id');
+    }
+
+    public function pinnedPost(): BelongsTo
+    {
+        return $this->belongsTo(Post::class, 'pinned_post_id');
     }
 
     public function participants(): HasMany

@@ -14,6 +14,20 @@
         <div class="card bg-base-100 border">
             <div class="card-body space-y-3">
                 <div class="font-semibold">Host a Space</div>
+                <x-input-error class="mt-2" :messages="$errors->get('host')" />
+
+                @php($minFollowers = \App\Models\Space::minFollowersToHost())
+                @php($myFollowers = $minFollowers > 0 ? auth()->user()->followers()->count() : 0)
+
+                @if ($minFollowers > 0 && $myFollowers < $minFollowers)
+                    <div class="alert alert-warning">
+                        <div class="text-sm">
+                            You need at least {{ $minFollowers }} followers to host a Space.
+                            You currently have {{ $myFollowers }}.
+                        </div>
+                    </div>
+                @endif
+
                 <form wire:submit="create" class="space-y-3">
                     <div>
                         <x-input-label for="title" value="Title" />
@@ -39,7 +53,13 @@
                     </label>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="btn btn-primary btn-sm">Create</button>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-sm"
+                            @disabled($minFollowers > 0 && $myFollowers < $minFollowers)
+                        >
+                            Create
+                        </button>
                     </div>
                 </form>
             </div>

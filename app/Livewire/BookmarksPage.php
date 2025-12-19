@@ -30,11 +30,10 @@ class BookmarksPage extends Component
         $query = Auth::user()
             ->bookmarkedPosts()
             ->getQuery()
-            ->whereNull('reply_to_id')
-            ->where('is_reply_like', false)
             ->with([
                 'user',
                 'images',
+                'replyTo.user',
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
             ])
             ->withCount(['likes', 'reposts', 'replies'])

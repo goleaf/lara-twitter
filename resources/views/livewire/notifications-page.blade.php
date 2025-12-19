@@ -28,26 +28,21 @@
             @php($profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null)
 
             @php($href = '#')
-            @php($navigate = false)
 
             @if ($type === 'message_received' && $conversationId)
                 @php($href = route('messages.show', $conversationId))
-                @php($navigate = true)
             @elseif ($type === 'user_followed' && $profileUsername)
                 @php($href = route('profile.show', ['user' => $profileUsername]))
-                @php($navigate = true)
             @elseif ($type === 'added_to_list' && ($data['list_id'] ?? null))
                 @php($href = route('lists.show', $data['list_id']))
-                @php($navigate = true)
             @elseif ($postId)
                 @php($href = route('posts.show', $postId))
-                @php($navigate = true)
             @endif
 
             <a
                 class="card bg-base-100 border hover:border-base-300 transition {{ $isUnread ? 'border-primary/40' : '' }}"
                 href="{{ $href }}"
-                @if ($navigate) wire:navigate @endif
+                wire:click.prevent="open('{{ $notification->id }}')"
             >
                 <div class="card-body py-4">
                     <div class="flex items-start justify-between gap-4">
@@ -68,6 +63,8 @@
                                     &#64;{{ $data['sender_username'] ?? 'someone' }} sent you a message
                                 @elseif ($type === 'added_to_list')
                                     You were added to the list “{{ $data['list_name'] ?? 'a list' }}”
+                                @elseif ($type === 'followed_user_posted')
+                                    &#64;{{ $data['actor_username'] ?? 'someone' }} posted
                                 @else
                                     Notification
                                 @endif

@@ -32,6 +32,8 @@ class UpdateProfileInformationRequest extends FormRequest
             'bio' => ['nullable', 'string', 'max:160'],
             'location' => ['nullable', 'string', 'max:80'],
             'website' => ['nullable', 'string', 'max:255', 'url:http,https'],
+            'birth_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'birth_date_visibility' => ['nullable', Rule::in(User::birthDateVisibilities())],
             'avatar' => ['nullable', 'image', 'max:2048'],
             'header' => ['nullable', 'image', 'max:4096'],
         ];

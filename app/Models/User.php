@@ -3,16 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -34,6 +34,8 @@ class User extends Authenticatable implements FilamentUser
         'bio',
         'location',
         'website',
+        'birth_date',
+        'birth_date_visibility',
         'is_admin',
         'is_premium',
         'is_verified',
@@ -62,6 +64,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_premium' => 'boolean',
@@ -82,7 +85,9 @@ class User extends Authenticatable implements FilamentUser
     }
 
     public const DM_EVERYONE = 'everyone';
+
     public const DM_FOLLOWING = 'following';
+
     public const DM_NONE = 'none';
 
     public static function dmPolicies(): array
@@ -92,6 +97,51 @@ class User extends Authenticatable implements FilamentUser
             self::DM_FOLLOWING,
             self::DM_NONE,
         ];
+    }
+
+    public const BIRTH_DATE_PUBLIC = 'public';
+
+    public const BIRTH_DATE_FOLLOWERS = 'followers';
+
+    public const BIRTH_DATE_PRIVATE = 'private';
+
+    public static function birthDateVisibilities(): array
+    {
+        return [
+            self::BIRTH_DATE_PUBLIC,
+            self::BIRTH_DATE_FOLLOWERS,
+            self::BIRTH_DATE_PRIVATE,
+        ];
+    }
+
+    public function canShowBirthDateTo(?User $viewer): bool
+    {
+        if (! $this->birth_date) {
+            return false;
+        }
+
+        $visibility = $this->birth_date_visibility ?: self::BIRTH_DATE_PUBLIC;
+
+        if ($visibility === self::BIRTH_DATE_PUBLIC) {
+            return true;
+        }
+
+        if (! $viewer) {
+            return false;
+        }
+
+        if ($viewer->is($this)) {
+            return true;
+        }
+
+        if ($visibility === self::BIRTH_DATE_PRIVATE) {
+            return false;
+        }
+
+        return $viewer
+            ->following()
+            ->where('followed_id', $this->id)
+            ->exists();
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -125,12 +175,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function following(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id');
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')->withTimestamps();
     }
 
     public function followers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
     }
 
     public function getAvatarUrlAttribute(): ?string
@@ -163,6 +213,7 @@ class User extends Authenticatable implements FilamentUser
             'follows' => true,
             'dms' => true,
             'lists' => true,
+            'followed_posts' => false,
         ];
 
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);
@@ -171,6 +222,14 @@ class User extends Authenticatable implements FilamentUser
     public function allowsNotificationFrom(User $actor): bool
     {
         if ($this->id === $actor->id) {
+            return false;
+        }
+
+        if ($this->isBlockedEitherWay($actor)) {
+            return false;
+        }
+
+        if ($this->hasMuted($actor)) {
             return false;
         }
 
