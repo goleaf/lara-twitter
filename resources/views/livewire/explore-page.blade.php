@@ -225,21 +225,35 @@
                     <div class="font-semibold">Discover people</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->recommendedUsers as $u)
-                            <div class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition">
-                                <a class="min-w-0" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-                                    <div class="font-semibold truncate">{{ $u->name }}</div>
-                                    <div class="text-sm opacity-70 truncate">&#64;{{ $u->username }}</div>
-                                    @if (($u->mutual_count ?? 0) > 0)
-                                        <div class="text-xs opacity-60 truncate">
-                                            {{ $u->mutual_count }} mutual follow{{ $u->mutual_count === 1 ? '' : 's' }}
+                            <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition">
+                                <a class="flex items-center gap-3 min-w-0" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                                    <div class="avatar">
+                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                            @if ($u->avatar_url)
+                                                <img src="{{ $u->avatar_url }}" alt="" />
+                                            @else
+                                                <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                    {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
+                                                </div>
+                                            @endif
                                         </div>
-                                    @elseif (($u->interest_posts_count ?? 0) > 0)
-                                        <div class="text-xs opacity-60 truncate">Based on your interests</div>
-                                    @elseif (! is_null($u->followers_count ?? null))
-                                        <div class="text-xs opacity-60 truncate">
-                                            {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
-                                        </div>
-                                    @endif
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <div class="font-semibold truncate">{{ $u->name }}</div>
+                                        <div class="text-xs opacity-60 truncate">&#64;{{ $u->username }}</div>
+                                        @if (($u->mutual_count ?? 0) > 0)
+                                            <div class="text-xs opacity-60 truncate">
+                                                {{ $u->mutual_count }} mutual follow{{ $u->mutual_count === 1 ? '' : 's' }}
+                                            </div>
+                                        @elseif (($u->interest_posts_count ?? 0) > 0)
+                                            <div class="text-xs opacity-60 truncate">Based on your interests</div>
+                                        @elseif (! is_null($u->followers_count ?? null))
+                                            <div class="text-xs opacity-60 truncate">
+                                                {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
+                                            </div>
+                                        @endif
+                                    </div>
                                 </a>
 
                                 @auth

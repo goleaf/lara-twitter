@@ -68,12 +68,27 @@
                 <div class="font-semibold">Users</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->users as $u)
-                        <a class="flex items-center justify-between gap-4 hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-                            <div class="min-w-0">
-                                <div class="font-semibold truncate">{{ $u->name }}</div>
-                                <div class="text-sm opacity-70 truncate">&#64;{{ $u->username }}</div>
+                        <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="avatar">
+                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                        @if ($u->avatar_url)
+                                            <img src="{{ $u->avatar_url }}" alt="" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate">{{ $u->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">&#64;{{ $u->username }}</div>
+                                </div>
                             </div>
-                            <div class="text-sm opacity-60">View</div>
+
+                            <div class="text-sm opacity-60 shrink-0">View</div>
                         </a>
                     @empty
                         <div class="opacity-70 text-sm">No users found.</div>

@@ -38,11 +38,28 @@
             <div class="card-body">
                 <div class="space-y-3">
                     @forelse ($this->retweeters as $retweet)
-                        <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $retweet->user->username]) }}" wire:navigate>
-                            <div class="min-w-0">
-                                <div class="font-semibold truncate">
-                                    {{ $retweet->user->name }}
-                                    <span class="opacity-60 font-normal">&#64;{{ $retweet->user->username }}</span>
+                        @php($user = $retweet->user)
+                        @if (! $user)
+                            @continue
+                        @endif
+
+                        <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="avatar">
+                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                        @if ($user->avatar_url)
+                                            <img src="{{ $user->avatar_url }}" alt="" />
+                                        @else
+                                            <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate">{{ $user->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">&#64;{{ $user->username }}</div>
                                 </div>
                             </div>
                             <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
