@@ -114,8 +114,23 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('editing_caption')" />
 
                                 <div class="flex justify-end gap-2">
-                                    <button type="button" class="btn btn-ghost btn-sm" wire:click="cancelEditingCaption">Cancel</button>
-                                    <button type="submit" class="btn btn-outline btn-sm">Save</button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-sm"
+                                        wire:click="cancelEditingCaption"
+                                        wire:loading.attr="disabled"
+                                        wire:target="cancelEditingCaption,saveCaption"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline btn-sm"
+                                        wire:loading.attr="disabled"
+                                        wire:target="saveCaption"
+                                    >
+                                        Save
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -131,12 +146,42 @@
                 @auth
                     @if (auth()->id() === $moment->owner_id)
                         <div class="flex items-center justify-end gap-2">
-                            <button type="button" class="btn btn-ghost btn-xs" wire:click="startEditingCaption({{ $item->id }})">
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs"
+                                wire:click="startEditingCaption({{ $item->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="startEditingCaption({{ $item->id }})"
+                            >
                                 {{ $item->caption ? 'Edit caption' : 'Add caption' }}
                             </button>
-                            <button type="button" class="btn btn-ghost btn-xs" wire:click="moveItemUp({{ $item->id }})">Up</button>
-                            <button type="button" class="btn btn-ghost btn-xs" wire:click="moveItemDown({{ $item->id }})">Down</button>
-                            <button type="button" class="btn btn-ghost btn-xs" wire:click="removeItem({{ $item->id }})">Remove</button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs"
+                                wire:click="moveItemUp({{ $item->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="moveItemUp({{ $item->id }})"
+                            >
+                                Up
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs"
+                                wire:click="moveItemDown({{ $item->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="moveItemDown({{ $item->id }})"
+                            >
+                                Down
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs"
+                                wire:click="removeItem({{ $item->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="removeItem({{ $item->id }})"
+                            >
+                                Remove
+                            </button>
                         </div>
                     @endif
                 @endauth

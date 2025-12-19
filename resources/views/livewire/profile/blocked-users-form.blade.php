@@ -75,7 +75,13 @@ new class extends Component
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-outline btn-sm" wire:click="unblock({{ $user->id }})">
+                <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    wire:click="unblock({{ $user->id }})"
+                    wire:loading.attr="disabled"
+                    wire:target="unblock({{ $user->id }})"
+                >
                     {{ __('Unblock') }}
                 </button>
             </div>

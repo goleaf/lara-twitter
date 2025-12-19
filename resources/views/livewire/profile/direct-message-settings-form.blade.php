@@ -63,7 +63,7 @@ new class extends Component
         <x-input-error class="mt-2" :messages="$errors->get('dm_read_receipts')" />
 
         <div class="flex items-center gap-3 pt-2">
-            <x-primary-button>Save</x-primary-button>
+            <x-primary-button wire:loading.attr="disabled" wire:target="save">Save</x-primary-button>
             <x-action-message class="me-3" on="dm-settings-updated">Saved.</x-action-message>
         </div>
     </form>

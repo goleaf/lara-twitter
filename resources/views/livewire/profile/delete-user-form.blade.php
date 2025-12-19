@@ -69,7 +69,7 @@ new class extends Component
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3">
+                <x-danger-button class="ms-3" wire:loading.attr="disabled" wire:target="deleteUser">
                     {{ __('Delete Account') }}
                 </x-danger-button>
             </div>
