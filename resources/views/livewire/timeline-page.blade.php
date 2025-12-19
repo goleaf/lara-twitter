@@ -95,6 +95,38 @@
         </div>
 
         <div class="space-y-4 lg:sticky lg:top-6 self-start">
+            @guest
+                <div class="card bg-base-100 border">
+                    <div class="card-body space-y-3">
+                        <div class="flex items-center gap-3">
+                            <x-brand-mark />
+                            <div class="min-w-0">
+                                <div class="text-lg font-bold tracking-tight">{{ config('app.name', 'MiniTwitter') }}</div>
+                                <div class="text-sm opacity-70">Browse the timeline. Sign in to post, follow, and chat.</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Log in</a>
+                            @if (Route::has('register'))
+                                <a class="btn btn-outline btn-sm" href="{{ route('register') }}" wire:navigate>Create account</a>
+                            @endif
+                        </div>
+
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-ghost badge-sm">Posts</span>
+                            <span class="badge badge-ghost badge-sm">Spaces</span>
+                            <span class="badge badge-ghost badge-sm">Messages</span>
+                            <span class="badge badge-ghost badge-sm">Bookmarks</span>
+                        </div>
+
+                        <div class="text-xs opacity-70">
+                            Tip: try searching for <span class="font-mono">#laravel</span>, <span class="font-mono">@username</span>, or <span class="font-mono">from:@username</span>.
+                        </div>
+                    </div>
+                </div>
+            @endguest
+
             <div class="card bg-base-100 border" wire:poll.visible.120s>
                 <div class="card-body">
                     <div class="flex items-center justify-between">
