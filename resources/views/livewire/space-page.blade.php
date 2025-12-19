@@ -75,66 +75,60 @@
                 </div>
             @endif
 
-                @if ($isModerator)
-                    <div class="pt-3">
-                        <form wire:submit="pinPost" class="flex flex-wrap items-end gap-2">
-                            <div class="grow min-w-[14rem]">
-                                <x-input-label for="pinned_post_id" value="Pin a post (ID or URL)" />
-                                <x-text-input id="pinned_post_id" class="mt-1 block w-full input-sm" wire:model="pinned_post_id" />
-                                <x-input-error class="mt-2" :messages="$errors->get('pinned_post_id')" />
-                            </div>
-                            <button type="submit" class="btn btn-outline btn-sm" wire:loading.attr="disabled" wire:target="pinPost">Pin</button>
-                            @if ($space->pinned_post_id)
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="unpinPost" wire:loading.attr="disabled" wire:target="unpinPost">Unpin</button>
-                            @endif
-                        </form>
-                    </div>
-                @endif
-
-            <div class="alert alert-info mt-2" role="note">
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                    <div class="font-semibold">Audio not implemented</div>
-                    <div class="text-sm opacity-70">This is a MVP placeholder for Spaces. To add live audio we need WebRTC signaling + TURN/STUN or a provider (Twilio/Agora).</div>
+            @if ($isModerator)
+                <div class="pt-3">
+                    <form wire:submit="pinPost" class="flex flex-wrap items-end gap-2">
+                        <div class="grow min-w-[14rem]">
+                            <x-input-label for="pinned_post_id" value="Pin a post (ID or URL)" />
+                            <x-text-input id="pinned_post_id" class="mt-1 block w-full input-sm" wire:model="pinned_post_id" />
+                            <x-input-error class="mt-2" :messages="$errors->get('pinned_post_id')" />
+                        </div>
+                        <button type="submit" class="btn btn-outline btn-sm" wire:loading.attr="disabled" wire:target="pinPost">Pin</button>
+                        @if ($space->pinned_post_id)
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="unpinPost" wire:loading.attr="disabled" wire:target="unpinPost">Unpin</button>
+                        @endif
+                    </form>
                 </div>
-            </div>
+            @endif
 
-                <div class="flex items-center gap-2 pt-2">
-                    @auth
-                        @if (!$participant || $participant->left_at)
-                            <button class="btn btn-primary btn-sm" wire:click="join" wire:loading.attr="disabled" wire:target="join">Join</button>
-                        @else
-                            <button class="btn btn-outline btn-sm" wire:click="leave" wire:loading.attr="disabled" wire:target="leave">Leave</button>
-                        @endif
-    
-                        @if ($isHost)
-                            @if (!$space->isLive() && !$space->isEnded())
-                                <button class="btn btn-outline btn-sm" wire:click="start" wire:loading.attr="disabled" wire:target="start">Start</button>
-                            @endif
-                            @if (!$space->isEnded())
-                                <button class="btn btn-outline btn-sm" wire:click="end" wire:loading.attr="disabled" wire:target="end">End</button>
-                            @endif
-                        @endif
+            <x-callout type="info" title="Audio not implemented" class="mt-2">
+                This is a MVP placeholder for Spaces. To add live audio we need WebRTC signaling + TURN/STUN or a provider (Twilio/Agora).
+            </x-callout>
+
+            <div class="flex items-center gap-2 pt-2">
+                @auth
+                    @if (! $participant || $participant->left_at)
+                        <button class="btn btn-primary btn-sm" wire:click="join" wire:loading.attr="disabled" wire:target="join">Join</button>
                     @else
-                        <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login to join</a>
+                        <button class="btn btn-outline btn-sm" wire:click="leave" wire:loading.attr="disabled" wire:target="leave">Leave</button>
+                    @endif
+
+                    @if ($isHost)
+                        @if (! $space->isLive() && ! $space->isEnded())
+                            <button class="btn btn-outline btn-sm" wire:click="start" wire:loading.attr="disabled" wire:target="start">Start</button>
+                        @endif
+                        @if (! $space->isEnded())
+                            <button class="btn btn-outline btn-sm" wire:click="end" wire:loading.attr="disabled" wire:target="end">End</button>
+                        @endif
+                    @endif
+                @else
+                    <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login to join</a>
                 @endauth
             </div>
 
             @auth
-                    @if ($participant && $participant->left_at === null && ! $space->isEnded())
-                        <div class="pt-2" wire:poll.5s>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <div class="text-sm opacity-70">Reactions</div>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👍')" wire:loading.attr="disabled" wire:target="react">👍</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('❤️')" wire:loading.attr="disabled" wire:target="react">❤️</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😂')" wire:loading.attr="disabled" wire:target="react">😂</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👏')" wire:loading.attr="disabled" wire:target="react">👏</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🔥')" wire:loading.attr="disabled" wire:target="react">🔥</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🎉')" wire:loading.attr="disabled" wire:target="react">🎉</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😮')" wire:loading.attr="disabled" wire:target="react">😮</button>
-                                <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😢')" wire:loading.attr="disabled" wire:target="react">😢</button>
+                @if ($participant && $participant->left_at === null && ! $space->isEnded())
+                    <div class="pt-2" wire:poll.5s>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="text-sm opacity-70">Reactions</div>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👍')" wire:loading.attr="disabled" wire:target="react">👍</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('❤️')" wire:loading.attr="disabled" wire:target="react">❤️</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😂')" wire:loading.attr="disabled" wire:target="react">😂</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('👏')" wire:loading.attr="disabled" wire:target="react">👏</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🔥')" wire:loading.attr="disabled" wire:target="react">🔥</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('🎉')" wire:loading.attr="disabled" wire:target="react">🎉</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😮')" wire:loading.attr="disabled" wire:target="react">😮</button>
+                            <button type="button" class="btn btn-ghost btn-sm" wire:click="react('😢')" wire:loading.attr="disabled" wire:target="react">😢</button>
 
                             @if ($this->reactionCounts->isNotEmpty())
                                 <div class="flex flex-wrap items-center gap-1">
@@ -147,12 +141,12 @@
                     </div>
                 @endif
 
-                    @if ($participant && $participant->left_at === null && $participant->role === 'listener' && ! $space->isEnded())
-                        <div class="flex items-center gap-2 pt-2">
-                            <button class="btn btn-outline btn-sm" wire:click="requestToSpeak" wire:loading.attr="disabled" wire:target="requestToSpeak">Request to speak</button>
-                            @if ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_PENDING)
-                                <div class="text-sm opacity-70">Request pending</div>
-                            @elseif ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_DENIED)
+                @if ($participant && $participant->left_at === null && $participant->role === 'listener' && ! $space->isEnded())
+                    <div class="flex items-center gap-2 pt-2">
+                        <button class="btn btn-outline btn-sm" wire:click="requestToSpeak" wire:loading.attr="disabled" wire:target="requestToSpeak">Request to speak</button>
+                        @if ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_PENDING)
+                            <div class="text-sm opacity-70">Request pending</div>
+                        @elseif ($myRequest?->status === \App\Models\SpaceSpeakerRequest::STATUS_DENIED)
                             <div class="text-sm opacity-70">Request denied</div>
                         @endif
                     </div>
@@ -203,7 +197,9 @@
                             </div>
                         </div>
                     @empty
-                        <div class="opacity-70 text-sm">No pending requests.</div>
+                        <x-empty-state class="px-3 py-2">
+                            No pending requests.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -253,21 +249,23 @@
                                 <span class="badge badge-ghost badge-sm">You</span>
                             @endif
 
-                                @if ($isModerator && $p->user_id !== $space->host_user_id)
-                                    <div class="dropdown dropdown-end">
-                                        <div tabindex="0" role="button" class="btn btn-ghost btn-xs">Manage</div>
-                                        <ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-44 p-2">
-                                            <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'listener')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set listener</button></li>
-                                            <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'speaker')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set speaker</button></li>
-                                            <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'cohost')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set co-host</button></li>
-                                            <li><button type="button" wire:click="removeParticipant({{ $p->id }})" wire:loading.attr="disabled" wire:target="removeParticipant" class="text-error">Remove</button></li>
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
+                            @if ($isModerator && $p->user_id !== $space->host_user_id)
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-xs">Manage</div>
+                                    <ul tabindex="0" class="dropdown-content z-[1] menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-44 p-2">
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'listener')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set listener</button></li>
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'speaker')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set speaker</button></li>
+                                        <li><button type="button" wire:click="setParticipantRole({{ $p->id }}, 'cohost')" wire:loading.attr="disabled" wire:target="setParticipantRole">Set co-host</button></li>
+                                        <li><button type="button" wire:click="removeParticipant({{ $p->id }})" wire:loading.attr="disabled" wire:target="removeParticipant" class="text-error">Remove</button></li>
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 @empty
-                    <div class="opacity-70 text-sm">No one joined yet.</div>
+                    <x-empty-state class="px-3 py-2">
+                        No one joined yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>
