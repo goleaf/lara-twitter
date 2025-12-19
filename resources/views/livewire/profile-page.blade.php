@@ -10,19 +10,19 @@
         </div>
     @endif
 
-	    <div class="space-y-3">
-	        @forelse ($this->posts as $post)
-	            <livewire:post-card :post="$post" :key="$post->id" />
-	        @empty
-	            @if (! $user->pinnedPost)
-	                <div class="card bg-base-100 border">
-	                    <div class="card-body">
-	                        <div class="opacity-70">No posts yet.</div>
-	                    </div>
-	                </div>
-	            @endif
-	        @endforelse
-	    </div>
+        <div class="space-y-3">
+            @forelse ($this->posts as $post)
+                <livewire:post-card :post="$post" :key="$post->id" />
+            @empty
+                @if (! $user->pinnedPost)
+                    <div class="card bg-base-100 border">
+                        <div class="card-body">
+                            <div class="opacity-70">No posts yet.</div>
+                        </div>
+                    </div>
+                @endif
+            @endforelse
+        </div>
 
     <div class="pt-2">
         {{ $this->posts->links() }}
