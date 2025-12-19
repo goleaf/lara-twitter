@@ -41,6 +41,8 @@ class PostCard extends Component
     public function mount(Post $post): void
     {
         $this->post = $post->loadMissing([
+            'linkPreview',
+            'repostOf.linkPreview',
             'poll.options' => fn ($q) => $q->withCount('votes'),
             'repostOf.poll.options' => fn ($q) => $q->withCount('votes'),
         ]);
