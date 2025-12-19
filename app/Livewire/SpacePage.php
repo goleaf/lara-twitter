@@ -7,8 +7,10 @@ use App\Http\Requests\Spaces\PinSpacePostRequest;
 use App\Http\Requests\Spaces\SetSpaceParticipantRoleRequest;
 use App\Models\Space;
 use App\Models\SpaceParticipant;
+use App\Models\SpaceReaction;
 use App\Models\SpaceSpeakerRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 
@@ -17,6 +19,24 @@ class SpacePage extends Component
     public Space $space;
 
     public int|string $pinned_post_id = '';
+
+    public function react(string $emoji): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_if($this->space->isEnded(), 403);
+
+        $participant = $this->myParticipant();
+        abort_unless($participant && $participant->left_at === null, 403);
+
+        $allowed = ['👍', '❤️', '😂', '👏', '🔥', '🎉', '😮', '😢'];
+        abort_unless(in_array($emoji, $allowed, true), 422);
+
+        SpaceReaction::query()->create([
+            'space_id' => $this->space->id,
+            'user_id' => Auth::id(),
+            'emoji' => $emoji,
+        ]);
+    }
 
     public function mount(Space $space): void
     {
@@ -272,6 +292,16 @@ class SpacePage extends Component
             ->where('status', SpaceSpeakerRequest::STATUS_PENDING)
             ->with('user')
             ->orderBy('created_at')
+            ->get();
+    }
+
+    public function getReactionCountsProperty()
+    {
+        return SpaceReaction::query()
+            ->select('emoji', DB::raw('count(*) as count'))
+            ->where('space_id', $this->space->id)
+            ->groupBy('emoji')
+            ->orderByDesc('count')
             ->get();
     }
 

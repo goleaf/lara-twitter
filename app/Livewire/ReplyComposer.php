@@ -43,16 +43,7 @@ class ReplyComposer extends Component
             return;
         }
 
-        $parser = app(PostTextParser::class);
-        $parsed = $parser->parse($this->post->body);
-
-        $usernames = collect([$this->post->user->username])
-            ->merge($parsed['mentions'])
-            ->filter()
-            ->unique()
-            ->values();
-
-        $this->body = $usernames->map(fn (string $u) => "@{$u}")->implode(' ').' ';
+        $this->body = $this->prefilledBody();
     }
 
     public function updatedImages(): void
@@ -122,9 +113,30 @@ class ReplyComposer extends Component
             }
         }
 
-        $this->reset(['body', 'images', 'video', 'poll_options', 'poll_duration']);
+        $this->reset(['images', 'video', 'poll_options', 'poll_duration']);
+        $this->body = $this->prefilledBody();
         $this->dispatch('reply-created');
         $this->dispatch('reply-created.'.$this->post->id);
+    }
+
+    private function prefilledBody(): string
+    {
+        $this->post->loadMissing('user');
+
+        $parser = app(PostTextParser::class);
+        $parsed = $parser->parse($this->post->body);
+
+        $usernames = collect([$this->post->user->username])
+            ->merge($parsed['mentions'])
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($usernames->isEmpty()) {
+            return '';
+        }
+
+        return $usernames->map(fn (string $u) => "@{$u}")->implode(' ').' ';
     }
 
     /**
