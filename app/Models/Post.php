@@ -133,6 +133,11 @@ class Post extends Model
         return $this->hasOne(PostPoll::class);
     }
 
+    public function linkPreview(): HasOne
+    {
+        return $this->hasOne(PostLinkPreview::class);
+    }
+
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
