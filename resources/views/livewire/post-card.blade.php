@@ -56,56 +56,57 @@
                         {{ $primary->user->name }}
                         @if ($primary->user->is_verified)
                             <x-verified-icon class="ms-1 align-middle" />
-                @endif
-                <span class="opacity-60 font-normal">&#64;{{ $primary->user->username }}</span>
-            </a>
-            <div class="flex items-center gap-2 shrink-0">
-                <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $primary) }}" wire:navigate>
-                    {{ $primary->created_at->diffForHumans() }}
-                </a>
-                @if ($primary->location)
-                    <span class="text-sm opacity-60">· {{ $primary->location }}</span>
-                @endif
+                        @endif
+                        <span class="opacity-60 font-normal">&#64;{{ $primary->user->username }}</span>
+                    </a>
 
-                @auth
-                    @if ($this->canDelete() || auth()->id() !== $primary->user_id)
-                        <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square" aria-label="More actions">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-                                </svg>
-                            </div>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border">
-                                @if ($this->canDelete())
-                                    <li>
-                                        <button type="button" wire:click="deletePost" class="text-error">
-                                            Delete
-                                        </button>
-                                    </li>
-                                @endif
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $primary) }}" wire:navigate>
+                            {{ $primary->created_at->diffForHumans() }}
+                        </a>
+                        @if ($primary->location)
+                            <span class="text-sm opacity-60">· {{ $primary->location }}</span>
+                        @endif
 
-                                @if (auth()->id() !== $primary->user_id)
-                                    <li>
-                                        <livewire:report-button
-                                            :reportable-type="\App\Models\Post::class"
-                                            :reportable-id="$primary->id"
-                                            label="Report"
-                                            button-class="btn btn-ghost btn-sm justify-start w-full"
-                                            :show-notice="false"
-                                            :key="'report-post-'.$primary->id"
-                                        />
-                                    </li>
-                                @endif
-                            </ul>
-                        </div>
-                    @endif
-                @endauth
-            </div>
+                        @auth
+                            @if ($this->canDelete() || auth()->id() !== $primary->user_id)
+                                <div class="dropdown dropdown-end">
+                                    <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square" aria-label="More actions">
+                                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+                                        </svg>
+                                    </div>
+                                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border">
+                                        @if ($this->canDelete())
+                                            <li>
+                                                <button type="button" wire:click="deletePost" class="text-error">
+                                                    Delete
+                                                </button>
+                                            </li>
+                                        @endif
+
+                                        @if (auth()->id() !== $primary->user_id)
+                                            <li>
+                                                <livewire:report-button
+                                                    :reportable-type="\App\Models\Post::class"
+                                                    :reportable-id="$primary->id"
+                                                    label="Report"
+                                                    button-class="btn btn-ghost btn-sm justify-start w-full"
+                                                    :show-notice="false"
+                                                    :key="'report-post-'.$primary->id"
+                                                />
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            @endif
+                        @endauth
+                    </div>
                 </div>
 
-        <div class="prose max-w-none">
-            {!! $this->bodyHtml() !!}
-        </div>
+                <div class="prose max-w-none">
+                    {!! $this->bodyHtml() !!}
+                </div>
 
         @if ($primary->poll)
             @php($poll = $primary->poll)
