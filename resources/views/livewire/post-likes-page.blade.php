@@ -1,14 +1,16 @@
 @php($primary = $this->primaryPost())
 
 <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
-    <div>
-        <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>← Back to post</a>
-    </div>
-
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="font-semibold">Likes</div>
-            <div class="text-sm opacity-70">People who liked this post.</div>
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <div class="text-xl font-semibold">Likes</div>
+                    <div class="text-sm opacity-70">People who liked this post.</div>
+                </div>
+
+                <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Back</a>
+            </div>
         </div>
     </div>
 
