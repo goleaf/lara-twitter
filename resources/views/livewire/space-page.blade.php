@@ -8,9 +8,25 @@
     <div class="card bg-base-100 border">
         <div class="card-body space-y-2">
             <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                    <div class="text-xl font-semibold">{{ $space->title }}</div>
-                    <div class="text-sm opacity-70">Host: &#64;{{ $space->host->username }}</div>
+                <div class="flex items-start gap-3 min-w-0">
+                    <a class="avatar shrink-0" href="{{ route('profile.show', ['user' => $space->host]) }}" wire:navigate>
+                        <div class="w-12 rounded-full border border-base-200 bg-base-100">
+                            @if ($space->host->avatar_url)
+                                <img src="{{ $space->host->avatar_url }}" alt="" />
+                            @else
+                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                    {{ mb_strtoupper(mb_substr($space->host->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
+                    </a>
+
+                    <div class="min-w-0">
+                        <div class="text-xl font-semibold truncate">{{ $space->title }}</div>
+                        <div class="text-sm opacity-70 truncate">
+                            Host: <a class="link link-hover" href="{{ route('profile.show', ['user' => $space->host]) }}" wire:navigate>&#64;{{ $space->host->username }}</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <livewire:report-button :reportable-type="\App\Models\Space::class" :reportable-id="$space->id" label="Report" :key="'report-space-'.$space->id" />
