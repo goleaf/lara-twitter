@@ -4,15 +4,9 @@
 <div class="max-w-2xl mx-auto space-y-4" wire:poll.5s="markRead">
     <div class="card bg-base-100 border">
         <div class="card-body">
-            @php
-                $others = $conversation->participants
-                    ->pluck('user')
-                    ->filter(fn ($u) => $u && $u->id !== $me->id)
-                    ->values();
-
-                $other = $others->first();
-                $avatarUsers = $others->take(3);
-            @endphp
+            @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u && $u->id !== $me->id)->values())
+            @php($other = $others->first())
+            @php($avatarUsers = $others->take(3))
 
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-start gap-3 min-w-0">
