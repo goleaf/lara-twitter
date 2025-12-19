@@ -53,7 +53,7 @@ new class extends Component
 
     @if (auth()->user()->analytics_enabled)
         <div class="pt-3">
-            <a class="link link-hover" href="{{ route('analytics') }}" wire:navigate>Open Analytics</a>
+            <a class="btn btn-ghost btn-sm" href="{{ route('analytics') }}" wire:navigate>Open Analytics</a>
         </div>
     @endif
 </section>

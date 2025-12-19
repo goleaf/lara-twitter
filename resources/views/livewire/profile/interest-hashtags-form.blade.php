@@ -57,7 +57,7 @@ new class extends Component
                 id="interest_hashtags"
                 name="interest_hashtags"
                 type="text"
-                class="mt-1 block w-full"
+                class="mt-1 block w-full input-sm"
                 placeholder="#laravel, #php, #livewire"
                 autocomplete="off"
             />
