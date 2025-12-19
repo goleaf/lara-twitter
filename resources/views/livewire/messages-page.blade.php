@@ -89,8 +89,12 @@
                                     @if ($conversation->is_group)
                                         {{ $conversation->title ?? 'Group' }}
                                     @else
-                                        {{ $others->first()?->name ?? 'Conversation' }}
-                                        <span class="opacity-60 font-normal">&#64;{{ $others->first()?->username }}</span>
+                                        @php($other = $others->first())
+                                        {{ $other?->name ?? 'Conversation' }}
+                                        @if ($other?->is_verified)
+                                            <x-verified-icon class="ms-1 align-middle" />
+                                        @endif
+                                        <span class="opacity-60 font-normal">&#64;{{ $other?->username }}</span>
                                     @endif
                                 </div>
                             </div>
