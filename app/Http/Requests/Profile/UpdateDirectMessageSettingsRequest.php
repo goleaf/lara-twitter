@@ -13,6 +13,7 @@ class UpdateDirectMessageSettingsRequest extends FormRequest
         return [
             'dm_policy' => ['required', 'string', Rule::in(User::dmPolicies())],
             'dm_allow_requests' => ['required', 'boolean'],
+            'dm_read_receipts' => ['required', 'boolean'],
         ];
     }
 
@@ -26,4 +27,3 @@ class UpdateDirectMessageSettingsRequest extends FormRequest
         return self::rulesFor();
     }
 }
-

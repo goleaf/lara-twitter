@@ -49,7 +49,21 @@ class PostPage extends Component
         $this->ancestors = $this->loadAncestors($this->post);
 
         $target = $this->post->repostOf && $this->post->body === '' ? $this->post->repostOf : $this->post;
+        $target->loadMissing('user');
+
+        if (! ($target->user->analytics_enabled || $target->user->is_admin)) {
+            return;
+        }
+
+        if (Auth::check() && Auth::id() === $target->user_id) {
+            return;
+        }
+
         app(AnalyticsService::class)->recordUnique('post_view', $target->id);
+
+        if ($target->images->isNotEmpty() || $target->video_path) {
+            app(AnalyticsService::class)->recordUnique('post_media_view', $target->id);
+        }
     }
 
     /**
