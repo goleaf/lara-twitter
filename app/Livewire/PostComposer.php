@@ -31,6 +31,25 @@ class PostComposer extends Component
 
     public ?int $poll_duration = null;
 
+    public function updatedImages(): void
+    {
+        if (! empty($this->images)) {
+            $this->video = null;
+        }
+    }
+
+    public function updatedVideo(): void
+    {
+        if ($this->video) {
+            $this->images = [];
+        }
+    }
+
+    public function removeVideo(): void
+    {
+        $this->video = null;
+    }
+
     public function save(): void
     {
         abort_unless(Auth::check(), 403);

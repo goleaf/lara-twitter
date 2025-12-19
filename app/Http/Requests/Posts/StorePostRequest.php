@@ -19,6 +19,8 @@ class StorePostRequest extends FormRequest
         return [
             'body' => ['required', 'string', "max:{$max}"],
             'reply_policy' => ['nullable', 'string', Rule::in(Post::replyPolicies())],
+            'scheduled_for' => ['nullable', 'date', 'after_or_equal:now'],
+            'location' => ['nullable', 'string', 'max:80'],
             'images' => ['array', 'max:4', new ExclusivePostMedia('video'), new ExclusivePostMedia('poll_options')],
             'images.*' => ['image', 'max:4096'],
             'video' => ['nullable', 'file', 'max:51200', 'mimetypes:video/mp4,video/webm', new ExclusivePostMedia('images'), new ExclusivePostMedia('poll_options')],
