@@ -160,7 +160,7 @@
                                         @endif
 
                                         @if ($actor?->is_verified)
-                                            <span class="badge badge-primary badge-xs align-middle ms-1">Verified</span>
+                                            <x-verified-icon class="ms-1 align-middle" />
                                         @endif
                                     </div>
 
