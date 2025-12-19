@@ -33,15 +33,15 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">Timeline</h2>
-        <p class="mt-1 text-sm text-gray-600">Customize what appears in your Following feed.</p>
+        <h2 class="text-lg font-medium text-base-content">Timeline</h2>
+        <p class="mt-1 text-sm opacity-70">Customize what appears in your Following feed.</p>
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-6">
         <div class="flex items-center justify-between gap-4">
             <div>
-                <div class="font-medium text-gray-900">Show replies</div>
-                <div class="text-sm text-gray-600">Include replies from accounts you follow.</div>
+                <div class="font-medium">Show replies</div>
+                <div class="text-sm opacity-70">Include replies from accounts you follow.</div>
             </div>
             <input type="checkbox" class="toggle" wire:model="show_replies" />
         </div>
@@ -49,8 +49,8 @@ new class extends Component
 
         <div class="flex items-center justify-between gap-4">
             <div>
-                <div class="font-medium text-gray-900">Show retweets</div>
-                <div class="text-sm text-gray-600">Include retweets from accounts you follow.</div>
+                <div class="font-medium">Show retweets</div>
+                <div class="text-sm opacity-70">Include retweets from accounts you follow.</div>
             </div>
             <input type="checkbox" class="toggle" wire:model="show_retweets" />
         </div>
@@ -62,4 +62,3 @@ new class extends Component
         </div>
     </form>
 </section>
-

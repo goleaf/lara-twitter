@@ -82,11 +82,11 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-medium text-base-content">
             {{ __('Notifications') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm opacity-70">
             {{ __('Choose which activity should notify you.') }}
         </p>
     </header>

@@ -42,8 +42,8 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">Pinned post</h2>
-        <p class="mt-1 text-sm text-gray-600">Pin one of your posts to the top of your profile.</p>
+        <h2 class="text-lg font-medium text-base-content">Pinned post</h2>
+        <p class="mt-1 text-sm opacity-70">Pin one of your posts to the top of your profile.</p>
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-4">
@@ -70,4 +70,3 @@ new class extends Component
         </div>
     </form>
 </section>
-

@@ -78,11 +78,11 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-medium text-base-content">
             {{ __('Muted words') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm opacity-70">
             {{ __('Hide posts containing specific words, phrases, or #hashtags. Applies to your timeline and (optionally) notifications.') }}
         </p>
     </header>
@@ -180,4 +180,3 @@ new class extends Component
         @endforelse
     </div>
 </section>
-

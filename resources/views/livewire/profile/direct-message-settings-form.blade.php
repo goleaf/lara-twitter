@@ -29,8 +29,8 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">Direct Messages</h2>
-        <p class="mt-1 text-sm text-gray-600">Control who can message you and whether message requests are allowed.</p>
+        <h2 class="text-lg font-medium text-base-content">Direct Messages</h2>
+        <p class="mt-1 text-sm opacity-70">Control who can message you and whether message requests are allowed.</p>
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-6">
@@ -46,8 +46,8 @@ new class extends Component
 
         <div class="flex items-center justify-between gap-4">
             <div>
-                <div class="font-medium text-gray-900">Allow message requests</div>
-                <div class="text-sm text-gray-600">If disabled, users who don't meet your policy cannot start a new DM.</div>
+                <div class="font-medium">Allow message requests</div>
+                <div class="text-sm opacity-70">If disabled, users who don't meet your policy cannot start a new DM.</div>
             </div>
             <input type="checkbox" class="toggle" wire:model="dm_allow_requests" />
         </div>
@@ -55,8 +55,8 @@ new class extends Component
 
         <div class="flex items-center justify-between gap-4">
             <div>
-                <div class="font-medium text-gray-900">Read receipts</div>
-                <div class="text-sm text-gray-600">If disabled, others won’t see when you’ve read their messages.</div>
+                <div class="font-medium">Read receipts</div>
+                <div class="text-sm opacity-70">If disabled, others won’t see when you’ve read their messages.</div>
             </div>
             <input type="checkbox" class="toggle" wire:model="dm_read_receipts" />
         </div>

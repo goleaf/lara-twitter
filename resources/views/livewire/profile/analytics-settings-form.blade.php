@@ -27,11 +27,11 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-medium text-base-content">
             {{ __('Analytics') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm opacity-70">
             {{ __('Enable analytics tracking for your account (unique daily views).') }}
         </p>
     </header>
@@ -57,4 +57,3 @@ new class extends Component
         </div>
     @endif
 </section>
-
