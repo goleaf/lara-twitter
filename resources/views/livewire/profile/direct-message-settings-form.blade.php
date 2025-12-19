@@ -28,12 +28,12 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-base-content">Direct Messages</h2>
-        <p class="mt-1 text-sm opacity-70">Control who can message you and whether message requests are allowed.</p>
+    <header class="space-y-1">
+        <h2 class="text-xl font-semibold text-base-content">Direct Messages</h2>
+        <p class="text-sm opacity-70">Control who can message you and whether message requests are allowed.</p>
     </header>
 
-    <form wire:submit="save" class="mt-6 space-y-6">
+    <form wire:submit="save" class="mt-6 space-y-4">
         <div>
             <x-input-label for="dm_policy" value="Who can message you?" />
             <select wire:model="dm_policy" id="dm_policy" class="select select-bordered select-sm w-full mt-1">
@@ -44,25 +44,25 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('dm_policy')" />
         </div>
 
-        <div class="flex items-center justify-between gap-4">
-            <div>
+        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+            <div class="min-w-0">
                 <div class="font-medium">Allow message requests</div>
                 <div class="text-sm opacity-70">If disabled, users who don't meet your policy cannot start a new DM.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm" wire:model="dm_allow_requests" />
-        </div>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_allow_requests" />
+        </label>
         <x-input-error class="mt-2" :messages="$errors->get('dm_allow_requests')" />
 
-        <div class="flex items-center justify-between gap-4">
-            <div>
+        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+            <div class="min-w-0">
                 <div class="font-medium">Read receipts</div>
                 <div class="text-sm opacity-70">If disabled, others won’t see when you’ve read their messages.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm" wire:model="dm_read_receipts" />
-        </div>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_read_receipts" />
+        </label>
         <x-input-error class="mt-2" :messages="$errors->get('dm_read_receipts')" />
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pt-2">
             <x-primary-button>Save</x-primary-button>
             <x-action-message class="me-3" on="dm-settings-updated">Saved.</x-action-message>
         </div>
