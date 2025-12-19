@@ -28,13 +28,25 @@ class ReportButton extends Component
 
     public string $label = 'Report';
 
+    public string $buttonClass = 'btn btn-ghost btn-xs';
+
+    public bool $showNotice = true;
+
     public ?string $submittedCaseNumber = null;
 
-    public function mount(string $reportableType, int $reportableId, string $label = 'Report'): void
+    public function mount(
+        string $reportableType,
+        int $reportableId,
+        string $label = 'Report',
+        string $buttonClass = 'btn btn-ghost btn-xs',
+        bool $showNotice = true,
+    ): void
     {
         $this->reportableType = $reportableType;
         $this->reportableId = $reportableId;
         $this->label = $label;
+        $this->buttonClass = $buttonClass;
+        $this->showNotice = $showNotice;
     }
 
     public function openModal(): void

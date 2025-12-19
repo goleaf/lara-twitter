@@ -33,18 +33,37 @@
 
             @auth
                 @if (auth()->id() !== $user->id)
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap items-center justify-end gap-2">
                         <a class="btn btn-outline btn-sm" href="{{ route('messages.new', ['user' => $user]) }}" wire:navigate>Message</a>
-                        <livewire:report-button :reportable-type="\App\Models\User::class" :reportable-id="$user->id" label="Report" :key="'report-user-'.$user->id" />
                         <button wire:click="toggleFollow" class="btn btn-sm {{ $this->isFollowing ? 'btn-outline' : 'btn-primary' }}">
                             {{ $this->isFollowing ? 'Unfollow' : 'Follow' }}
                         </button>
-                        <button wire:click="toggleMute" class="btn btn-outline btn-sm">
-                            {{ $this->isMuted ? 'Unmute' : 'Mute' }}
-                        </button>
-                        <button wire:click="toggleBlock" class="btn btn-outline btn-sm btn-error">
-                            {{ $this->hasBlocked ? 'Unblock' : 'Block' }}
-                        </button>
+
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="btn btn-ghost btn-sm">More</div>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border">
+                                <li>
+                                    <livewire:report-button
+                                        :reportable-type="\App\Models\User::class"
+                                        :reportable-id="$user->id"
+                                        label="Report"
+                                        button-class="btn btn-ghost btn-sm justify-start w-full"
+                                        :show-notice="false"
+                                        :key="'report-user-'.$user->id"
+                                    />
+                                </li>
+                                <li>
+                                    <button type="button" wire:click="toggleMute">
+                                        {{ $this->isMuted ? 'Unmute' : 'Mute' }}
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" wire:click="toggleBlock" class="text-error">
+                                        {{ $this->hasBlocked ? 'Unblock' : 'Block' }}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 @else
                     <a class="btn btn-outline btn-sm" href="{{ route('profile') }}" wire:navigate>Edit profile</a>

@@ -1,9 +1,9 @@
 <div>
-    <button type="button" wire:click="openModal" class="btn btn-ghost btn-xs" @disabled(!auth()->check())>
+    <button type="button" wire:click="openModal" class="{{ $buttonClass }}" @disabled(!auth()->check())>
         {{ $label }}
     </button>
 
-    @if ($submittedCaseNumber)
+    @if ($showNotice && $submittedCaseNumber)
         <div class="mt-1 flex items-center gap-2 text-xs">
             <div class="text-success">
                 Report submitted (case <span class="font-mono">{{ $submittedCaseNumber }}</span>)
