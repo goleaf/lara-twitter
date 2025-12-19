@@ -1,4 +1,6 @@
 @php($primary = $this->primaryPost())
+@php($isQuotes = $tab === 'quotes')
+@php($rows = $isQuotes ? $this->quotes : $this->retweeters)
 
 <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
@@ -9,7 +11,10 @@
                     <div class="text-sm opacity-70">See who retweeted and quote tweeted this post.</div>
                 </div>
 
-                <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Back</a>
+                <div class="flex items-center gap-2">
+                    <span class="badge badge-outline badge-sm">{{ $rows->total() }}</span>
+                    <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Back</a>
+                </div>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
@@ -25,27 +30,31 @@
 
     @if ($tab === 'quotes')
         <div class="space-y-3">
-            @forelse ($this->quotes as $quote)
+            @forelse ($rows as $quote)
                 <livewire:post-card :post="$quote" :key="'quote-'.$quote->id" />
             @empty
-                <div class="opacity-70">No quote tweets yet.</div>
+                <div class="card bg-base-100 border">
+                    <div class="card-body">
+                        <div class="opacity-70">No quote tweets yet.</div>
+                    </div>
+                </div>
             @endforelse
         </div>
 
         <div class="pt-2">
-            {{ $this->quotes->links() }}
+            {{ $rows->links() }}
         </div>
     @else
         <div class="card bg-base-100 border">
             <div class="card-body">
                 <div class="space-y-3">
-                    @forelse ($this->retweeters as $retweet)
+                    @forelse ($rows as $retweet)
                         @php($user = $retweet->user)
                         @if (! $user)
                             @continue
                         @endif
 
-                        <a class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
+                        <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -72,14 +81,16 @@
                             <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
                         </a>
                     @empty
-                        <div class="opacity-70">No retweets yet.</div>
+                        <div class="alert">
+                            <span class="opacity-70">No retweets yet.</span>
+                        </div>
                     @endforelse
                 </div>
             </div>
         </div>
 
         <div class="pt-2">
-            {{ $this->retweeters->links() }}
+            {{ $rows->links() }}
         </div>
     @endif
 </div>
