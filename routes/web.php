@@ -4,6 +4,7 @@ use App\Http\Controllers\LinkRedirectController;
 use App\Livewire\AnalyticsPage;
 use App\Livewire\BookmarksPage;
 use App\Livewire\ConversationPage;
+use App\Livewire\NewConversationPage;
 use App\Livewire\ExplorePage;
 use App\Livewire\FollowersPage;
 use App\Livewire\FollowingPage;
@@ -70,7 +71,8 @@ Route::middleware('auth')->group(function () {
     Route::get('bookmarks', BookmarksPage::class)->name('bookmarks');
     Route::get('reports', ReportsPage::class)->name('reports.index');
     Route::get('messages', MessagesPage::class)->name('messages.index');
-    Route::get('messages/{conversation}', ConversationPage::class)->name('messages.show');
+    Route::get('messages/new', NewConversationPage::class)->name('messages.compose');
+    Route::get('messages/{conversation}', ConversationPage::class)->name('messages.show')->whereNumber('conversation');
 
     Route::get('messages/new/{user}', function (\App\Models\User $user, DirectMessageService $service) {
         try {
