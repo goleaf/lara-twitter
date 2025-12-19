@@ -286,6 +286,59 @@ class PostCard extends Component
         return app(\App\Services\PostBodyRenderer::class)->render($primary->body, $primary->id);
     }
 
+    public function pollVoteOptionId(int $pollId): ?int
+    {
+        if (! Auth::check()) {
+            return null;
+        }
+
+        return PostPollVote::query()
+            ->where('post_poll_id', $pollId)
+            ->where('user_id', Auth::id())
+            ->value('post_poll_option_id');
+    }
+
+    public function voteInPoll(int $optionId): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $option = PostPollOption::query()
+            ->with('poll')
+            ->findOrFail($optionId);
+
+        $poll = $option->poll;
+        abort_unless((bool) $poll, 404);
+
+        abort_if($poll->ends_at->isPast(), 403);
+
+        $allowedPostIds = [$this->primaryPost()->id];
+        if ($this->post->repostOf) {
+            $allowedPostIds[] = $this->post->repostOf->id;
+        }
+
+        abort_unless(in_array((int) $poll->post_id, array_unique($allowedPostIds), true), 403);
+
+        $alreadyVoted = PostPollVote::query()
+            ->where('post_poll_id', $poll->id)
+            ->where('user_id', Auth::id())
+            ->exists();
+
+        if ($alreadyVoted) {
+            return;
+        }
+
+        PostPollVote::query()->create([
+            'post_poll_id' => $poll->id,
+            'post_poll_option_id' => $option->id,
+            'user_id' => Auth::id(),
+        ]);
+
+        $this->post->load([
+            'poll.options' => fn ($q) => $q->withCount('votes'),
+            'repostOf.poll.options' => fn ($q) => $q->withCount('votes'),
+        ]);
+    }
+
     public function imageUrls(): array
     {
         return $this->primaryPost()

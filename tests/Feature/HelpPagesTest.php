@@ -11,9 +11,16 @@ class HelpPagesTest extends TestCase
         $this->get(route('help.index'))
             ->assertOk()
             ->assertSee('Help')
+            ->assertSee('Block')
             ->assertSee('Direct Messages')
             ->assertSee('Hashtags')
             ->assertSee('Profile');
+
+        $this->get(route('help.blocking'))
+            ->assertOk()
+            ->assertSee('Blocking')
+            ->assertSee('What happens when you block someone')
+            ->assertSee('Unblocking restores normal behavior');
 
         $this->get(route('help.hashtags'))
             ->assertOk()
