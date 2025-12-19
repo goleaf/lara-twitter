@@ -23,15 +23,15 @@
                     <a href="{{ $profileHref }}" wire:navigate aria-label="View profile">
                 @endif
 
-                <div class="avatar">
-                    <div class="w-10 rounded-full border border-base-200 bg-base-100">
-                        @if ($me?->avatar_url)
-                            <img src="{{ $me->avatar_url }}" alt="" />
-                        @else
-                            <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-                                {{ $avatarInitial }}
-                            </div>
-                        @endif
+	                <div class="avatar">
+	                    <div class="w-10 rounded-full border border-base-200 bg-base-100">
+	                        @if ($me?->avatar_url)
+	                            <img src="{{ $me->avatar_url }}" alt="" loading="lazy" decoding="async" />
+	                        @else
+	                            <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+	                                {{ $avatarInitial }}
+	                            </div>
+	                        @endif
                     </div>
                 </div>
 
