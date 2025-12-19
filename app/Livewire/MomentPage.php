@@ -20,6 +20,12 @@ class MomentPage extends Component
 
     public int|string $post_id = '';
 
+    public string $caption = '';
+
+    public int $editing_item_id = 0;
+
+    public string $editing_caption = '';
+
     public string $title = '';
 
     public string $description = '';
@@ -47,14 +53,30 @@ class MomentPage extends Component
         $this->post_id = $this->normalizePostId($this->post_id);
         $validated = $this->validate(AddMomentItemRequest::rulesFor());
 
+        $caption = trim((string) ($validated['caption'] ?? ''));
+        $caption = $caption === '' ? null : $caption;
+
         $max = (int) $this->moment->items()->max('sort_order');
 
-        MomentItem::query()->firstOrCreate(
-            ['moment_id' => $this->moment->id, 'post_id' => (int) $validated['post_id']],
-            ['sort_order' => $max + 1],
-        );
+        $existing = MomentItem::query()
+            ->where('moment_id', $this->moment->id)
+            ->where('post_id', (int) $validated['post_id'])
+            ->first();
 
-        $this->reset('post_id');
+        if ($existing) {
+            if ($caption !== null) {
+                $existing->update(['caption' => $caption]);
+            }
+        } else {
+            MomentItem::query()->create([
+                'moment_id' => $this->moment->id,
+                'post_id' => (int) $validated['post_id'],
+                'caption' => $caption,
+                'sort_order' => $max + 1,
+            ]);
+        }
+
+        $this->reset(['post_id', 'caption']);
         $this->dispatch('$refresh');
     }
 
@@ -93,6 +115,50 @@ class MomentPage extends Component
 
         MomentItem::query()->where('id', $itemId)->where('moment_id', $this->moment->id)->delete();
         $this->dispatch('$refresh');
+    }
+
+    public function startEditingCaption(int $itemId): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless(Auth::id() === $this->moment->owner_id, 403);
+
+        $item = MomentItem::query()
+            ->where('id', $itemId)
+            ->where('moment_id', $this->moment->id)
+            ->firstOrFail();
+
+        $this->editing_item_id = $itemId;
+        $this->editing_caption = (string) ($item->caption ?? '');
+    }
+
+    public function saveCaption(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless(Auth::id() === $this->moment->owner_id, 403);
+
+        if ($this->editing_item_id === 0) {
+            return;
+        }
+
+        $validated = $this->validate([
+            'editing_caption' => ['nullable', 'string', 'max:280'],
+        ]);
+
+        $caption = trim((string) ($validated['editing_caption'] ?? ''));
+        $caption = $caption === '' ? null : $caption;
+
+        MomentItem::query()
+            ->where('id', $this->editing_item_id)
+            ->where('moment_id', $this->moment->id)
+            ->update(['caption' => $caption]);
+
+        $this->reset(['editing_item_id', 'editing_caption']);
+        $this->dispatch('$refresh');
+    }
+
+    public function cancelEditingCaption(): void
+    {
+        $this->reset(['editing_item_id', 'editing_caption']);
     }
 
     public function moveItemUp(int $itemId): void

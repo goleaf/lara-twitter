@@ -64,18 +64,20 @@ class ReportButton extends Component
         $this->authorizeReportable($reportable);
         $this->ensureNotSelfReport($reportable);
 
-        $report = Report::query()->updateOrCreate(
-            [
-                'reporter_id' => Auth::id(),
-                'reportable_type' => $this->reportableType,
-                'reportable_id' => $this->reportableId,
-            ],
-            [
-                'reason' => $validated['reason'],
-                'details' => $validated['details'] ?: null,
-                'status' => Report::STATUS_OPEN,
-            ],
-        );
+        $report = Report::query()->firstOrNew([
+            'reporter_id' => Auth::id(),
+            'reportable_type' => $this->reportableType,
+            'reportable_id' => $this->reportableId,
+        ]);
+
+        $report->reason = $validated['reason'];
+        $report->details = $validated['details'] ?: null;
+
+        if (! $report->exists) {
+            $report->status = Report::STATUS_OPEN;
+        }
+
+        $report->save();
 
         $this->submittedCaseNumber = $report->case_number;
 

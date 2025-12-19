@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Post extends Model
 {
@@ -125,6 +126,11 @@ class Post extends Model
     public function images(): HasMany
     {
         return $this->hasMany(PostImage::class)->orderBy('sort_order');
+    }
+
+    public function poll(): HasOne
+    {
+        return $this->hasOne(PostPoll::class);
     }
 
     public function likes(): HasMany
