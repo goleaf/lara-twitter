@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Hashtag;
+use App\Models\MutedTerm;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +71,57 @@ class DiscoverService
             return $users;
         }
 
+        $interestTags = $this->normalizedInterestHashtags($viewer);
+        if (count($interestTags)) {
+            $exclude = array_merge($excludeIds, $users->pluck('id')->all());
+
+            $interestRows = DB::table('hashtag_post')
+                ->join('hashtags', 'hashtags.id', '=', 'hashtag_post.hashtag_id')
+                ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
+                ->select('posts.user_id', DB::raw('count(*) as interest_posts_count'))
+                ->whereIn('hashtags.tag', $interestTags)
+                ->whereNull('posts.reply_to_id')
+                ->where('posts.is_reply_like', false)
+                ->where('posts.created_at', '>=', now()->subDays(30))
+                ->when(count($exclude), fn ($q) => $q->whereNotIn('posts.user_id', $exclude))
+                ->groupBy('posts.user_id')
+                ->orderByDesc('interest_posts_count')
+                ->limit(max(10, $remaining * 5))
+                ->get()
+                ->keyBy('user_id');
+
+            $interestCandidateIds = $interestRows->keys()->all();
+
+            if (! empty($interestCandidateIds)) {
+                $interestUsers = User::query()
+                    ->withCount('followers')
+                    ->whereIn('id', $interestCandidateIds)
+                    ->get()
+                    ->each(function (User $u) use ($interestRows) {
+                        $u->setAttribute('interest_posts_count', (int) ($interestRows[$u->id]->interest_posts_count ?? 0));
+                    })
+                    ->sort(function (User $a, User $b) {
+                        $aCount = (int) ($a->getAttribute('interest_posts_count') ?? 0);
+                        $bCount = (int) ($b->getAttribute('interest_posts_count') ?? 0);
+
+                        if ($aCount !== $bCount) {
+                            return $bCount <=> $aCount;
+                        }
+
+                        return ((int) ($b->followers_count ?? 0)) <=> ((int) ($a->followers_count ?? 0));
+                    })
+                    ->values()
+                    ->take($remaining);
+
+                $users = $users->concat($interestUsers)->values();
+            }
+        }
+
+        $remaining = $limit - $users->count();
+        if ($remaining <= 0) {
+            return $users;
+        }
+
         $fallback = User::query()
             ->withCount('followers')
             ->whereNotIn('id', array_merge($excludeIds, $users->pluck('id')->all()))
@@ -97,6 +149,17 @@ class DiscoverService
         $this->applyViewerExclusions($query, $viewer);
 
         if ($viewer) {
+            $this->applyMutedTermsToPostsQuery($query, $viewer);
+
+            $interestTags = $this->normalizedInterestHashtags($viewer);
+            if (count($interestTags)) {
+                $placeholders = implode(',', array_fill(0, count($interestTags), '?'));
+                $query->orderByRaw(
+                    "case when exists (select 1 from hashtag_post hp join hashtags h on h.id = hp.hashtag_id where hp.post_id = posts.id and h.tag in ($placeholders)) then 0 else 1 end asc",
+                    $interestTags,
+                );
+            }
+
             $query->where('user_id', '!=', $viewer->id);
 
             $followingIds = $viewer->following()->pluck('users.id')->all();
@@ -130,6 +193,10 @@ class DiscoverService
             ->withCount(['likes', 'reposts', 'replies']);
 
         $this->applyViewerExclusions($query, $viewer);
+
+        if ($viewer) {
+            $this->applyMutedTermsToPostsQuery($query, $viewer);
+        }
 
         if (count($tags)) {
             $query->whereHas('hashtags', fn ($q) => $q->whereIn('tag', $tags));
@@ -190,6 +257,7 @@ class DiscoverService
         $this->applyViewerExclusions($query, $viewer);
 
         if ($viewer) {
+            $this->applyMutedTermsToPostsQuery($query, $viewer);
             $query->where('posts.user_id', '!=', $viewer->id);
         }
 
@@ -225,5 +293,74 @@ class DiscoverService
         if ($exclude->isNotEmpty()) {
             $query->whereNotIn('user_id', $exclude);
         }
+    }
+
+    private function normalizedInterestHashtags(?User $viewer): array
+    {
+        $raw = $viewer?->interest_hashtags ?? [];
+
+        return collect($raw)
+            ->filter(fn ($t) => is_string($t) && trim($t) !== '')
+            ->map(fn ($t) => mb_strtolower(ltrim(trim($t), '#')))
+            ->unique()
+            ->take(20)
+            ->values()
+            ->all();
+    }
+
+    private function applyMutedTermsToPostsQuery(Builder $query, User $viewer): void
+    {
+        $terms = $this->activeMutedTerms($viewer);
+
+        if ($terms->isEmpty()) {
+            return;
+        }
+
+        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+
+        foreach ($terms as $term) {
+            $raw = trim((string) $term->term);
+            if ($raw === '') {
+                continue;
+            }
+
+            $needle = mb_strtolower($raw);
+            if (str_starts_with($needle, '#')) {
+                $needle = '#'.ltrim($needle, '#');
+            }
+
+            if ($term->whole_word && preg_match('/^[a-z0-9_]+$/i', $needle)) {
+                $postMatchSql = "(' ' || lower(posts.body) || ' ') like ?";
+                $originalMatchSql = "(' ' || lower(original.body) || ' ') like ?";
+                $matchArg = '% '.$needle.' %';
+            } else {
+                $postMatchSql = 'lower(posts.body) like ?';
+                $originalMatchSql = 'lower(original.body) like ?';
+                $matchArg = '%'.$needle.'%';
+            }
+
+            $repostMatchSql = "exists (select 1 from posts as original where original.id = posts.repost_of_id and ($originalMatchSql))";
+            $combinedMatchSql = "($postMatchSql) or ($repostMatchSql)";
+
+            if ($term->only_non_followed && count($followingIds)) {
+                $query->where(function ($q) use ($followingIds, $combinedMatchSql, $matchArg): void {
+                    $q->whereIn('posts.user_id', $followingIds)->orWhereRaw('('.$combinedMatchSql.') = 0', [$matchArg, $matchArg]);
+                });
+            } else {
+                $query->whereRaw('('.$combinedMatchSql.') = 0', [$matchArg, $matchArg]);
+            }
+        }
+    }
+
+    private function activeMutedTerms(User $viewer): Collection
+    {
+        return $viewer->mutedTerms()
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->where('mute_timeline', true)
+            ->latest()
+            ->limit(50)
+            ->get();
     }
 }

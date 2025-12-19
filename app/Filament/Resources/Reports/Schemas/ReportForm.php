@@ -14,6 +14,10 @@ class ReportForm
     {
         return $schema
             ->components([
+                TextInput::make('case_number')
+                    ->label('Case')
+                    ->disabled()
+                    ->dehydrated(false),
                 Select::make('status')
                     ->options(array_combine(Report::statuses(), Report::statuses()))
                     ->required(),

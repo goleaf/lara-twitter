@@ -169,15 +169,15 @@ class SearchPage extends Component
             }
 
             if (! $isPhrase && ! $negated) {
-                if (preg_match('/^from:([A-Za-z0-9_]{1,30})$/i', $t, $m)) {
-                    $fromUser = mb_strtolower($m[1]);
-                    continue;
-                }
+            if (preg_match('/^from:([A-Za-z0-9_-]{1,30})$/i', $t, $m)) {
+                $fromUser = mb_strtolower($m[1]);
+                continue;
+            }
 
-                if (preg_match('/^to:([A-Za-z0-9_]{1,30})$/i', $t, $m)) {
-                    $toUser = mb_strtolower($m[1]);
-                    continue;
-                }
+            if (preg_match('/^to:([A-Za-z0-9_-]{1,30})$/i', $t, $m)) {
+                $toUser = mb_strtolower($m[1]);
+                continue;
+            }
 
                 if (preg_match('/^since:(\d{4}-\d{2}-\d{2})$/', $t, $m)) {
                     try {

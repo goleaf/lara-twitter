@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\UserList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -85,5 +86,49 @@ class ListsTest extends TestCase
         Livewire::actingAs($outsider)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(403);
         Livewire::actingAs($member)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(403);
         Livewire::actingAs($owner)->test(\App\Livewire\ListPage::class, ['list' => $list])->assertStatus(200);
+    }
+
+    public function test_list_feed_supports_large_member_counts(): void
+    {
+        $owner = User::factory()->create(['username' => 'owner']);
+
+        $list = UserList::query()->create([
+            'owner_id' => $owner->id,
+            'name' => 'Big list',
+            'is_private' => false,
+        ]);
+
+        $count = 1200;
+        $batchSize = 200;
+
+        $buffer = [];
+        for ($i = 0; $i < $count; $i++) {
+            $buffer[] = [
+                'name' => 'Member '.$i,
+                'username' => 'bulk_'.$i,
+                'email' => 'bulk_'.$i.'@example.com',
+                'password' => 'password',
+            ];
+
+            if (count($buffer) >= $batchSize) {
+                DB::table('users')->insert($buffer);
+                $buffer = [];
+            }
+        }
+
+        if ($buffer !== []) {
+            DB::table('users')->insert($buffer);
+        }
+
+        $memberIds = DB::table('users')->where('username', 'like', 'bulk_%')->pluck('id');
+
+        foreach ($memberIds->chunk(400) as $chunk) {
+            DB::table('user_list_user')->insert(
+                $chunk->map(fn (int $id) => ['user_list_id' => $list->id, 'user_id' => $id])->all()
+            );
+        }
+
+        Livewire::test(\App\Livewire\ListPage::class, ['list' => $list])
+            ->assertStatus(200);
     }
 }

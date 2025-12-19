@@ -16,6 +16,8 @@ class ReportsTable
     {
         return $table
             ->columns([
+                TextColumn::make('case_number')
+                    ->label('Case'),
                 TextColumn::make('status')
                     ->badge()
                     ->sortable(),
@@ -36,6 +38,10 @@ class ReportsTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('resolvedBy.username')
+                    ->label('Resolved By'),
+                TextColumn::make('resolved_at')
+                    ->dateTime(),
             ])
             ->filters([
                 SelectFilter::make('status')
