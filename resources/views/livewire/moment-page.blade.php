@@ -64,40 +64,40 @@
                             <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
                         </div>
 
-                            <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
-                                <div class="min-w-0">
-                                    <div class="font-medium">Public</div>
-                                    <div class="text-sm opacity-70">Show this Moment in the public directory.</div>
-                                </div>
-                                <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_public" />
-                            </label>
-    
-                            <div class="flex justify-end">
-                                <button type="submit" class="btn btn-outline btn-sm" wire:loading.attr="disabled" wire:target="updateMoment">Save</button>
+                        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                            <div class="min-w-0">
+                                <div class="font-medium">Public</div>
+                                <div class="text-sm opacity-70">Show this Moment in the public directory.</div>
                             </div>
-                        </form>
-    
-                        <div class="divider">Add post</div>
-    
-                        <form wire:submit="addPost" class="space-y-2">
-                            <div class="join w-full">
-                                <input class="input input-bordered input-sm join-item w-full" placeholder="Post ID or URL (e.g. 123 or /posts/123)" wire:model="post_id" wire:loading.attr="disabled" wire:target="addPost" />
-                                <button type="submit" class="btn btn-primary btn-sm join-item" wire:loading.attr="disabled" wire:target="addPost">Add</button>
-                            </div>
-    
-                            <textarea
-                                class="textarea textarea-bordered textarea-sm w-full"
-                                rows="2"
-                                placeholder="Context (optional)"
-                                wire:model="caption"
-                                wire:loading.attr="disabled"
-                                wire:target="addPost"
-                            ></textarea>
-                        </form>
-                        <x-input-error class="mt-2" :messages="$errors->get('post_id')" />
-                        <x-input-error class="mt-2" :messages="$errors->get('caption')" />
-                    @endif
-                @endauth
+                            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_public" />
+                        </label>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-outline btn-sm" wire:loading.attr="disabled" wire:target="updateMoment">Save</button>
+                        </div>
+                    </form>
+
+                    <div class="divider">Add post</div>
+
+                    <form wire:submit="addPost" class="space-y-2">
+                        <div class="join w-full">
+                            <input class="input input-bordered input-sm join-item w-full" placeholder="Post ID or URL (e.g. 123 or /posts/123)" wire:model="post_id" wire:loading.attr="disabled" wire:target="addPost" />
+                            <button type="submit" class="btn btn-primary btn-sm join-item" wire:loading.attr="disabled" wire:target="addPost">Add</button>
+                        </div>
+
+                        <textarea
+                            class="textarea textarea-bordered textarea-sm w-full"
+                            rows="2"
+                            placeholder="Context (optional)"
+                            wire:model="caption"
+                            wire:loading.attr="disabled"
+                            wire:target="addPost"
+                        ></textarea>
+                    </form>
+                    <x-input-error class="mt-2" :messages="$errors->get('post_id')" />
+                    <x-input-error class="mt-2" :messages="$errors->get('caption')" />
+                @endif
+            @endauth
         </div>
     </div>
 
