@@ -149,22 +149,35 @@
                         <div class="whitespace-pre-wrap">{{ $message->body }}</div>
                     @endif
 
-                    @if ($message->attachments->count())
-                        <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @php($attachmentsCount = $message->attachments->count())
+                    @if ($attachmentsCount)
+                        @php($gridClass = $attachmentsCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
+
+                        <div class="pt-2 grid {{ $gridClass }} gap-2">
                             @foreach ($message->attachments as $attachment)
                                 @php($url = \Illuminate\Support\Facades\Storage::disk('public')->url($attachment->path))
+                                @php($isWide = $attachmentsCount === 1 || ($attachmentsCount === 3 && $loop->last))
+                                @php($spanClass = $attachmentsCount === 3 && $loop->last ? 'col-span-2' : '')
+                                @php($ratio = $isWide ? '16 / 9' : '1 / 1')
+
                                 @if (str_starts_with($attachment->mime_type, 'image/'))
-                                    <img class="rounded-box border" src="{{ $url }}" alt="" loading="lazy" />
+                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                                        <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" />
+                                    </div>
                                 @elseif (str_starts_with($attachment->mime_type, 'video/'))
-                                    <video class="rounded-box border w-full" controls>
-                                        <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
-                                    </video>
+                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                                        <video class="h-full w-full" controls preload="metadata">
+                                            <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
+                                        </video>
+                                    </div>
                                 @elseif (str_starts_with($attachment->mime_type, 'audio/'))
-                                    <audio class="w-full" controls>
-                                        <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
-                                    </audio>
+                                    <div class="rounded-box border border-base-200 bg-base-200/40 p-2 {{ $spanClass }}">
+                                        <audio class="w-full" controls>
+                                            <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
+                                        </audio>
+                                    </div>
                                 @else
-                                    <a class="link link-hover text-sm" href="{{ $url }}" target="_blank" rel="noreferrer">
+                                    <a class="btn btn-ghost btn-sm justify-start w-full {{ $spanClass }}" href="{{ $url }}" target="_blank" rel="noreferrer">
                                         {{ basename($attachment->path) }}
                                     </a>
                                 @endif
