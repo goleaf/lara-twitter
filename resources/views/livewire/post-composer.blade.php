@@ -12,7 +12,7 @@
     <div class="card-body gap-4">
         <div class="flex items-center justify-between gap-4">
             <div class="font-semibold">Post</div>
-            <div class="text-xs {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}">
+            <div class="text-xs tabular-nums {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}">
                 {{ $bodyLength }}/{{ $maxBodyLength }}
             </div>
         </div>
@@ -23,15 +23,15 @@
                     <a href="{{ $profileHref }}" wire:navigate aria-label="View profile">
                 @endif
 
-                    <div class="avatar">
-                        <div class="w-10 rounded-full border border-base-200 bg-base-100">
-                            @if ($me?->avatar_url)
-                                <img src="{{ $me->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                            @else
-                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
-                                    {{ $avatarInitial }}
-                                </div>
-                            @endif
+                <div class="avatar">
+                    <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                        @if ($me?->avatar_url)
+                            <img src="{{ $me->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                        @else
+                            <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                {{ $avatarInitial }}
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -51,40 +51,85 @@
                     <x-input-error class="mt-2" :messages="$errors->get('body')" />
                 </div>
 
-                <div class="flex items-center justify-between gap-3">
-                    <label class="text-sm opacity-70">Who can reply?</label>
-                    <select wire:model="reply_policy" class="select select-bordered select-sm max-w-xs w-full">
-                        <option value="everyone">Everyone</option>
-                        <option value="following">Only people you follow</option>
-                        <option value="mentioned">Only people you mention</option>
-                        <option value="none">No one</option>
-                    </select>
-                </div>
-                <x-input-error :messages="$errors->get('reply_policy')" />
+                <div class="rounded-box border border-base-200 bg-base-200/40 p-3 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-sm opacity-70">Who can reply?</label>
+                            <select wire:model="reply_policy" class="select select-bordered select-sm w-full">
+                                <option value="everyone">Everyone</option>
+                                <option value="following">Only people you follow</option>
+                                <option value="mentioned">Only people you mention</option>
+                                <option value="none">No one</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('reply_policy')" />
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="space-y-1">
-                        <label class="text-sm opacity-70">Location (optional)</label>
-                        <input wire:model="location" type="text" class="input input-bordered input-sm w-full" placeholder="e.g. Prague" />
-                        <x-input-error :messages="$errors->get('location')" />
+                        <div class="space-y-1">
+                            <label class="text-sm opacity-70">Schedule (optional)</label>
+                            <input wire:model="scheduled_for" type="datetime-local" class="input input-bordered input-sm w-full" />
+                            <x-input-error :messages="$errors->get('scheduled_for')" />
+                        </div>
+
+                        <div class="space-y-1 sm:col-span-2">
+                            <label class="text-sm opacity-70">Location (optional)</label>
+                            <input wire:model="location" type="text" class="input input-bordered input-sm w-full" placeholder="e.g. Prague" />
+                            <x-input-error :messages="$errors->get('location')" />
+                        </div>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="text-sm opacity-70">Schedule (optional)</label>
-                        <input wire:model="scheduled_for" type="datetime-local" class="input input-bordered input-sm w-full" />
-                        <x-input-error :messages="$errors->get('scheduled_for')" />
-                    </div>
+                    <div class="text-xs opacity-70">Scheduled posts won’t appear until they’re published.</div>
                 </div>
-                <div class="text-xs opacity-70">Scheduled posts won’t appear until they’re published.</div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <input wire:model="images" type="file" multiple accept="image/*" class="file-input file-input-bordered file-input-sm w-full max-w-xs" />
-                        <input wire:model="video" type="file" accept="video/mp4,video/webm,video/*" class="file-input file-input-bordered file-input-sm w-full max-w-xs" />
+                <div class="rounded-box border border-base-200 bg-base-200/40 p-3 space-y-2">
+                    <div class="flex flex-col sm:flex-row sm:items-end gap-3">
+                        <div class="flex flex-wrap items-center gap-3 flex-1">
+                            <input
+                                wire:model="images"
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                class="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                                wire:loading.attr="disabled"
+                                wire:target="images"
+                            />
+
+                            <input
+                                wire:model="video"
+                                type="file"
+                                accept="video/mp4,video/webm,video/*"
+                                class="file-input file-input-bordered file-input-sm w-full max-w-xs"
+                                wire:loading.attr="disabled"
+                                wire:target="video"
+                            />
+
+                            @if ($video)
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    wire:click="removeVideo"
+                                    wire:loading.attr="disabled"
+                                    wire:target="removeVideo"
+                                >
+                                    Remove video
+                                </button>
+                            @endif
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            wire:click="save"
+                            wire:loading.attr="disabled"
+                            wire:target="save,images,video,removeVideo"
+                            @disabled(trim($body) === '' || $bodyLength > $maxBodyLength)
+                        >
+                            Post
+                        </button>
                     </div>
-                    <button wire:click="save" class="btn btn-primary btn-sm" @disabled(trim($body) === '' || $bodyLength > $maxBodyLength)>Post</button>
+
+                    <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
                 </div>
-                <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
+
                 <x-input-error :messages="$errors->get('images')" />
                 <x-input-error :messages="$errors->get('images.*')" />
                 <x-input-error :messages="$errors->get('video')" />
