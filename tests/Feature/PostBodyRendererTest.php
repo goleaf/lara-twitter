@@ -9,10 +9,14 @@ class PostBodyRendererTest extends TestCase
 {
     public function test_it_linkifies_urls_mentions_and_hashtags_without_overlapping(): void
     {
-        $html = (string) app(PostBodyRenderer::class)->render('Hey @Alice check #Laravel https://example.com/#section');
+        $html = (string) app(PostBodyRenderer::class)->render('Hey @Alice @john-doe check #Laravel https://example.com/#section');
 
         $this->assertStringContainsString(
             'href="'.route('profile.show', ['user' => 'alice']).'"',
+            $html,
+        );
+        $this->assertStringContainsString(
+            'href="'.route('profile.show', ['user' => 'john-doe']).'"',
             $html,
         );
         $this->assertStringContainsString(
