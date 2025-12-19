@@ -4,6 +4,7 @@ namespace App\Livewire\Concerns;
 
 use App\Models\Block;
 use App\Models\Mute;
+use App\Models\UserList;
 use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
 
@@ -118,5 +119,12 @@ trait InteractsWithUserProfile
 
         return Auth::user()->hasBlocked($this->user);
     }
-}
 
+    public function getListsCountProperty(): int
+    {
+        return UserList::query()
+            ->where('is_private', false)
+            ->whereHas('members', fn ($q) => $q->where('users.id', $this->user->id))
+            ->count();
+    }
+}
