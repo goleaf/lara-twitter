@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
         <div class="card-body space-y-3">
             <div class="text-xl font-semibold">Lists</div>

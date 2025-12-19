@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     <div>
         <a class="btn btn-ghost btn-sm" href="{{ url()->previous() }}">← Back</a>
     </div>

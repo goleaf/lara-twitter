@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">

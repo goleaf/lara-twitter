@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     @php($recipientCount = count($recipientUserIds))
     @php($isGroup = $recipientCount >= 2)
 

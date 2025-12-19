@@ -1,6 +1,6 @@
 @php($primary = $this->primaryPost())
 
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
     <div>
         <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>← Back to post</a>
     </div>

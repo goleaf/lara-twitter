@@ -1,7 +1,7 @@
 @php($me = auth()->user())
 @php($myParticipant = $this->myParticipant)
 
-<div class="max-w-2xl mx-auto space-y-4" wire:poll.5s="markRead">
+<div class="max-w-2xl lg:max-w-3xl mx-auto space-y-4" wire:poll.5s="markRead">
     <div class="card bg-base-100 border">
         <div class="card-body">
             @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u && $u->id !== $me->id)->values())

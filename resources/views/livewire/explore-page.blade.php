@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-4">
+<div class="max-w-5xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="text-xl font-semibold">Explore</div>

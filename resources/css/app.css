@@ -41,11 +41,11 @@
     }
 
     .tabs.tabs-boxed {
-        @apply bg-base-200/50 border border-base-200 p-1 rounded-box;
+        @apply bg-base-200/50 border border-base-200 p-1 rounded-box overflow-x-auto;
     }
 
     .tabs.tabs-boxed .tab {
-        @apply font-medium;
+        @apply font-medium shrink-0;
     }
 
     .prose {
