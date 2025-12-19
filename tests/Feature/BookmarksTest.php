@@ -138,4 +138,43 @@ class BookmarksTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder(['Second', 'First']);
     }
+
+    public function test_bookmarks_remain_visible_when_the_original_post_is_deleted(): void
+    {
+        $author = User::factory()->create(['username' => 'alice']);
+        $viewer = User::factory()->create(['username' => 'bob']);
+
+        $post = Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'A post',
+        ]);
+
+        Livewire::actingAs($viewer)
+            ->test(PostCard::class, ['post' => $post])
+            ->call('toggleBookmark')
+            ->assertHasNoErrors();
+
+        $post->delete();
+
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $viewer->id,
+            'post_id' => $post->id,
+        ]);
+
+        $this->actingAs($viewer)
+            ->get(route('bookmarks'))
+            ->assertOk()
+            ->assertSee('This post is no longer available')
+            ->assertDontSee('A post');
+
+        Livewire::actingAs($viewer)
+            ->test(BookmarksPage::class)
+            ->call('remove', $post->id)
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseMissing('bookmarks', [
+            'user_id' => $viewer->id,
+            'post_id' => $post->id,
+        ]);
+    }
 }
