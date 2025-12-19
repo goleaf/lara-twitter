@@ -15,6 +15,10 @@
                         <div class="font-medium">Block</div>
                         <div class="text-sm opacity-60">Cut off an account</div>
                     </a>
+                    <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('help.mute') }}" wire:navigate>
+                        <div class="font-medium">Mute</div>
+                        <div class="text-sm opacity-60">Hide without blocking</div>
+                    </a>
                     <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('help.direct-messages') }}" wire:navigate>
                         <div class="font-medium">Direct Messages</div>
                         <div class="text-sm opacity-60">Private chats</div>
