@@ -152,6 +152,18 @@
                             </a>
                         </div>
 
+                        @auth
+                            <div class="pb-2">
+                                <a class="btn btn-primary btn-sm w-full gap-2" href="{{ route('timeline') }}#composer" wire:navigate aria-label="New post">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 6.75 17.25 4.5" />
+                                    </svg>
+                                    Post
+                                </a>
+                            </div>
+                        @endauth
+
                         <ul class="menu p-0 gap-1">
                             <li>
                                 <a href="{{ route('timeline') }}" wire:navigate class="{{ request()->routeIs('timeline') ? 'active' : '' }}">
@@ -353,5 +365,20 @@
                 </aside>
             </div>
         </div>
+
+        @auth
+            <a
+                href="{{ route('timeline') }}#composer"
+                wire:navigate
+                class="btn btn-primary btn-circle shadow-lg fixed bottom-6 right-6 z-40 lg:hidden"
+                aria-label="New post"
+                title="New post"
+            >
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 6.75 17.25 4.5" />
+                </svg>
+            </a>
+        @endauth
     </body>
 </html>

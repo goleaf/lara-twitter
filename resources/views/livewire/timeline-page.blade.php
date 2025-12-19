@@ -62,7 +62,9 @@
             @endauth
 
             @auth
-                <livewire:post-composer />
+                <div id="composer" class="scroll-mt-24">
+                    <livewire:post-composer />
+                </div>
             @endauth
 
             <div wire:poll.30s="checkForNewPosts">
