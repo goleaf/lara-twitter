@@ -37,12 +37,12 @@
             </div>
         @endif
 
-        <div class="flex items-center justify-between">
-            <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate>
+        <div class="flex items-center justify-between gap-3">
+            <a class="font-semibold link link-hover truncate" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate>
                 {{ $primary->user->name }}
                 <span class="opacity-60 font-normal">&#64;{{ $primary->user->username }}</span>
             </a>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
                 <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $primary) }}" wire:navigate>
                     {{ $primary->created_at->diffForHumans() }}
                 </a>
