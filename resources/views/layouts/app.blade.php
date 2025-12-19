@@ -323,7 +323,7 @@
 
                         @auth
                             <div class="mt-4 pt-4 border-t border-base-200">
-                                <a class="flex items-center gap-3 p-2 rounded-btn hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
+                                <a class="flex items-center gap-3 p-2 rounded-btn hover:bg-base-200/70 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
                                     <div class="avatar shrink-0">
                                         <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                             @if (auth()->user()->avatar_url)
