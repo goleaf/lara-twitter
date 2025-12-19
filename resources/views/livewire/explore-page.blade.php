@@ -44,13 +44,23 @@
                 @if ($this->trendingTopicPosts->isNotEmpty())
                     <div class="card bg-base-100 border">
                         <div class="card-body">
+                            @php($trendIndex = $this->trendingHashtags->keyBy('tag'))
                             <div class="font-semibold">What's happening</div>
                             <div class="space-y-4 pt-2">
                                 @foreach ($this->trendingTopicPosts as $tag => $posts)
+                                    @php($meta = $trendIndex->get($tag))
                                     <div class="space-y-2">
                                         <a class="link link-hover font-semibold" href="{{ route('hashtags.show', ['tag' => $tag]) }}" wire:navigate>
                                             #{{ $tag }}
                                         </a>
+                                        @if ($meta)
+                                            <div class="text-xs opacity-60">
+                                                {{ (int) ($meta->users_count ?? 0) }} people talking
+                                                @if ((int) ($meta->recent_uses_count ?? 0) > 0)
+                                                    · {{ (int) $meta->recent_uses_count }} posts in the last hour
+                                                @endif
+                                            </div>
+                                        @endif
 
                                         <div class="space-y-2">
                                             @foreach ($posts as $post)
@@ -121,15 +131,34 @@
 
                             <div class="space-y-2 pt-2">
                                 @forelse ($this->topStories as $moment)
-                                    <a class="card bg-base-200 border hover:border-base-300 transition" href="{{ route('moments.show', $moment) }}" wire:navigate>
-                                        <div class="card-body py-4">
+                                    <a class="flex items-start gap-3 rounded-box bg-base-200 border border-base-200 hover:border-base-300 transition p-3" href="{{ route('moments.show', $moment) }}" wire:navigate>
+                                        @if ($moment->coverUrl())
+                                            <img class="w-16 h-16 rounded-box object-cover border border-base-300" src="{{ $moment->coverUrl() }}" alt="Moment cover" />
+                                        @endif
+
+                                        <div class="min-w-0 flex-1">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="min-w-0">
                                                     <div class="font-semibold truncate">{{ $moment->title }}</div>
-                                                    <div class="text-sm opacity-70 truncate">by &#64;{{ $moment->owner->username }}</div>
+                                                    <div class="text-sm opacity-70 truncate">
+                                                        by &#64;{{ $moment->owner->username }} · {{ $moment->items_count }} posts
+                                                    </div>
                                                 </div>
-                                                <div class="text-sm opacity-60 shrink-0">{{ $moment->items_count }} posts</div>
                                             </div>
+
+                                            @if ($moment->firstItem && $moment->firstItem->post)
+                                                @php($p = $moment->firstItem->post)
+                                                @php($primary = $p->repostOf && $p->body === '' ? $p->repostOf : $p)
+                                                @if ($primary->body !== '')
+                                                    <div class="text-sm opacity-80 pt-1">
+                                                        {{ \Illuminate\Support\Str::limit($primary->body, 140) }}
+                                                    </div>
+                                                @endif
+                                            @elseif ($moment->description)
+                                                <div class="text-sm opacity-80 pt-1">
+                                                    {{ \Illuminate\Support\Str::limit($moment->description, 140) }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </a>
                                 @empty
@@ -157,7 +186,7 @@
         <div class="space-y-4">
             <div class="card bg-base-100 border">
                 <div class="card-body">
-                    <div class="font-semibold">Recommended accounts</div>
+                    <div class="font-semibold">Discover people</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->recommendedUsers as $u)
                             <div class="flex items-center justify-between gap-3">

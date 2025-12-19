@@ -32,5 +32,33 @@
         <x-input-error :messages="$errors->get('images')" />
         <x-input-error :messages="$errors->get('images.*')" />
         <x-input-error :messages="$errors->get('video')" />
+
+        <div class="divider my-2"></div>
+
+        <div class="space-y-2">
+            <div class="font-semibold">Poll (optional)</div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input wire:model="poll_options.0" type="text" class="input input-bordered w-full" placeholder="Option 1" />
+                <input wire:model="poll_options.1" type="text" class="input input-bordered w-full" placeholder="Option 2" />
+                <input wire:model="poll_options.2" type="text" class="input input-bordered w-full" placeholder="Option 3" />
+                <input wire:model="poll_options.3" type="text" class="input input-bordered w-full" placeholder="Option 4" />
+            </div>
+            <x-input-error :messages="$errors->get('poll_options')" />
+            <x-input-error :messages="$errors->get('poll_options.*')" />
+
+            <div class="flex items-center justify-between gap-3">
+                <label class="text-sm opacity-70">Duration</label>
+                <select wire:model="poll_duration" class="select select-bordered max-w-xs w-full">
+                    <option value="">Select...</option>
+                    <option value="1440">1 day</option>
+                    <option value="4320">3 days</option>
+                    <option value="10080">7 days</option>
+                </select>
+            </div>
+            <x-input-error :messages="$errors->get('poll_duration')" />
+
+            <div class="text-xs opacity-70">Polls can’t be combined with images or video.</div>
+        </div>
     </div>
 </div>
