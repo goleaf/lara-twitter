@@ -29,6 +29,20 @@
             @php($avatarLabel = $actor?->name ?? $actorUsername)
             @php($avatarInitial = mb_strtoupper(mb_substr($avatarLabel, 0, 1)))
 
+            @php
+                $iconClass = match ($type) {
+                    'post_liked' => 'bg-error text-error-content',
+                    'post_reposted' => 'bg-success text-success-content',
+                    'post_replied' => 'bg-info text-info-content',
+                    'post_mentioned' => 'bg-info text-info-content',
+                    'user_followed' => 'bg-primary text-primary-content',
+                    'message_received' => 'bg-secondary text-secondary-content',
+                    'added_to_list' => 'bg-accent text-accent-content',
+                    'followed_user_posted' => 'bg-neutral text-neutral-content',
+                    default => 'bg-base-200 text-base-content',
+                };
+            @endphp
+
             @php($postId = $data['post_id'] ?? $data['original_post_id'] ?? null)
             @php($conversationId = $data['conversation_id'] ?? null)
             @php($profileUsername = $data['follower_username'] ?? $data['actor_username'] ?? null)
@@ -51,20 +65,6 @@
                 wire:click.prevent="open('{{ $notification->id }}')"
             >
                 <div class="card-body py-4">
-                    @php
-                        $iconClass = match ($type) {
-                            'post_liked' => 'bg-error text-error-content',
-                            'post_reposted' => 'bg-success text-success-content',
-                            'post_replied' => 'bg-info text-info-content',
-                            'post_mentioned' => 'bg-info text-info-content',
-                            'user_followed' => 'bg-primary text-primary-content',
-                            'message_received' => 'bg-secondary text-secondary-content',
-                            'added_to_list' => 'bg-accent text-accent-content',
-                            'followed_user_posted' => 'bg-neutral text-neutral-content',
-                            default => 'bg-base-200 text-base-content',
-                        };
-                    @endphp
-
                     <div class="flex items-start gap-3">
                         <div class="shrink-0 pt-0.5">
                             <div class="indicator">
