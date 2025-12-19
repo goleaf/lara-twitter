@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+
+    ::selection {
+        @apply bg-primary/20;
+    }
+}
+
+@layer components {
+    .card {
+        @apply border border-base-200 shadow-sm;
+    }
+
+    .card.card-hover {
+        @apply transition hover:shadow-md hover:border-base-300;
+    }
+
+    .prose {
+        @apply text-sm leading-relaxed text-base-content;
+    }
+
+    .prose a {
+        @apply link link-primary font-medium;
+    }
+
+    .prose p {
+        @apply my-0;
+    }
+
+    .prose ul,
+    .prose ol {
+        @apply my-0 ps-5;
+    }
+
+    .prose li {
+        @apply my-0;
+    }
+
+    .prose blockquote {
+        @apply my-0 border-s-4 border-base-300 ps-4 opacity-90;
+    }
+
+    .prose code {
+        @apply bg-base-200 px-1.5 py-0.5 rounded-md text-[0.85em];
+    }
+}
