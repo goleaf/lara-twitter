@@ -55,17 +55,18 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto pt-3">
-                    <table class="table table-zebra table-sm">
+                <div class="pt-3">
+                    <div class="overflow-x-auto rounded-box border border-base-200">
+                        <table class="table table-zebra table-sm">
                         <thead>
                             <tr>
                                 <th>Post</th>
-                                <th class="text-right">Impressions</th>
-                                <th class="text-right">Engagements</th>
-                                <th class="text-right">Rate</th>
-                                <th class="text-right">Links</th>
-                                <th class="text-right">Profile</th>
-                                <th class="text-right">Media</th>
+                                <th class="text-right tabular-nums">Impressions</th>
+                                <th class="text-right tabular-nums">Engagements</th>
+                                <th class="text-right tabular-nums">Rate</th>
+                                <th class="text-right tabular-nums">Links</th>
+                                <th class="text-right tabular-nums">Profile</th>
+                                <th class="text-right tabular-nums">Media</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,12 +78,12 @@
                                         </a>
                                         <div class="text-xs opacity-60">{{ $post->created_at->diffForHumans() }}</div>
                                     </td>
-                                    <td class="text-right">{{ $post->analytics_impressions }}</td>
-                                    <td class="text-right">{{ $post->analytics_engagements }}</td>
-                                    <td class="text-right">{{ number_format($post->analytics_engagement_rate * 100, 1) }}%</td>
-                                    <td class="text-right">{{ $post->analytics_link_clicks }}</td>
-                                    <td class="text-right">{{ $post->analytics_profile_clicks }}</td>
-                                    <td class="text-right">{{ $post->analytics_media_views }}</td>
+                                    <td class="text-right tabular-nums">{{ $post->analytics_impressions }}</td>
+                                    <td class="text-right tabular-nums">{{ $post->analytics_engagements }}</td>
+                                    <td class="text-right tabular-nums">{{ number_format($post->analytics_engagement_rate * 100, 1) }}%</td>
+                                    <td class="text-right tabular-nums">{{ $post->analytics_link_clicks }}</td>
+                                    <td class="text-right tabular-nums">{{ $post->analytics_profile_clicks }}</td>
+                                    <td class="text-right tabular-nums">{{ $post->analytics_media_views }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -91,6 +92,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                        </div>
                 </div>
 
                 <div class="text-xs opacity-60 pt-2">Shows up to 100 posts published in the selected range.</div>
@@ -105,7 +107,7 @@
                         @forelse ($this->followerGrowth as $row)
                             <div class="flex items-center justify-between">
                                 <div class="text-sm">{{ $row->day }}</div>
-                                <div class="text-sm opacity-70">{{ $row->followers }}</div>
+                                <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
                         @empty
                             <div class="opacity-70 text-sm">No new followers yet.</div>
@@ -121,7 +123,7 @@
                         @forelse ($this->topFollowerLocations as $row)
                             <div class="flex items-center justify-between">
                                 <div class="text-sm truncate">{{ $row->location }}</div>
-                                <div class="text-sm opacity-70">{{ $row->followers }}</div>
+                                <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
                         @empty
                             <div class="opacity-70 text-sm">No locations yet.</div>
@@ -131,26 +133,26 @@
             </div>
         </div>
 
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="font-semibold">Followers also follow</div>
-                    <div class="space-y-2 pt-2">
-                        @forelse ($this->alsoFollowedAccounts as $row)
-                            <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
-                                <div class="min-w-0">
-                                    <div class="font-medium truncate">{{ $row->name }}</div>
-                                    <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
-                                </div>
-                                <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
-                            </a>
-                        @empty
-                            <div class="opacity-70 text-sm">Not enough data yet.</div>
-                        @endforelse
-                    </div>
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="font-semibold">Followers also follow</div>
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->alsoFollowedAccounts as $row)
+                        <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
+                            <div class="min-w-0">
+                                <div class="font-medium truncate">{{ $row->name }}</div>
+                                <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
+                            </div>
+                            <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
+                        </a>
+                    @empty
+                        <div class="opacity-70 text-sm">Not enough data yet.</div>
+                    @endforelse
                 </div>
             </div>
+        </div>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 tabular-nums">
             <div class="card bg-base-100 border">
                 <div class="card-body">
                     <div class="text-sm opacity-70">Impressions</div>
@@ -280,30 +282,30 @@
             </div>
         </div>
 
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
-                    <div class="space-y-2 pt-2">
-                        @forelse ($this->topPosts as $post)
-                            <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('posts.show', $post) }}" wire:navigate>
-                                <div class="min-w-0">
-                                    <div class="font-medium truncate">{{ $post->body }}</div>
-                                    <div class="text-xs opacity-60">
-                                        {{ $post->analytics_impressions }} impressions ·
-                                        {{ $post->analytics_engagements }} engagements ·
-                                        {{ number_format($post->analytics_engagement_rate * 100, 1) }}% ·
-                                        {{ $post->analytics_link_clicks }} links ·
-                                        {{ $post->analytics_profile_clicks }} profile ·
-                                        {{ $post->analytics_media_views }} media
-                                    </div>
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->topPosts as $post)
+                        <a class="flex items-start justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('posts.show', $post) }}" wire:navigate>
+                            <div class="min-w-0">
+                                <div class="font-medium truncate">{{ $post->body }}</div>
+                                <div class="text-xs opacity-60 tabular-nums">
+                                    {{ $post->analytics_impressions }} impressions ·
+                                    {{ $post->analytics_engagements }} engagements ·
+                                    {{ number_format($post->analytics_engagement_rate * 100, 1) }}% ·
+                                    {{ $post->analytics_link_clicks }} links ·
+                                    {{ $post->analytics_profile_clicks }} profile ·
+                                    {{ $post->analytics_media_views }} media
                                 </div>
-                                <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
-                            </a>
-                        @empty
-                            <div class="opacity-70 text-sm">No impressions yet.</div>
-                        @endforelse
-                    </div>
+                            </div>
+                            <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
+                        </a>
+                    @empty
+                        <div class="opacity-70 text-sm">No impressions yet.</div>
+                    @endforelse
                 </div>
             </div>
+        </div>
     @endif
 </div>
