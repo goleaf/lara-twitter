@@ -315,71 +315,128 @@
             </div>
         @endif
 
-        <div class="flex flex-wrap items-center gap-2 pt-2">
-            <button
-                wire:click="toggleLike"
-                class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
-                title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
-                aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
-            >
-                @if ($this->hasLiked())
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 21s-7-4.35-7-11.5S8.5 2 12 7.5C15.5 2 19 2 19 9.5S12 21 12 21Z" />
-                    </svg>
-                @else
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.687-4.5-1.935 0-3.597 1.126-4.313 2.733-.716-1.607-2.378-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                    </svg>
-                @endif
-            </button>
+	        @php($likesCount = (int) ($primary->likes_count ?? $primary->likes()->count()))
+	        @php($repostsCount = (int) ($primary->reposts_count ?? $primary->reposts()->count()))
+	        @php($repliesCount = is_numeric($primary->replies_count ?? null) ? (int) $primary->replies_count : null)
 
-            <a class="btn btn-ghost btn-sm" href="{{ route('posts.likes', $primary) }}" wire:navigate aria-label="View likes">
-                Likes <span class="badge badge-neutral badge-sm">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
-            </a>
+	        @php($likesBadge = $likesCount ? 'badge-neutral' : 'badge-ghost')
+	        @php($repostsBadge = $repostsCount ? 'badge-neutral' : 'badge-ghost')
+	        @php($repliesBadge = ($repliesCount ?? 0) ? 'badge-neutral' : 'badge-ghost')
 
-            <button
-                wire:click="toggleBookmark"
-                class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
-                @disabled(!auth()->check())
-                aria-label="Bookmark"
-                title="{{ $this->hasBookmarked() ? 'Remove bookmark' : 'Bookmark' }}"
-                aria-pressed="{{ $this->hasBookmarked() ? 'true' : 'false' }}"
-            >
-                @if ($this->hasBookmarked())
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 2a2 2 0 0 0-2 2v18l8-5 8 5V4a2 2 0 0 0-2-2H6Z" />
-                    </svg>
-                @else
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16Z" />
-                    </svg>
-                @endif
-            </button>
+	        <div class="flex flex-wrap items-center gap-1 pt-2">
+	            @auth
+	                <button
+	                    wire:click="toggleReplyComposer"
+	                    class="btn btn-ghost btn-sm btn-square {{ $isReplying ? 'text-primary' : '' }}"
+	                    aria-label="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+	                    title="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+	                    aria-pressed="{{ $isReplying ? 'true' : 'false' }}"
+	                >
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5" />
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.418-4.03 8-9 8a10.3 10.3 0 0 1-4-.78L3 20l1.3-3.9A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+	                    </svg>
+	                </button>
+	            @else
+	                <button class="btn btn-ghost btn-sm btn-square" disabled aria-label="Reply">
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5" />
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.418-4.03 8-9 8a10.3 10.3 0 0 1-4-.78L3 20l1.3-3.9A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+	                    </svg>
+	                </button>
+	            @endauth
 
-            <button wire:click="toggleRepost" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
-                {{ $this->hasRetweeted() ? 'Retweeted' : 'Retweet' }}
-            </button>
+	            <a class="btn btn-ghost btn-sm gap-2" href="{{ route('posts.show', $primary) }}" wire:navigate aria-label="Open thread">
+	                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5" />
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 3h-6m6 0v6m0-6L10.5 13.5" />
+	                </svg>
+	                <span class="hidden sm:inline">Thread</span>
+	                @if (! is_null($repliesCount))
+	                    <span class="badge badge-sm {{ $repliesBadge }} tabular-nums">{{ $repliesCount }}</span>
+	                @endif
+	            </a>
 
-            <a class="btn btn-ghost btn-sm" href="{{ route('posts.reposts', $primary) }}" wire:navigate>
-                Reposts <span class="badge badge-neutral badge-sm">{{ $primary->reposts_count ?? $primary->reposts()->count() }}</span>
-            </a>
+	            <div class="w-px h-6 bg-base-200 mx-1"></div>
 
-            <button wire:click="openQuote" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
-                Quote
-            </button>
+	            <button
+	                wire:click="toggleRepost"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasRetweeted() ? 'text-success' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
+	                title="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
+	                aria-pressed="{{ $this->hasRetweeted() ? 'true' : 'false' }}"
+	            >
+	                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 1l4 4-4 4" />
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 11V9a4 4 0 0 1 4-4h14" />
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 23l-4-4 4-4" />
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 13v2a4 4 0 0 1-4 4H3" />
+	                </svg>
+	            </button>
 
-            @auth
-                <button wire:click="toggleReplyComposer" class="btn btn-ghost btn-sm">
-                    {{ $isReplying ? 'Cancel' : 'Reply' }}
-                </button>
-            @else
-                <button class="btn btn-ghost btn-sm" disabled>Reply</button>
-            @endauth
+	            <a class="btn btn-ghost btn-sm gap-2" href="{{ route('posts.reposts', $primary) }}" wire:navigate aria-label="View reposts">
+	                <span class="hidden sm:inline">Reposts</span>
+	                <span class="badge badge-sm {{ $repostsBadge }} tabular-nums">{{ $repostsCount }}</span>
+	            </a>
 
-            <a class="btn btn-ghost btn-sm" href="{{ route('posts.show', $primary) }}" wire:navigate>Thread</a>
-        </div>
+	            <button
+	                wire:click="openQuote"
+	                class="btn btn-ghost btn-sm btn-square {{ $isQuoting ? 'text-primary' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="Quote"
+	                title="Quote"
+	                aria-pressed="{{ $isQuoting ? 'true' : 'false' }}"
+	            >
+	                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487Z" />
+	                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 6.75 17.25 4.5" />
+	                </svg>
+	            </button>
+
+	            <button
+	                wire:click="toggleLike"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
+	                title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
+	                aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
+	            >
+	                @if ($this->hasLiked())
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+	                        <path d="M12 21s-7-4.35-7-11.5S8.5 2 12 7.5C15.5 2 19 2 19 9.5S12 21 12 21Z" />
+	                    </svg>
+	                @else
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.687-4.5-1.935 0-3.597 1.126-4.313 2.733-.716-1.607-2.378-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+	                    </svg>
+	                @endif
+	            </button>
+
+	            <a class="btn btn-ghost btn-sm gap-2" href="{{ route('posts.likes', $primary) }}" wire:navigate aria-label="View likes">
+	                <span class="hidden sm:inline">Likes</span>
+	                <span class="badge badge-sm {{ $likesBadge }} tabular-nums">{{ $likesCount }}</span>
+	            </a>
+
+	            <button
+	                wire:click="toggleBookmark"
+	                class="btn btn-ghost btn-sm btn-square {{ $this->hasBookmarked() ? 'text-primary' : '' }}"
+	                @disabled(!auth()->check())
+	                aria-label="Bookmark"
+	                title="{{ $this->hasBookmarked() ? 'Remove bookmark' : 'Bookmark' }}"
+	                aria-pressed="{{ $this->hasBookmarked() ? 'true' : 'false' }}"
+	            >
+	                @if ($this->hasBookmarked())
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+	                        <path d="M6 2a2 2 0 0 0-2 2v18l8-5 8 5V4a2 2 0 0 0-2-2H6Z" />
+	                    </svg>
+	                @else
+	                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16Z" />
+	                    </svg>
+	                @endif
+	            </button>
+	        </div>
 
         @if ($replyError)
             <div class="pt-2 text-error text-sm">{{ $replyError }}</div>
