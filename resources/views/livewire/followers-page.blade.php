@@ -19,7 +19,7 @@
     <div class="card bg-base-100 border">
         <div class="card-body">
             <div class="space-y-2">
-                @forelse ($this->followers as $follower)
+                @forelse ($followers as $follower)
                     <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
                         <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $follower->username]) }}" wire:navigate>
                             <div class="avatar">
