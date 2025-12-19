@@ -42,26 +42,28 @@
                         </div>
 
                         <div class="flex-none gap-1">
-                            <a class="btn btn-ghost btn-square" href="{{ route('search') }}" wire:navigate aria-label="Search">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
-                                </svg>
-                            </a>
+                            <div class="hidden lg:flex gap-1">
+                                <a class="btn btn-ghost btn-square" href="{{ route('search') }}" wire:navigate aria-label="Search">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                                    </svg>
+                                </a>
 
-                            <a class="btn btn-ghost btn-square" href="{{ route('trending') }}" wire:navigate aria-label="Trending">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l3-3 4 4 7-7" />
-                                </svg>
-                            </a>
+                                <a class="btn btn-ghost btn-square" href="{{ route('trending') }}" wire:navigate aria-label="Trending">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l3-3 4 4 7-7" />
+                                    </svg>
+                                </a>
 
-                            <a class="btn btn-ghost btn-square" href="{{ route('explore') }}" wire:navigate aria-label="Explore">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
-                                </svg>
-                            </a>
+                                <a class="btn btn-ghost btn-square" href="{{ route('explore') }}" wire:navigate aria-label="Explore">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
+                                    </svg>
+                                </a>
+                            </div>
 
                             @auth
-                                <div class="indicator">
+                                <div class="indicator hidden lg:inline-flex">
                                     @if ($unreadNotificationsCount)
                                         <span class="indicator-item badge badge-primary badge-sm">{{ $unreadNotificationsCount }}</span>
                                     @endif
@@ -137,7 +139,7 @@
                     </header>
                 @endif
 
-                <main class="max-w-7xl w-full mx-auto px-4 pt-6 pb-20 lg:pb-6">
+                <main class="max-w-7xl w-full mx-auto px-4 pt-6 pb-24 lg:pb-6">
                     @isset($slot)
                         {{ $slot }}
                     @else
@@ -385,15 +387,15 @@
 
             @auth
                 <a
-                    href="{{ route('messages.index') }}"
+                    href="{{ route('explore') }}"
                     wire:navigate
-                    class="{{ request()->routeIs('messages.*') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
-                    aria-label="Messages"
+                    class="{{ request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+                    aria-label="Explore"
                 >
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a8.5 8.5 0 1 1-2.5-6.01L21 8.5V12Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
                     </svg>
-                    <span class="btm-nav-label">DMs</span>
+                    <span class="btm-nav-label">Explore</span>
                 </a>
 
                 <a href="{{ route('timeline') }}#composer" wire:navigate class="text-primary" aria-label="New post">
@@ -424,15 +426,15 @@
                 </a>
 
                 <a
-                    href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
+                    href="{{ route('messages.index') }}"
                     wire:navigate
-                    class="{{ request()->routeIs('profile.*') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
-                    aria-label="Profile"
+                    class="{{ request()->routeIs('messages.*') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+                    aria-label="Messages"
                 >
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a8.5 8.5 0 1 1-2.5-6.01L21 8.5V12Z" />
                     </svg>
-                    <span class="btm-nav-label">Me</span>
+                    <span class="btm-nav-label">DMs</span>
                 </a>
             @else
                 <a
