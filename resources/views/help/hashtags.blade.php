@@ -76,7 +76,7 @@
 
         <div class="card bg-base-100 border">
             <div class="card-body">
-                <a class="link link-primary" href="{{ route('help.index') }}" wire:navigate>← Back to Help</a>
+                <a class="btn btn-ghost btn-sm" href="{{ route('help.index') }}" wire:navigate>← Back to Help</a>
             </div>
         </div>
     </div>

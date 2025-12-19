@@ -43,7 +43,7 @@ new #[Layout('layouts.app')] class extends Component
             <form wire:submit="confirmPassword" class="space-y-4 mt-2">
                 <div>
                     <x-input-label for="password" :value="__('Password')" />
-                    <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                    <x-text-input wire:model="password" id="password" class="block mt-1 w-full input-sm" type="password" name="password" required autocomplete="current-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
