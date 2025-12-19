@@ -103,7 +103,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <ul tabindex="0" class="dropdown-content menu bg-base-100 border rounded-box shadow-lg mt-2 w-56 p-2">
+	                                    <ul tabindex="0" class="dropdown-content menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-56 p-2">
                                         <li>
                                             <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
                                                 Profile
