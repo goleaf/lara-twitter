@@ -20,13 +20,20 @@ class MomentsPage extends Component
 
     public $cover_image;
 
+    public function getCanCreateProperty(): bool
+    {
+        $user = Auth::user();
+
+        return $user && ($user->is_verified || $user->is_admin);
+    }
+
     public function mount(): void
     {
     }
 
     public function create(): void
     {
-        abort_unless(Auth::check(), 403);
+        abort_unless($this->canCreate, 403);
 
         $validated = $this->validate(StoreMomentRequest::rulesFor());
 
