@@ -237,6 +237,17 @@ class PostCard extends Component
         return Auth::id() === $this->post->user_id || (bool) Auth::user()->is_admin;
     }
 
+    public function hasLiked(): bool
+    {
+        if (! Auth::check()) {
+            return false;
+        }
+
+        $post = $this->primaryPost();
+
+        return $post->likes()->where('user_id', Auth::id())->exists();
+    }
+
     public function render()
     {
         return view('livewire.post-card');

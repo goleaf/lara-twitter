@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Http\Requests\Messages\StoreMessageRequest;
 use App\Models\Conversation;
+use App\Models\ConversationParticipant;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -22,6 +23,18 @@ class ConversationPage extends Component
     /** @var array<int, mixed> */
     public array $attachments = [];
 
+    public function getMyParticipantProperty(): ?ConversationParticipant
+    {
+        if (! Auth::check()) {
+            return null;
+        }
+
+        return $this->conversation
+            ->participants()
+            ->where('user_id', Auth::id())
+            ->first();
+    }
+
     public function mount(Conversation $conversation): void
     {
         abort_unless(Auth::check(), 403);
@@ -33,6 +46,36 @@ class ConversationPage extends Component
         $this->conversation = $conversation;
 
         $this->markRead();
+    }
+
+    public function acceptRequest(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless($this->conversation->hasParticipant(Auth::user()), 403);
+
+        $this->conversation
+            ->participants()
+            ->where('user_id', Auth::id())
+            ->update(['is_request' => false]);
+    }
+
+    public function declineRequest(): void
+    {
+        abort_unless(Auth::check(), 403);
+        abort_unless($this->conversation->hasParticipant(Auth::user()), 403);
+
+        $this->conversation
+            ->participants()
+            ->where('user_id', Auth::id())
+            ->delete();
+
+        if (! $this->conversation->is_group && $this->conversation->participants()->count() < 2) {
+            $this->conversation->delete();
+        } elseif ($this->conversation->participants()->count() === 0) {
+            $this->conversation->delete();
+        }
+
+        $this->redirect(route('messages.index'), navigate: true);
     }
 
     public function getMessagesProperty()
@@ -48,6 +91,10 @@ class ConversationPage extends Component
     {
         abort_unless(Auth::check(), 403);
         abort_unless($this->conversation->hasParticipant(Auth::user()), 403);
+
+        if ($this->myParticipant?->is_request) {
+            abort(403);
+        }
 
         $otherIds = $this->conversation
             ->participants()
@@ -66,6 +113,15 @@ class ConversationPage extends Component
                 ->exists();
 
             abort_if($blockedEitherWay, 403);
+        }
+
+        // Enforce DM privacy settings for other participants. Existing conversations are allowed
+        // unless the recipient has set DM policy to "none".
+        $others = \App\Models\User::query()->whereIn('id', $otherIds)->get()->keyBy('id');
+        foreach ($others as $other) {
+            if ($other->dm_policy === \App\Models\User::DM_NONE) {
+                abort(403);
+            }
         }
 
         $validated = $this->validate(StoreMessageRequest::rulesFor());

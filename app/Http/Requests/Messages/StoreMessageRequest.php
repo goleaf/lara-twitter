@@ -9,7 +9,7 @@ class StoreMessageRequest extends FormRequest
     public static function rulesFor(): array
     {
         return [
-            'body' => ['nullable', 'string', 'max:5000'],
+            'body' => ['nullable', 'string', 'max:10000'],
             'attachments' => ['array', 'max:4'],
             'attachments.*' => [
                 'file',
@@ -29,4 +29,3 @@ class StoreMessageRequest extends FormRequest
         return self::rulesFor();
     }
 }
-

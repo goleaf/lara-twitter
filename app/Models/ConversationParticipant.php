@@ -14,12 +14,17 @@ class ConversationParticipant extends Model
         'conversation_id',
         'user_id',
         'last_read_at',
+        'is_request',
+        'is_pinned',
+        'role',
     ];
 
     protected function casts(): array
     {
         return [
             'last_read_at' => 'datetime',
+            'is_request' => 'boolean',
+            'is_pinned' => 'boolean',
         ];
     }
 
@@ -33,4 +38,3 @@ class ConversationParticipant extends Model
         return $this->belongsTo(User::class);
     }
 }
-

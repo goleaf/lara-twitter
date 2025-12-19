@@ -4,6 +4,24 @@
             <div class="flex items-center justify-between">
                 <div class="text-xl font-semibold">Messages</div>
             </div>
+
+            <div class="tabs tabs-boxed mt-4">
+                <button type="button" class="tab {{ $tab === 'inbox' ? 'tab-active' : '' }}" wire:click="$set('tab', 'inbox')">
+                    Inbox
+                </button>
+                <button type="button" class="tab {{ $tab === 'requests' ? 'tab-active' : '' }}" wire:click="$set('tab', 'requests')">
+                    Requests
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <input
+                    wire:model.live="q"
+                    type="search"
+                    placeholder="Search messages…"
+                    class="input input-bordered w-full"
+                />
+            </div>
         </div>
     </div>
 
@@ -11,12 +29,17 @@
         @forelse ($this->conversations as $conversation)
             @php($last = $conversation->messages->first())
             @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u->id !== auth()->id()))
+            @php($meParticipant = $conversation->participants->firstWhere('user_id', auth()->id()))
 
             <a class="card bg-base-100 border hover:border-base-300 transition" href="{{ route('messages.show', $conversation) }}" wire:navigate>
                 <div class="card-body py-4">
                     <div class="flex items-center justify-between gap-4">
                         <div class="min-w-0">
                             <div class="font-semibold truncate">
+                                @if ($meParticipant?->is_pinned)
+                                    <span class="badge badge-neutral badge-sm">Pinned</span>
+                                @endif
+
                                 @if ($conversation->is_group)
                                     {{ $conversation->title ?? 'Group' }}
                                 @else
@@ -33,12 +56,22 @@
                             {{ $last?->created_at?->diffForHumans() }}
                         </div>
                     </div>
+
+                    <div class="pt-2 flex justify-end">
+                        <button
+                            type="button"
+                            wire:click.prevent="togglePin({{ $conversation->id }})"
+                            class="btn btn-ghost btn-xs"
+                        >
+                            {{ $meParticipant?->is_pinned ? 'Unpin' : 'Pin' }}
+                        </button>
+                    </div>
                 </div>
             </a>
         @empty
             <div class="card bg-base-100 border">
                 <div class="card-body">
-                    <div class="opacity-70">No conversations yet.</div>
+                    <div class="opacity-70">No conversations.</div>
                 </div>
             </div>
         @endforelse

@@ -4,11 +4,13 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserForm
 {
@@ -44,6 +46,13 @@ class UserForm
                 Toggle::make('is_admin'),
                 Toggle::make('is_premium')
                     ->label('Premium (long posts)'),
+                Select::make('dm_policy')
+                    ->label('DM policy')
+                    ->options(array_combine(User::dmPolicies(), User::dmPolicies()))
+                    ->default(User::DM_EVERYONE)
+                    ->required(),
+                Toggle::make('dm_allow_requests')
+                    ->label('Allow DM requests'),
             ]);
     }
 }

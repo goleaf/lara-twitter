@@ -79,9 +79,19 @@
         @endif
 
         <div class="flex items-center gap-2 pt-2">
-            <button wire:click="toggleLike" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
-                Like <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
+            <button
+                wire:click="toggleLike"
+                class="btn btn-ghost btn-sm {{ $this->hasLiked() ? 'text-error' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="Like"
+                title="Like"
+            >
+                <span class="text-lg leading-none">♥</span>
             </button>
+
+            <a class="btn btn-ghost btn-sm" href="{{ route('posts.likes', $primary) }}" wire:navigate>
+                Likes <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
+            </a>
 
             <button wire:click="toggleBookmark" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
                 {{ $this->hasBookmarked() ? 'Bookmarked' : 'Bookmark' }}

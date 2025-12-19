@@ -9,11 +9,14 @@ use App\Livewire\MentionsPage;
 use App\Livewire\MessagesPage;
 use App\Livewire\NotificationsPage;
 use App\Livewire\PostPage;
+use App\Livewire\PostLikesPage;
 use App\Livewire\RepostsPage;
 use App\Livewire\ProfileLikesPage;
 use App\Livewire\ProfileRepliesPage;
 use App\Livewire\ProfilePage;
 use App\Livewire\ExplorePage;
+use App\Livewire\FollowersPage;
+use App\Livewire\FollowingPage;
 use App\Livewire\SearchPage;
 use App\Livewire\TimelinePage;
 use App\Livewire\TrendingPage;
@@ -32,8 +35,11 @@ Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashb
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');
 Route::get('/@{user}/replies', ProfileRepliesPage::class)->name('profile.replies');
+Route::get('/@{user}/followers', FollowersPage::class)->name('profile.followers');
+Route::get('/@{user}/following', FollowingPage::class)->name('profile.following');
 
 Route::get('posts/{post}', PostPage::class)->name('posts.show');
+Route::get('posts/{post}/likes', PostLikesPage::class)->name('posts.likes');
 Route::get('posts/{post}/reposts', RepostsPage::class)->name('posts.reposts');
 
 Route::get('tags/{tag}', HashtagPage::class)->name('hashtags.show');

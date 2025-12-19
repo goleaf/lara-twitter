@@ -13,6 +13,8 @@ class PostPage extends Component
     use WithPagination;
 
     public Post $post;
+    /** @var array<int, \App\Models\Post> */
+    public array $ancestors = [];
 
     protected $listeners = [
         'reply-created' => '$refresh',
@@ -44,8 +46,47 @@ class PostPage extends Component
             }
         }
 
+        $this->ancestors = $this->loadAncestors($this->post);
+
         $target = $this->post->repostOf && $this->post->body === '' ? $this->post->repostOf : $this->post;
         app(AnalyticsService::class)->recordUnique('post_view', $target->id);
+    }
+
+    /**
+     * @return array<int, Post>
+     */
+    private function loadAncestors(Post $post): array
+    {
+        $ancestors = [];
+
+        $current = $post;
+        $maxDepth = 20;
+        $depth = 0;
+
+        while ($current->reply_to_id && $depth < $maxDepth) {
+            $parent = Post::query()
+                ->with([
+                    'user',
+                    'images',
+                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+                ])
+                ->withCount(['likes', 'reposts'])
+                ->find($current->reply_to_id);
+
+            if (! $parent) {
+                break;
+            }
+
+            if (Auth::check() && Auth::user()->isBlockedEitherWay($parent->user)) {
+                abort(403);
+            }
+
+            $ancestors[] = $parent;
+            $current = $parent;
+            $depth++;
+        }
+
+        return array_reverse($ancestors);
     }
 
     public function getRepliesProperty()

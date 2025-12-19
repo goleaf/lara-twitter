@@ -16,6 +16,7 @@ class ReplyComposer extends Component
     public Post $post;
 
     public string $body = '';
+    public string $reply_policy = Post::REPLY_EVERYONE;
 
     public int $maxLength = 280;
 

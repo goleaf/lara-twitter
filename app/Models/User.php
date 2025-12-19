@@ -35,6 +35,8 @@ class User extends Authenticatable implements FilamentUser
         'website',
         'is_admin',
         'is_premium',
+        'dm_policy',
+        'dm_allow_requests',
     ];
 
     /**
@@ -59,9 +61,31 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_premium' => 'boolean',
+            'dm_allow_requests' => 'boolean',
+            'timeline_settings' => 'array',
             'notification_settings' => 'array',
             'interest_hashtags' => 'array',
             'analytics_enabled' => 'boolean',
+        ];
+    }
+
+    public function timelineSetting(string $key, bool $default): bool
+    {
+        $settings = $this->timeline_settings ?? [];
+
+        return (bool) ($settings[$key] ?? $default);
+    }
+
+    public const DM_EVERYONE = 'everyone';
+    public const DM_FOLLOWING = 'following';
+    public const DM_NONE = 'none';
+
+    public static function dmPolicies(): array
+    {
+        return [
+            self::DM_EVERYONE,
+            self::DM_FOLLOWING,
+            self::DM_NONE,
         ];
     }
 

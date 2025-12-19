@@ -67,13 +67,18 @@
             </div>
 
             <div class="pt-3 flex gap-2 text-sm opacity-70">
-                <span>{{ $user->followers_count }} followers</span>
-                <span>{{ $user->following_count }} following</span>
+                <a class="link link-hover" href="{{ route('profile.followers', ['user' => $user]) }}" wire:navigate>
+                    {{ $user->followers_count }} followers
+                </a>
+                <a class="link link-hover" href="{{ route('profile.following', ['user' => $user]) }}" wire:navigate>
+                    {{ $user->following_count }} following
+                </a>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
                 <a class="tab tab-active" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
                 <a class="tab" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
+                <a class="tab" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
             </div>
         </div>
     </div>

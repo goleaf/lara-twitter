@@ -1,4 +1,5 @@
 @php($me = auth()->user())
+@php($myParticipant = $this->myParticipant)
 
 <div class="max-w-2xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
@@ -24,6 +25,20 @@
             </div>
         </div>
     </div>
+
+    @if ($myParticipant?->is_request)
+        <div class="card bg-base-100 border">
+            <div class="card-body">
+                <div class="font-semibold">Message request</div>
+                <div class="text-sm opacity-70">Accept to reply and move this conversation to your inbox.</div>
+
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" wire:click="declineRequest" class="btn btn-ghost btn-sm">Decline</button>
+                    <button type="button" wire:click="acceptRequest" class="btn btn-primary btn-sm">Accept</button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="space-y-2">
         @foreach ($this->messages as $message)
@@ -69,19 +84,21 @@
                         class="textarea textarea-bordered w-full"
                         rows="3"
                         placeholder="Write a message..."
+                        maxlength="10000"
+                        @disabled($myParticipant?->is_request)
                     ></textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('body')" />
                 </div>
 
                 <div>
-                    <input wire:model="attachments" type="file" multiple class="file-input file-input-bordered w-full" />
+                    <input wire:model="attachments" type="file" multiple class="file-input file-input-bordered w-full" @disabled($myParticipant?->is_request) />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments')" />
                     <x-input-error class="mt-2" :messages="$errors->get('attachments.*')" />
                     <div class="text-xs opacity-70 mt-1">Up to 4 attachments (images/video/audio/GIF), 10MB each.</div>
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                    <button type="submit" class="btn btn-primary btn-sm" @disabled($myParticipant?->is_request)>Send</button>
                 </div>
             </form>
         </div>

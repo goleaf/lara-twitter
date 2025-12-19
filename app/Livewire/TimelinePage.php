@@ -16,13 +16,26 @@ class TimelinePage extends Component
     #[Url]
     public string $feed = 'following';
 
+    public ?string $latestSeenAt = null;
+
+    public bool $hasNewPosts = false;
+
     protected $listeners = [
         'post-created' => '$refresh',
     ];
 
+    public function mount(): void
+    {
+        $value = $this->baseQuery()->max('created_at');
+        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+    }
+
     public function updatedFeed(): void
     {
         $this->resetPage();
+        $value = $this->baseQuery()->max('created_at');
+        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+        $this->hasNewPosts = false;
     }
 
     private function normalizedFeed(): string
@@ -30,16 +43,44 @@ class TimelinePage extends Component
         return in_array($this->feed, ['following', 'for-you'], true) ? $this->feed : 'following';
     }
 
-    public function getPostsProperty()
+    private function showReplies(): bool
+    {
+        if (! Auth::check()) {
+            return false;
+        }
+
+        return Auth::user()->timelineSetting('show_replies', false);
+    }
+
+    private function showRetweets(): bool
+    {
+        if (! Auth::check()) {
+            return true;
+        }
+
+        return Auth::user()->timelineSetting('show_retweets', true);
+    }
+
+    private function baseQuery()
     {
         $query = Post::query()
-            ->whereNull('reply_to_id')
             ->with([
                 'user',
                 'images',
+                'replyTo.user',
                 'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
             ])
             ->withCount(['likes', 'reposts', 'replies']);
+
+        if (! $this->showReplies()) {
+            $query->whereNull('reply_to_id');
+        }
+
+        if (! $this->showRetweets()) {
+            $query->where(function ($q) {
+                $q->whereNull('repost_of_id')->orWhere('body', '!=', '');
+            });
+        }
 
         if (Auth::check()) {
             $viewer = Auth::user();
@@ -53,6 +94,13 @@ class TimelinePage extends Component
                 $query->whereNotIn('user_id', $exclude);
             }
         }
+
+        return $query;
+    }
+
+    public function getPostsProperty()
+    {
+        $query = $this->baseQuery();
 
         if ($this->normalizedFeed() === 'following') {
             $query->when(Auth::check(), function (Builder $query): void {
@@ -80,6 +128,25 @@ class TimelinePage extends Component
             ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
             ->orderByDesc('created_at')
             ->paginate(15);
+    }
+
+    public function checkForNewPosts(): void
+    {
+        if (! $this->latestSeenAt) {
+            return;
+        }
+
+        $this->hasNewPosts = $this->baseQuery()
+            ->where('created_at', '>', $this->latestSeenAt)
+            ->exists();
+    }
+
+    public function refreshTimeline(): void
+    {
+        $this->resetPage();
+        $value = $this->baseQuery()->max('created_at');
+        $this->latestSeenAt = $value ? $value->toDateTimeString() : null;
+        $this->hasNewPosts = false;
     }
 
     public function render()

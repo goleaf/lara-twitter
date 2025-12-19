@@ -26,51 +26,24 @@
                         <div class="opacity-60">&#64;{{ $user->username }}</div>
                     </div>
                 </div>
-
-                @auth
-                    @if (auth()->id() !== $user->id)
-                        <a class="btn btn-outline btn-sm" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
-                    @endif
-                @endauth
-            </div>
-
-            @if ($user->bio)
-                <div class="pt-3">{{ $user->bio }}</div>
-            @endif
-
-            <div class="pt-3 flex flex-wrap gap-3 text-sm opacity-70">
-                @if ($user->location)
-                    <span>{{ $user->location }}</span>
-                @endif
-
-                @if ($user->website)
-                    <a class="link link-hover" href="{{ $user->website }}" target="_blank" rel="noreferrer">
-                        {{ preg_replace('#^https?://#', '', $user->website) }}
-                    </a>
-                @endif
-
-                <span>Joined {{ $user->created_at->format('M Y') }}</span>
-            </div>
-
-            <div class="pt-3 flex gap-2 text-sm opacity-70">
-                <a class="link link-hover" href="{{ route('profile.followers', ['user' => $user]) }}" wire:navigate>
-                    {{ $user->followers_count }} followers
-                </a>
-                <a class="link link-hover" href="{{ route('profile.following', ['user' => $user]) }}" wire:navigate>
-                    {{ $user->following_count }} following
-                </a>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
                 <a class="tab" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>Posts</a>
-                <a class="tab tab-active" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
-                <a class="tab" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
+                <a class="tab" href="{{ route('profile.likes', ['user' => $user]) }}" wire:navigate>Likes</a>
+                <a class="tab tab-active" href="{{ route('profile.replies', ['user' => $user]) }}" wire:navigate>Replies</a>
             </div>
         </div>
     </div>
 
     <div class="space-y-3">
         @foreach ($this->posts as $post)
+            <div class="opacity-70 text-sm">
+                Replying to
+                <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
+                    &#64;{{ $post->replyTo->user->username }}
+                </a>
+            </div>
             <livewire:post-card :post="$post" :key="$post->id" />
         @endforeach
     </div>
@@ -79,3 +52,4 @@
         {{ $this->posts->links() }}
     </div>
 </div>
+

@@ -3,6 +3,14 @@
         <a class="link link-hover opacity-70" href="{{ url()->previous() }}">← Back</a>
     </div>
 
+    @if (count($ancestors))
+        <div class="space-y-3">
+            @foreach ($ancestors as $ancestor)
+                <livewire:post-card :post="$ancestor" :key="'ancestor-'.$ancestor->id" />
+            @endforeach
+        </div>
+    @endif
+
     <div class="space-y-3">
         @if ($post->reply_to_id && $post->replyTo)
             <div class="opacity-70 text-sm">
@@ -17,12 +25,20 @@
     </div>
 
     @auth
-        <div class="card bg-base-100 border">
-            <div class="card-body">
-                <div class="font-semibold">Reply</div>
-                <livewire:reply-composer :post="$post" :key="'reply-composer-'.$post->id" />
+        @if ($post->canBeRepliedBy(auth()->user()))
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Reply</div>
+                    <livewire:reply-composer :post="$post" :key="'reply-composer-'.$post->id" />
+                </div>
             </div>
-        </div>
+        @else
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="opacity-70">Replies are limited by the author.</div>
+                </div>
+            </div>
+        @endif
     @endauth
 
     <div class="space-y-3">
