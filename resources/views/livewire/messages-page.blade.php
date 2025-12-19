@@ -20,7 +20,7 @@
                     wire:model.live="q"
                     type="search"
                     placeholder="Search messages…"
-                    class="input input-bordered w-full"
+                    class="input input-bordered input-sm w-full"
                 />
             </div>
         </div>

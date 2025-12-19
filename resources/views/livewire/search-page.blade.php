@@ -12,7 +12,7 @@
                 />
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <select class="select select-bordered w-full" wire:model.live="type">
+                    <select class="select select-bordered select-sm w-full" wire:model.live="type">
                         <option value="all">All</option>
                         <option value="posts">Posts</option>
                         <option value="media">Media</option>
@@ -21,20 +21,20 @@
                         <option value="lists">Lists</option>
                     </select>
 
-                    <select class="select select-bordered w-full" wire:model.live="sort">
+                    <select class="select select-bordered select-sm w-full" wire:model.live="sort">
                         <option value="latest">Latest</option>
                         <option value="top">Top</option>
                     </select>
 
                     <input
-                        class="input input-bordered w-full"
+                        class="input input-bordered input-sm w-full"
                         type="text"
                         placeholder="From user (@username)"
                         wire:model.live.debounce.350ms="user"
                     />
 
-                    <input class="input input-bordered w-full" type="date" wire:model.live="from" />
-                    <input class="input input-bordered w-full" type="date" wire:model.live="to" />
+                    <input class="input input-bordered input-sm w-full" type="date" wire:model.live="from" />
+                    <input class="input input-bordered input-sm w-full" type="date" wire:model.live="to" />
                 </div>
 
                 <div class="text-xs opacity-70">
@@ -68,7 +68,7 @@
                 <div class="font-semibold">Users</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->users as $u)
-                        <a class="flex items-center justify-between gap-4 hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                        <a class="flex items-center justify-between gap-4 hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
                             <div class="min-w-0">
                                 <div class="font-semibold truncate">{{ $u->name }}</div>
                                 <div class="text-sm opacity-70 truncate">&#64;{{ $u->username }}</div>
@@ -106,7 +106,7 @@
                 <div class="font-semibold">Lists</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->lists as $list)
-                        <a class="flex items-center justify-between gap-4 hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('lists.show', $list) }}" wire:navigate>
+                        <a class="flex items-center justify-between gap-4 hover:bg-base-200/70 transition rounded-box px-2 py-2" href="{{ route('lists.show', $list) }}" wire:navigate>
                             <div class="min-w-0">
                                 <div class="font-semibold truncate">{{ $list->name }}</div>
                                 <div class="text-sm opacity-70 truncate">

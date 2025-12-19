@@ -7,22 +7,24 @@
                 <div class="join w-full">
                     <input
                         type="text"
-                        class="input input-bordered join-item w-full"
+                        class="input input-bordered input-sm join-item w-full"
                         placeholder="Search posts, people, hashtags"
                         wire:model="q"
                     />
-                    <button type="submit" class="btn join-item">Search</button>
+                    <button type="submit" class="btn btn-primary btn-sm join-item">Search</button>
                 </div>
             </form>
 
-            <div class="tabs tabs-boxed mt-4">
-                <a class="tab {{ $tab === 'for-you' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'for-you']) }}" wire:navigate>For You</a>
-                <a class="tab {{ $tab === 'trending' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'trending']) }}" wire:navigate>Trending</a>
-                <a class="tab {{ $tab === 'news' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'news']) }}" wire:navigate>News</a>
-                <a class="tab {{ $tab === 'politics' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'politics']) }}" wire:navigate>Politics</a>
-                <a class="tab {{ $tab === 'sports' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'sports']) }}" wire:navigate>Sports</a>
-                <a class="tab {{ $tab === 'entertainment' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'entertainment']) }}" wire:navigate>Entertainment</a>
-                <a class="tab {{ $tab === 'technology' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'technology']) }}" wire:navigate>Technology</a>
+            <div class="mt-4 overflow-x-auto">
+                <div class="tabs tabs-boxed flex-nowrap w-max min-w-full">
+                    <a class="tab {{ $tab === 'for-you' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'for-you']) }}" wire:navigate>For You</a>
+                    <a class="tab {{ $tab === 'trending' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'trending']) }}" wire:navigate>Trending</a>
+                    <a class="tab {{ $tab === 'news' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'news']) }}" wire:navigate>News</a>
+                    <a class="tab {{ $tab === 'politics' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'politics']) }}" wire:navigate>Politics</a>
+                    <a class="tab {{ $tab === 'sports' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'sports']) }}" wire:navigate>Sports</a>
+                    <a class="tab {{ $tab === 'entertainment' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'entertainment']) }}" wire:navigate>Entertainment</a>
+                    <a class="tab {{ $tab === 'technology' ? 'tab-active' : '' }}" href="{{ route('explore', ['tab' => 'technology']) }}" wire:navigate>Technology</a>
+                </div>
             </div>
         </div>
     </div>
@@ -223,7 +225,7 @@
                     <div class="font-semibold">Discover people</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->recommendedUsers as $u)
-                            <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition">
                                 <a class="min-w-0" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
                                     <div class="font-semibold truncate">{{ $u->name }}</div>
                                     <div class="text-sm opacity-70 truncate">&#64;{{ $u->username }}</div>
@@ -241,7 +243,7 @@
                                 </a>
 
                                 @auth
-                                    <button class="btn btn-outline btn-xs" wire:click="toggleFollow({{ $u->id }})">
+                                    <button class="btn btn-xs {{ $this->isFollowing($u->id) ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleFollow({{ $u->id }})">
                                         {{ $this->isFollowing($u->id) ? 'Following' : 'Follow' }}
                                     </button>
                                 @endauth
