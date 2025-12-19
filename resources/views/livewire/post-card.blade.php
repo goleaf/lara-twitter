@@ -273,17 +273,17 @@
                                         @else
                                             <div class="space-y-2">
                                                 @foreach ($options as $option)
-                                <button
-                                    type="button"
-                                    class="btn btn-outline btn-sm w-full justify-start"
-                                    wire:click="voteInPoll({{ $option->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="voteInPoll({{ $option->id }})"
-                                >
-                                    {{ $option->option_text }}
-                                </button>
-                            @endforeach
-                        </div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline btn-sm w-full justify-start"
+                                                        wire:click="voteInPoll({{ $option->id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="voteInPoll({{ $option->id }})"
+                                                    >
+                                                        {{ $option->option_text }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
 
                                             <div class="text-xs opacity-70">Poll ends {{ $poll->ends_at->diffForHumans() }}</div>
                                         @endif
@@ -359,14 +359,14 @@
         @php($repliesBadge = ($repliesCount ?? 0) ? 'badge-neutral' : 'badge-ghost')
 
         <div class="flex flex-wrap items-center gap-1 pt-2">
-                @auth
-                    <button
-                        wire:click="toggleReplyComposer"
-                        wire:loading.attr="disabled"
-                        wire:target="toggleReplyComposer"
-                        class="btn btn-ghost btn-sm btn-square {{ $isReplying ? 'text-primary' : '' }}"
-                        aria-label="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
-                        title="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+            @auth
+                <button
+                    wire:click="toggleReplyComposer"
+                    wire:loading.attr="disabled"
+                    wire:target="toggleReplyComposer"
+                    class="btn btn-ghost btn-sm btn-square {{ $isReplying ? 'text-primary' : '' }}"
+                    aria-label="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
+                    title="{{ $isReplying ? 'Cancel reply' : 'Reply' }}"
                     aria-pressed="{{ $isReplying ? 'true' : 'false' }}"
                 >
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
