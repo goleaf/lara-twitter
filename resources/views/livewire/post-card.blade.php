@@ -2,7 +2,23 @@
 @php($replyingTo = $this->replyingToUsername())
 
 <div class="card bg-base-100 border">
-    <div class="card-body gap-2">
+    <div class="card-body">
+        <div class="flex gap-3">
+            <a class="shrink-0" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate aria-label="View profile">
+                <div class="avatar">
+                    <div class="w-10 rounded-full border border-base-200 bg-base-100">
+                        @if ($primary->user->avatar_url)
+                            <img src="{{ $primary->user->avatar_url }}" alt="" />
+                        @else
+                            <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                {{ mb_strtoupper(mb_substr($primary->user->name, 0, 1)) }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </a>
+
+            <div class="min-w-0 flex-1 flex flex-col gap-2">
         @if ($this->isRepost())
             <div class="text-sm opacity-70">
                 Retweeted by
@@ -179,5 +195,7 @@
                 </div>
             </div>
         @endif
+            </div>
+        </div>
     </div>
 </div>
