@@ -71,9 +71,16 @@ new class extends Component
         </div>
 
         <div class="flex flex-wrap items-center gap-3 pt-2">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button wire:loading.attr="disabled" wire:target="save">{{ __('Save') }}</x-primary-button>
 
-            <button type="button" wire:click="clear" class="btn btn-ghost btn-sm" @disabled(! $pinned_post_id)>
+            <button
+                type="button"
+                wire:click="clear"
+                class="btn btn-ghost btn-sm"
+                wire:loading.attr="disabled"
+                wire:target="clear"
+                @disabled(! $pinned_post_id)
+            >
                 {{ __('Unpin') }}
             </button>
 

@@ -44,7 +44,12 @@
                 @if (! $list->is_private && auth()->id() !== $list->owner_id)
                     <div>
                         @php($isSubscribed = $this->isSubscribed())
-                        <button class="btn btn-sm {{ $isSubscribed ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleSubscribe">
+                        <button
+                            class="btn btn-sm {{ $isSubscribed ? 'btn-outline' : 'btn-primary' }}"
+                            wire:click="toggleSubscribe"
+                            wire:loading.attr="disabled"
+                            wire:target="toggleSubscribe"
+                        >
                             {{ $isSubscribed ? 'Unsubscribe' : 'Subscribe' }}
                         </button>
                     </div>
@@ -72,6 +77,8 @@
                                 class="input input-bordered input-sm join-item w-full"
                                 placeholder="@username"
                                 wire:model="member_username"
+                                wire:loading.attr="disabled"
+                                wire:target="addMember"
                             />
                             <button type="submit" class="btn btn-primary btn-sm join-item" wire:loading.attr="disabled" wire:target="addMember">
                                 Add
@@ -81,7 +88,7 @@
 
                         <div class="space-y-2">
                             @foreach ($this->members as $member)
-                                <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2">
+                                <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
                                     <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
                                         <div class="avatar shrink-0">
                                             <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -106,7 +113,13 @@
                                         </div>
                                     </a>
 
-                                    <button type="button" class="btn btn-ghost btn-xs text-error" wire:click="removeMember({{ $member->id }})">
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-xs text-error"
+                                        wire:click="removeMember({{ $member->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="removeMember({{ $member->id }})"
+                                    >
                                         Remove
                                     </button>
                                 </div>

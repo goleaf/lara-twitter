@@ -66,7 +66,7 @@ new class extends Component
         </div>
 
         <div class="flex items-center gap-3 pt-2">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button wire:loading.attr="disabled" wire:target="updatePassword">{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="password-updated">
                 {{ __('Saved.') }}

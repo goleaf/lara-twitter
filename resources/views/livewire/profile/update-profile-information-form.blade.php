@@ -142,13 +142,29 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <x-input-label for="header" :value="__('Header image')" />
-                <input wire:model="header" id="header" name="header" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
+                <input
+                    wire:model="header"
+                    id="header"
+                    name="header"
+                    type="file"
+                    class="file-input file-input-bordered file-input-sm w-full mt-1"
+                    wire:loading.attr="disabled"
+                    wire:target="header"
+                />
                 <x-input-error class="mt-2" :messages="$errors->get('header')" />
             </div>
 
             <div>
                 <x-input-label for="avatar" :value="__('Avatar')" />
-                <input wire:model="avatar" id="avatar" name="avatar" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
+                <input
+                    wire:model="avatar"
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    class="file-input file-input-bordered file-input-sm w-full mt-1"
+                    wire:loading.attr="disabled"
+                    wire:target="avatar"
+                />
                 <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
         </div>
@@ -179,7 +195,12 @@ new class extends Component
                     </svg>
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">{{ __('Your email address is unverified.') }}</div>
-                        <button wire:click.prevent="sendVerification" class="link link-primary text-sm">
+                        <button
+                            wire:click.prevent="sendVerification"
+                            class="link link-primary text-sm"
+                            wire:loading.attr="disabled"
+                            wire:target="sendVerification"
+                        >
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
 
@@ -234,7 +255,7 @@ new class extends Component
         </div>
 
         <div class="flex items-center gap-3 pt-2">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button wire:loading.attr="disabled" wire:target="updateProfileInformation,header,avatar">{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="profile-updated">
                 {{ __('Saved.') }}

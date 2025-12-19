@@ -1,5 +1,12 @@
 <div>
-    <button type="button" wire:click="openModal" class="{{ $buttonClass }}" @disabled(!auth()->check())>
+    <button
+        type="button"
+        wire:click="openModal"
+        class="{{ $buttonClass }}"
+        wire:loading.attr="disabled"
+        wire:target="openModal"
+        @disabled(!auth()->check())
+    >
         {{ $label }}
     </button>
 
@@ -15,7 +22,15 @@
             </div>
             <div class="flex items-center gap-1">
                 <a class="btn btn-ghost btn-xs" href="{{ route('reports.index') }}" wire:navigate>View</a>
-                <button type="button" class="btn btn-ghost btn-xs" wire:click="clearNotice">Dismiss</button>
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs"
+                    wire:click="clearNotice"
+                    wire:loading.attr="disabled"
+                    wire:target="clearNotice"
+                >
+                    Dismiss
+                </button>
             </div>
         </div>
     @endif
@@ -30,7 +45,7 @@
                     <label class="label">
                         <span class="label-text">Reason</span>
                     </label>
-                    <select wire:model="reason" class="select select-bordered select-sm w-full">
+                    <select wire:model="reason" class="select select-bordered select-sm w-full" wire:loading.attr="disabled" wire:target="submit">
                         <option value="">Select a reason</option>
                         @foreach ($reasonOptions as $group => $options)
                             <optgroup label="{{ $group }}">
@@ -53,19 +68,36 @@
                         class="textarea textarea-bordered textarea-sm w-full"
                         rows="3"
                         placeholder="Add context for the reviewer..."
+                        wire:loading.attr="disabled"
+                        wire:target="submit"
                     ></textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('details')" />
                 </div>
 
                 <div class="flex justify-end gap-2">
-                    <button type="button" wire:click="closeModal" class="btn btn-ghost btn-sm">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                    <button
+                        type="button"
+                        wire:click="closeModal"
+                        class="btn btn-ghost btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="closeModal,submit"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm"
+                        wire:loading.attr="disabled"
+                        wire:target="submit"
+                    >
+                        Submit
+                    </button>
                 </div>
             </form>
         </div>
 
         <form method="dialog" class="modal-backdrop">
-            <button type="button" wire:click="closeModal">close</button>
+            <button type="button" wire:click="closeModal" wire:loading.attr="disabled" wire:target="closeModal,submit">close</button>
         </form>
     </dialog>
 </div>

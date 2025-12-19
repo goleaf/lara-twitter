@@ -63,6 +63,8 @@
                 class="card bg-base-100 card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 {{ $isUnread ? 'ring-1 ring-primary/20' : '' }}"
                 href="{{ $href }}"
                 wire:click.prevent="open('{{ $notification->id }}')"
+                wire:loading.class="pointer-events-none opacity-70"
+                wire:target="open('{{ $notification->id }}')"
             >
                 <div class="card-body py-4">
                     <div class="flex items-start gap-3">
