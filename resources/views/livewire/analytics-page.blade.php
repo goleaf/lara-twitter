@@ -87,7 +87,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="opacity-70">No posts in this range.</td>
+                                        <td colspan="7" class="text-center py-8 opacity-70">No posts in this range.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -110,7 +110,9 @@
                                 <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
                         @empty
-                            <div class="opacity-70 text-sm">No new followers yet.</div>
+                            <x-empty-state class="px-3 py-2">
+                                No new followers yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>
@@ -126,7 +128,9 @@
                                 <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
                         @empty
-                            <div class="opacity-70 text-sm">No locations yet.</div>
+                            <x-empty-state class="px-3 py-2">
+                                No locations yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>
@@ -146,7 +150,9 @@
                             <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">Not enough data yet.</div>
+                        <x-empty-state class="px-3 py-2">
+                            Not enough data yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -302,7 +308,9 @@
                             <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
                         </a>
                     @empty
-                        <div class="opacity-70 text-sm">No impressions yet.</div>
+                        <x-empty-state class="px-3 py-2">
+                            No impressions yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
