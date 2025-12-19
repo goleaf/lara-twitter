@@ -116,6 +116,36 @@
             </div>
         @endif
 
+        @if ($primary->linkPreview)
+            @php($preview = $primary->linkPreview)
+            @php($host = parse_url($preview->url, PHP_URL_HOST))
+
+            <div class="pt-2">
+                <a
+                    class="block"
+                    href="{{ route('links.redirect', ['post' => $primary->id, 'u' => $preview->url]) }}"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                >
+                    <div class="card bg-base-200 border overflow-hidden">
+                        @if ($preview->image_url)
+                            <figure>
+                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
+                            </figure>
+                        @endif
+
+                        <div class="card-body p-3 gap-1">
+                            <div class="text-xs opacity-70">{{ $preview->site_name ?? $host ?? $preview->url }}</div>
+                            <div class="font-semibold leading-snug">{{ $preview->title ?? $host ?? $preview->url }}</div>
+                            @if ($preview->description)
+                                <div class="text-sm opacity-70">{{ $preview->description }}</div>
+                            @endif
+                        </div>
+                    </div>
+                </a>
+            </div>
+        @endif
+
         @if ($primary->video_path)
             <div class="pt-2">
                 <video class="w-full rounded-box border" controls preload="metadata">
@@ -199,6 +229,36 @@
                                         @endif
                                     </div>
                                 </div>
+                            </div>
+                        @endif
+
+                        @if ($post->repostOf->linkPreview)
+                            @php($preview = $post->repostOf->linkPreview)
+                            @php($host = parse_url($preview->url, PHP_URL_HOST))
+
+                            <div class="pt-2">
+                                <a
+                                    class="block"
+                                    href="{{ route('links.redirect', ['post' => $post->repostOf->id, 'u' => $preview->url]) }}"
+                                    target="_blank"
+                                    rel="nofollow noopener noreferrer"
+                                >
+                                    <div class="card bg-base-100 border overflow-hidden">
+                                        @if ($preview->image_url)
+                                            <figure>
+                                                <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
+                                            </figure>
+                                        @endif
+
+                                        <div class="card-body p-3 gap-1">
+                                            <div class="text-xs opacity-70">{{ $preview->site_name ?? $host ?? $preview->url }}</div>
+                                            <div class="font-semibold leading-snug">{{ $preview->title ?? $host ?? $preview->url }}</div>
+                                            @if ($preview->description)
+                                                <div class="text-sm opacity-70">{{ $preview->description }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
                         @endif
 
