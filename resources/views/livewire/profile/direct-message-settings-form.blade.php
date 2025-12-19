@@ -36,7 +36,7 @@ new class extends Component
     <form wire:submit="save" class="mt-6 space-y-6">
         <div>
             <x-input-label for="dm_policy" value="Who can message you?" />
-            <select wire:model="dm_policy" id="dm_policy" class="select select-bordered w-full">
+            <select wire:model="dm_policy" id="dm_policy" class="select select-bordered select-sm w-full mt-1">
                 <option value="everyone">Everyone</option>
                 <option value="following">Only people you follow</option>
                 <option value="none">No one</option>
@@ -49,7 +49,7 @@ new class extends Component
                 <div class="font-medium">Allow message requests</div>
                 <div class="text-sm opacity-70">If disabled, users who don't meet your policy cannot start a new DM.</div>
             </div>
-            <input type="checkbox" class="toggle" wire:model="dm_allow_requests" />
+            <input type="checkbox" class="toggle toggle-sm" wire:model="dm_allow_requests" />
         </div>
         <x-input-error class="mt-2" :messages="$errors->get('dm_allow_requests')" />
 
@@ -58,7 +58,7 @@ new class extends Component
                 <div class="font-medium">Read receipts</div>
                 <div class="text-sm opacity-70">If disabled, others won’t see when you’ve read their messages.</div>
             </div>
-            <input type="checkbox" class="toggle" wire:model="dm_read_receipts" />
+            <input type="checkbox" class="toggle toggle-sm" wire:model="dm_read_receipts" />
         </div>
         <x-input-error class="mt-2" :messages="$errors->get('dm_read_receipts')" />
 

@@ -15,24 +15,24 @@
                         <div class="badge badge-outline badge-sm">Verified/Admin</div>
                     </div>
 
-                    <form wire:submit="create" class="space-y-3">
-                        <div>
-                            <x-input-label for="title" value="Title" />
-                            <x-text-input id="title" class="mt-1 block w-full" wire:model="title" />
-                            <x-input-error class="mt-2" :messages="$errors->get('title')" />
-                        </div>
+	                    <form wire:submit="create" class="space-y-3">
+	                        <div>
+	                            <x-input-label for="title" value="Title" />
+	                            <x-text-input id="title" class="mt-1 block w-full input-sm" wire:model="title" />
+	                            <x-input-error class="mt-2" :messages="$errors->get('title')" />
+	                        </div>
 
-                        <div>
-                            <x-input-label for="description" value="Description" />
-                            <textarea id="description" class="textarea textarea-bordered mt-1 block w-full" rows="3" wire:model="description"></textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
-                        </div>
+	                        <div>
+	                            <x-input-label for="description" value="Description" />
+	                            <textarea id="description" class="textarea textarea-bordered textarea-sm mt-1 block w-full" rows="3" wire:model="description"></textarea>
+	                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
+	                        </div>
 
-                        <div>
-                            <x-input-label for="cover_image" value="Cover image (optional)" />
-                            <input id="cover_image" type="file" class="file-input file-input-bordered w-full mt-1" wire:model="cover_image" />
-                            <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
-                        </div>
+	                        <div>
+	                            <x-input-label for="cover_image" value="Cover image (optional)" />
+	                            <input id="cover_image" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" wire:model="cover_image" />
+	                            <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
+	                        </div>
 
                         <label class="flex items-center gap-2">
                             <input type="checkbox" class="checkbox checkbox-sm" wire:model="is_public" />

@@ -6,13 +6,13 @@
             <form wire:submit="create" class="space-y-3">
                 <div>
                     <x-input-label for="name" value="Name" />
-                    <x-text-input id="name" class="mt-1 block w-full" wire:model="name" />
+                    <x-text-input id="name" class="mt-1 block w-full input-sm" wire:model="name" />
                     <x-input-error class="mt-2" :messages="$errors->get('name')" />
                 </div>
 
                 <div>
                     <x-input-label for="description" value="Description" />
-                    <textarea id="description" class="textarea textarea-bordered mt-1 block w-full" rows="2" wire:model="description"></textarea>
+                    <textarea id="description" class="textarea textarea-bordered textarea-sm mt-1 block w-full" rows="2" wire:model="description"></textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('description')" />
                 </div>
 

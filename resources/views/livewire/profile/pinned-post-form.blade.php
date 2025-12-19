@@ -54,7 +54,7 @@ new class extends Component
                 id="pinned_post_id"
                 type="number"
                 min="1"
-                class="input input-bordered w-full"
+                class="input input-bordered input-sm w-full"
                 placeholder="e.g. 123"
             />
             <x-input-error class="mt-2" :messages="$errors->get('pinned_post_id')" />
@@ -65,7 +65,7 @@ new class extends Component
 
         <div class="flex items-center gap-2">
             <x-primary-button>Save</x-primary-button>
-            <button type="button" wire:click="clear" class="btn btn-ghost">Unpin</button>
+            <button type="button" wire:click="clear" class="btn btn-ghost btn-sm">Unpin</button>
             <x-action-message class="me-3" on="pinned-post-updated">Saved.</x-action-message>
         </div>
     </form>

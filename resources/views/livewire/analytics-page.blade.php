@@ -136,7 +136,7 @@
                 <div class="font-semibold">Followers also follow</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->alsoFollowedAccounts as $row)
-                        <a class="flex items-center justify-between hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
+                        <a class="flex items-center justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition" href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
                             <div class="min-w-0">
                                 <div class="font-medium truncate">{{ $row->name }}</div>
                                 <div class="text-xs opacity-60">&#64;{{ $row->username }}</div>
@@ -285,7 +285,7 @@
                 <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->topPosts as $post)
-                        <a class="flex items-start justify-between gap-3 hover:bg-base-200 rounded-box px-2 py-2" href="{{ route('posts.show', $post) }}" wire:navigate>
+                        <a class="flex items-start justify-between gap-3 rounded-box px-2 py-2 hover:bg-base-200/70 transition" href="{{ route('posts.show', $post) }}" wire:navigate>
                             <div class="min-w-0">
                                 <div class="truncate">{{ $post->body }}</div>
                                 <div class="text-xs opacity-60">

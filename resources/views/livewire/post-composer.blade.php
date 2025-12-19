@@ -15,7 +15,7 @@
 
         <textarea
             wire:model.live="body"
-            class="textarea textarea-bordered w-full"
+            class="textarea textarea-bordered textarea-sm w-full"
             rows="3"
             placeholder="What’s happening?"
         ></textarea>

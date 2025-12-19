@@ -398,15 +398,15 @@
                         <div class="font-semibold">Quote tweet</div>
 
                         <form wire:submit="quoteRepost" class="space-y-3">
-                            <div>
-                                <textarea
-                                    wire:model="quote_body"
-                                    class="textarea textarea-bordered w-full"
-                                    rows="3"
-                                    placeholder="Add your commentary..."
-                                ></textarea>
-                                <x-input-error class="mt-2" :messages="$errors->get('quote_body')" />
-                            </div>
+	                            <div>
+	                                <textarea
+	                                    wire:model="quote_body"
+	                                    class="textarea textarea-bordered textarea-sm w-full"
+	                                    rows="3"
+	                                    placeholder="Add your commentary..."
+	                                ></textarea>
+	                                <x-input-error class="mt-2" :messages="$errors->get('quote_body')" />
+	                            </div>
 
                             <div class="flex justify-end gap-2">
                                 <button type="button" wire:click="cancelQuote" class="btn btn-ghost btn-sm">Cancel</button>

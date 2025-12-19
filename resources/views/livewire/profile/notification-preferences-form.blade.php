@@ -155,7 +155,7 @@ new class extends Component
                     <label class="label">
                         <span class="label-text">From</span>
                     </label>
-                    <input type="time" class="input input-bordered w-full" wire:model="quiet_hours_start" />
+                    <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_start" />
                     <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_start')" />
                 </div>
 
@@ -163,7 +163,7 @@ new class extends Component
                     <label class="label">
                         <span class="label-text">To</span>
                     </label>
-                    <input type="time" class="input input-bordered w-full" wire:model="quiet_hours_end" />
+                    <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_end" />
                     <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_end')" />
                 </div>
             </div>

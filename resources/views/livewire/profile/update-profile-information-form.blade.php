@@ -106,7 +106,7 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <x-input-label for="header" :value="__('Header image')" />
-            <input wire:model="header" id="header" name="header" type="file" class="file-input file-input-bordered w-full" />
+            <input wire:model="header" id="header" name="header" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
             <x-input-error class="mt-2" :messages="$errors->get('header')" />
         </div>
 
@@ -125,26 +125,26 @@ new class extends Component
 
             <div class="w-full">
                 <x-input-label for="avatar" :value="__('Avatar')" />
-                <input wire:model="avatar" id="avatar" name="avatar" type="file" class="file-input file-input-bordered w-full" />
+                <input wire:model="avatar" id="avatar" name="avatar" type="file" class="file-input file-input-bordered file-input-sm w-full mt-1" />
                 <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
         </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full input-sm" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="username" :value="__('Username')" />
-            <x-text-input wire:model="username" id="username" name="username" type="text" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input wire:model="username" id="username" name="username" type="text" class="mt-1 block w-full input-sm" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('username')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="email" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full input-sm" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -168,31 +168,31 @@ new class extends Component
 
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
-            <textarea wire:model="bio" id="bio" name="bio" class="textarea textarea-bordered mt-1 block w-full" rows="3"></textarea>
+            <textarea wire:model="bio" id="bio" name="bio" class="textarea textarea-bordered textarea-sm mt-1 block w-full" rows="3"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
         <div>
             <x-input-label for="location" :value="__('Location')" />
-            <x-text-input wire:model="location" id="location" name="location" type="text" class="mt-1 block w-full" autocomplete="off" />
+            <x-text-input wire:model="location" id="location" name="location" type="text" class="mt-1 block w-full input-sm" autocomplete="off" />
             <x-input-error class="mt-2" :messages="$errors->get('location')" />
         </div>
 
         <div>
             <x-input-label for="website" :value="__('Website')" />
-            <x-text-input wire:model="website" id="website" name="website" type="url" class="mt-1 block w-full" placeholder="https://example.com" autocomplete="off" />
+            <x-text-input wire:model="website" id="website" name="website" type="url" class="mt-1 block w-full input-sm" placeholder="https://example.com" autocomplete="off" />
             <x-input-error class="mt-2" :messages="$errors->get('website')" />
         </div>
 
         <div>
             <x-input-label for="birth_date" :value="__('Birth date')" />
-            <input wire:model="birth_date" id="birth_date" name="birth_date" type="date" class="input input-bordered mt-1 block w-full" />
+            <input wire:model="birth_date" id="birth_date" name="birth_date" type="date" class="input input-bordered input-sm mt-1 block w-full" />
             <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
         </div>
 
         <div>
             <x-input-label for="birth_date_visibility" :value="__('Birth date visibility')" />
-            <select wire:model="birth_date_visibility" id="birth_date_visibility" class="select select-bordered w-full">
+            <select wire:model="birth_date_visibility" id="birth_date_visibility" class="select select-bordered select-sm w-full mt-1">
                 <option value="{{ \App\Models\User::BIRTH_DATE_PUBLIC }}">Public</option>
                 <option value="{{ \App\Models\User::BIRTH_DATE_FOLLOWERS }}">Followers</option>
                 <option value="{{ \App\Models\User::BIRTH_DATE_PRIVATE }}">Only you</option>

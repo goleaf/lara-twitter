@@ -13,18 +13,32 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="space-y-3">
+            <div class="space-y-2">
                 @forelse ($this->following as $followed)
-                    <div class="flex items-center justify-between gap-3">
-                        <a class="link link-hover min-w-0" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
-                            <span class="font-semibold">{{ $followed->name }}</span>
-                            <span class="opacity-60 font-normal">&#64;{{ $followed->username }}</span>
+                    <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 hover:bg-base-200/70 transition">
+                        <a class="flex items-center gap-3 min-w-0" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
+                            <div class="avatar">
+                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                    @if ($followed->avatar_url)
+                                        <img src="{{ $followed->avatar_url }}" alt="" />
+                                    @else
+                                        <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                            {{ mb_strtoupper(mb_substr($followed->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="min-w-0">
+                                <div class="font-semibold truncate">{{ $followed->name }}</div>
+                                <div class="text-xs opacity-60 truncate">&#64;{{ $followed->username }}</div>
+                            </div>
                         </a>
 
                         <div class="flex items-center gap-2 shrink-0">
                             @auth
                                 @if (auth()->id() !== $followed->id)
-                                    <button class="btn btn-outline btn-sm" wire:click="toggleFollow({{ $followed->id }})">
+                                    <button class="btn btn-sm {{ $this->isFollowing($followed->id) ? 'btn-outline' : 'btn-primary' }}" wire:click="toggleFollow({{ $followed->id }})">
                                         {{ $this->isFollowing($followed->id) ? 'Unfollow' : 'Follow' }}
                                     </button>
                                 @endif
@@ -42,4 +56,3 @@
         {{ $this->following->links() }}
     </div>
 </div>
-

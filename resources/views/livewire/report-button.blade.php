@@ -8,7 +8,7 @@
             <div class="text-success">
                 Report submitted (case <span class="font-mono">{{ $submittedCaseNumber }}</span>)
             </div>
-            <a class="link link-hover opacity-70" href="{{ route('reports.index') }}" wire:navigate>View</a>
+            <a class="btn btn-ghost btn-xs" href="{{ route('reports.index') }}" wire:navigate>View</a>
             <button type="button" class="btn btn-ghost btn-xs" wire:click="clearNotice">Dismiss</button>
         </div>
     @endif
@@ -23,7 +23,7 @@
                     <label class="label">
                         <span class="label-text">Reason</span>
                     </label>
-                    <select wire:model="reason" class="select select-bordered w-full">
+                    <select wire:model="reason" class="select select-bordered select-sm w-full">
                         <option value="">Select a reason</option>
                         @foreach ($reasonOptions as $group => $options)
                             <optgroup label="{{ $group }}">
@@ -43,7 +43,7 @@
                     </label>
                     <textarea
                         wire:model="details"
-                        class="textarea textarea-bordered w-full"
+                        class="textarea textarea-bordered textarea-sm w-full"
                         rows="3"
                         placeholder="Add context for the reviewer..."
                     ></textarea>

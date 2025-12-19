@@ -95,7 +95,7 @@ new class extends Component
                 id="term"
                 name="term"
                 type="text"
-                class="mt-1 block w-full"
+                class="mt-1 block w-full input-sm"
                 placeholder="spoiler, \"movie name\", #politics"
                 autocomplete="off"
             />
@@ -105,7 +105,7 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
                 <x-input-label for="duration" :value="__('Duration')" />
-                <select id="duration" class="select select-bordered w-full mt-1" wire:model="duration">
+                <select id="duration" class="select select-bordered select-sm w-full mt-1" wire:model="duration">
                     <option value="forever">{{ __('Forever') }}</option>
                     <option value="1h">{{ __('1 hour') }}</option>
                     <option value="1d">{{ __('1 day') }}</option>

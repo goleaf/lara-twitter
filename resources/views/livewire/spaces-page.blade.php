@@ -31,19 +31,19 @@
                 <form wire:submit="create" class="space-y-3">
                     <div>
                         <x-input-label for="title" value="Title" />
-                        <x-text-input id="title" class="mt-1 block w-full" wire:model="title" />
+                        <x-text-input id="title" class="mt-1 block w-full input-sm" wire:model="title" />
                         <x-input-error class="mt-2" :messages="$errors->get('title')" />
                     </div>
 
                     <div>
                         <x-input-label for="description" value="Description" />
-                        <textarea id="description" class="textarea textarea-bordered mt-1 block w-full" rows="3" wire:model="description"></textarea>
+                        <textarea id="description" class="textarea textarea-bordered textarea-sm mt-1 block w-full" rows="3" wire:model="description"></textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('description')" />
                     </div>
 
                     <div>
                         <x-input-label for="scheduled_for" value="Schedule (optional)" />
-                        <input id="scheduled_for" type="datetime-local" class="input input-bordered w-full mt-1" wire:model="scheduled_for" />
+                        <input id="scheduled_for" type="datetime-local" class="input input-bordered input-sm w-full mt-1" wire:model="scheduled_for" />
                         <x-input-error class="mt-2" :messages="$errors->get('scheduled_for')" />
                     </div>
 
