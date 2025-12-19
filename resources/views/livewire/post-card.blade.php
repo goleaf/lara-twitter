@@ -515,8 +515,8 @@
                         <button type="button" wire:click="hideThread" wire:loading.attr="disabled" wire:target="hideThread" class="btn btn-ghost btn-xs">Hide</button>
                     </div>
                 @endif
-                </div>
-            @endif
+            </div>
+        @endif
 
         @if ($isQuoting)
             <div class="pt-3">
