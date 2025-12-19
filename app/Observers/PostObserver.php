@@ -31,13 +31,13 @@ class PostObserver
 
         $body = ltrim((string) $post->body);
 
-        if (preg_match('/^\\.@[A-Za-z0-9_]{1,30}\\b/', $body)) {
+        if (preg_match('/^\\.@[A-Za-z0-9_-]{1,30}(?![A-Za-z0-9_-])/', $body)) {
             $post->is_reply_like = false;
 
             return;
         }
 
-        $post->is_reply_like = (bool) preg_match('/^@[A-Za-z0-9_]{1,30}\\b/', $body);
+        $post->is_reply_like = (bool) preg_match('/^@[A-Za-z0-9_-]{1,30}(?![A-Za-z0-9_-])/', $body);
     }
 
     public function saved(Post $post): void

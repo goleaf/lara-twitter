@@ -8,7 +8,7 @@ class PostBodyRenderer
 {
     public function render(string $text, ?int $postId = null): HtmlString
     {
-        $pattern = '/(?P<url>https?:\\/\\/[^\s<]+)|(?P<hashtag>(?P<hashtag_prefix>^|[^\pL\pN_])#(?P<hashtag_tag>[\pL\pN][\pL\pN_]{0,49}))|(?P<mention>(?P<mention_prefix>^|[^A-Za-z0-9_])@(?P<mention_username>[A-Za-z0-9_]{3,30}))/u';
+        $pattern = '/(?P<url>https?:\\/\\/[^\s<]+)|(?P<hashtag>(?P<hashtag_prefix>^|[^\pL\pN_])#(?P<hashtag_tag>[\pL\pN][\pL\pN_]{0,49}))|(?P<mention>(?P<mention_prefix>^|[^A-Za-z0-9_])@(?P<mention_username>[A-Za-z0-9_-]{3,30}))/u';
 
         $output = '';
         $offset = 0;

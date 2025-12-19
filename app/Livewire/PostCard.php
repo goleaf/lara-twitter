@@ -204,7 +204,7 @@ class PostCard extends Component
 
         $body = ltrim((string) $post->body);
 
-        if (preg_match('/^@([A-Za-z0-9_]{1,30})\\b/', $body, $m)) {
+        if (preg_match('/^@([A-Za-z0-9_-]{1,30})(?![A-Za-z0-9_-])/', $body, $m)) {
             return mb_strtolower($m[1]);
         }
 

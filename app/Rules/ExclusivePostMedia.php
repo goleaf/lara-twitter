@@ -2,11 +2,10 @@
 
 namespace App\Rules;
 
-use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
-use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Rule;
 
-class ExclusivePostMedia implements DataAwareRule, ValidationRule
+class ExclusivePostMedia implements DataAwareRule, Rule
 {
     /** @var array<string, mixed> */
     private array $data = [];
@@ -22,15 +21,16 @@ class ExclusivePostMedia implements DataAwareRule, ValidationRule
         return $this;
     }
 
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function passes($attribute, $value): bool
     {
         $other = $this->data[$this->otherField] ?? null;
 
-        if (! $this->hasMedia($value) || ! $this->hasMedia($other)) {
-            return;
-        }
+        return ! ($this->hasMedia($value) && $this->hasMedia($other));
+    }
 
-        $fail('Choose either images or a video.');
+    public function message(): string
+    {
+        return 'Choose only one attachment type.';
     }
 
     private function hasMedia(mixed $value): bool
@@ -42,4 +42,3 @@ class ExclusivePostMedia implements DataAwareRule, ValidationRule
         return ! is_null($value);
     }
 }
-
