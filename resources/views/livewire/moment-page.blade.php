@@ -80,9 +80,9 @@
                         <div class="card-body py-4 space-y-2">
                             <div class="font-semibold">Caption</div>
 
-	                            <form wire:submit="saveCaption" class="space-y-2">
-	                                <textarea class="textarea textarea-bordered textarea-sm w-full" rows="3" wire:model="editing_caption"></textarea>
-	                                <x-input-error class="mt-2" :messages="$errors->get('editing_caption')" />
+                            <form wire:submit="saveCaption" class="space-y-2">
+                                <textarea class="textarea textarea-bordered textarea-sm w-full" rows="3" wire:model="editing_caption"></textarea>
+                                <x-input-error class="mt-2" :messages="$errors->get('editing_caption')" />
 
                                 <div class="flex justify-end gap-2">
                                     <button type="button" class="btn btn-ghost btn-sm" wire:click="cancelEditingCaption">Cancel</button>
