@@ -1,4 +1,5 @@
 @php($me = auth()->user())
+@php($profileHref = $me ? route('profile.show', ['user' => $me->username]) : null)
 @php($avatarLabel = $me?->name ?? $me?->username ?? 'You')
 @php($avatarInitial = mb_strtoupper(mb_substr($avatarLabel, 0, 1)))
 @php($bodyLength = mb_strlen($body))
@@ -6,7 +7,11 @@
 
 <form wire:submit="save" class="space-y-3">
     <div class="flex items-start gap-3">
-        <a class="shrink-0 pt-1" href="{{ route('profile.show', ['user' => $me?->username]) }}" wire:navigate aria-label="View profile">
+        <div class="shrink-0 pt-1">
+            @if ($profileHref)
+                <a href="{{ $profileHref }}" wire:navigate aria-label="View profile">
+            @endif
+
             <div class="avatar">
                 <div class="w-10 rounded-full border border-base-200 bg-base-100">
                     @if ($me?->avatar_url)
@@ -18,7 +23,11 @@
                     @endif
                 </div>
             </div>
-        </a>
+
+            @if ($profileHref)
+                </a>
+            @endif
+        </div>
 
         <div class="min-w-0 flex-1 space-y-3">
             <div class="flex items-center justify-between gap-3">
