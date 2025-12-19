@@ -216,6 +216,7 @@ class User extends Authenticatable implements FilamentUser
             'dms' => true,
             'lists' => true,
             'followed_posts' => false,
+            'high_engagement' => false,
         ];
 
         return (bool) ($settings[$type] ?? $defaults[$type] ?? true);

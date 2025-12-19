@@ -17,7 +17,7 @@ class TrendingPage extends Component
 
     public function mount(): void
     {
-        $this->tab = in_array($this->tab, ['hashtags', 'keywords', 'conversations'], true) ? $this->tab : 'hashtags';
+        $this->tab = in_array($this->tab, ['hashtags', 'keywords', 'topics', 'conversations'], true) ? $this->tab : 'hashtags';
         $this->loc = $this->normalizedLocation();
     }
 
@@ -45,6 +45,11 @@ class TrendingPage extends Component
     public function getTrendingConversationsProperty()
     {
         return app(TrendingService::class)->trendingConversations(Auth::user(), 10, $this->normalizedLocation() ?: null);
+    }
+
+    public function getTrendingTopicsProperty()
+    {
+        return app(TrendingService::class)->trendingTopics(Auth::user(), 10, $this->normalizedLocation() ?: null);
     }
 
     public function render()
