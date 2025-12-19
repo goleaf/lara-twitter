@@ -396,13 +396,13 @@
 
             <div class="w-px h-6 bg-base-200 mx-1"></div>
 
-                <button
-                    wire:click="toggleRepost"
-                    wire:loading.attr="disabled"
-                    wire:target="toggleRepost"
-                    class="btn btn-ghost btn-sm btn-square {{ $this->hasRetweeted() ? 'text-success' : '' }}"
-                    @disabled(!auth()->check())
-                    aria-label="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
+            <button
+                wire:click="toggleRepost"
+                wire:loading.attr="disabled"
+                wire:target="toggleRepost"
+                class="btn btn-ghost btn-sm btn-square {{ $this->hasRetweeted() ? 'text-success' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
                 title="{{ $this->hasRetweeted() ? 'Undo retweet' : 'Retweet' }}"
                 aria-pressed="{{ $this->hasRetweeted() ? 'true' : 'false' }}"
             >
@@ -419,13 +419,13 @@
                 <span class="badge badge-sm {{ $repostsBadge }} tabular-nums">{{ $repostsCount }}</span>
             </a>
 
-                <button
-                    wire:click="openQuote"
-                    wire:loading.attr="disabled"
-                    wire:target="openQuote"
-                    class="btn btn-ghost btn-sm btn-square {{ $isQuoting ? 'text-primary' : '' }}"
-                    @disabled(!auth()->check())
-                    aria-label="Quote"
+            <button
+                wire:click="openQuote"
+                wire:loading.attr="disabled"
+                wire:target="openQuote"
+                class="btn btn-ghost btn-sm btn-square {{ $isQuoting ? 'text-primary' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="Quote"
                 title="Quote"
                 aria-pressed="{{ $isQuoting ? 'true' : 'false' }}"
             >
@@ -435,13 +435,13 @@
                 </svg>
             </button>
 
-                <button
-                    wire:click="toggleLike"
-                    wire:loading.attr="disabled"
-                    wire:target="toggleLike"
-                    class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
-                    @disabled(!auth()->check())
-                    aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
+            <button
+                wire:click="toggleLike"
+                wire:loading.attr="disabled"
+                wire:target="toggleLike"
+                class="btn btn-ghost btn-sm btn-square {{ $this->hasLiked() ? 'text-error' : '' }}"
+                @disabled(!auth()->check())
+                aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
             >
