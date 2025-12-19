@@ -28,6 +28,7 @@
                             <a class="btn btn-ghost btn-sm" href="{{ route('search') }}" wire:navigate>Search</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('trending') }}" wire:navigate>Trending</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
+                            <a class="btn btn-ghost btn-sm" href="{{ route('help.index') }}" wire:navigate>Help</a>
                             <div class="indicator">
                                 @if ($unreadNotificationsCount)
                                     <span class="indicator-item badge badge-primary badge-sm">{{ $unreadNotificationsCount }}</span>
@@ -64,6 +65,7 @@
                             <a class="btn btn-ghost btn-sm" href="{{ route('search') }}" wire:navigate>Search</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('trending') }}" wire:navigate>Trending</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
+                            <a class="btn btn-ghost btn-sm" href="{{ route('help.index') }}" wire:navigate>Help</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('spaces.index') }}" wire:navigate>Spaces</a>
                             <a class="btn btn-ghost btn-sm" href="{{ route('moments.index') }}" wire:navigate>Moments</a>
                             <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login</a>
