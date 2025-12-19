@@ -1,8 +1,8 @@
 @php($primary = $this->primaryPost())
 @php($replyingTo = $this->replyingToUsername())
 
-<div class="card bg-base-100 border">
-    <div class="card-body">
+<div class="card bg-base-100 border hover:border-base-300 hover:shadow-sm transition">
+    <div class="card-body p-4">
         <div class="flex gap-3">
             <a class="shrink-0" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate aria-label="View profile">
                 <div class="avatar">
