@@ -20,7 +20,7 @@
                             <div class="avatar">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                     @if ($followed->avatar_url)
-                                        <img src="{{ $followed->avatar_url }}" alt="" />
+                                        <img src="{{ $followed->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
                                             {{ mb_strtoupper(mb_substr($followed->name, 0, 1)) }}
