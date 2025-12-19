@@ -44,6 +44,27 @@ class Report extends Model
         'resolved_at',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $report): void {
+            if (! $report->isDirty('status')) {
+                return;
+            }
+
+            $isResolved = in_array($report->status, [self::STATUS_RESOLVED, self::STATUS_DISMISSED], true);
+
+            if ($isResolved) {
+                $report->resolved_at ??= now();
+                $report->resolved_by ??= auth()->id();
+
+                return;
+            }
+
+            $report->resolved_at = null;
+            $report->resolved_by = null;
+        });
+    }
+
     protected function casts(): array
     {
         return [

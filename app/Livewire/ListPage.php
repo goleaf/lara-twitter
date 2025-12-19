@@ -118,12 +118,12 @@ class ListPage extends Component
 
     public function getPostsProperty()
     {
-        $memberIds = $this->list->members()->pluck('users.id')->all();
+        $memberIdsQuery = $this->list->members()->select('users.id');
 
         $query = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->whereIn('user_id', $memberIds)
+            ->whereIn('user_id', $memberIdsQuery)
             ->with([
                 'user',
                 'images',
