@@ -2,17 +2,37 @@
     <div class="card bg-base-100 border">
         <div class="card-body space-y-3">
             <div class="flex items-start justify-between gap-4">
-                <div class="min-w-0">
-                    <div class="text-xl font-semibold truncate">{{ $list->name }}</div>
-                    <div class="text-sm opacity-70">
-                        by &#64;{{ $list->owner->username }}
-                        · {{ $list->members_count }} members
-                        · {{ $list->subscribers_count ?? 0 }} subscribers
-                        {{ $list->is_private ? ' · Private' : '' }}
+                <div class="flex items-start gap-3 min-w-0">
+                    <a class="avatar shrink-0" href="{{ route('profile.show', ['user' => $list->owner]) }}" wire:navigate>
+                        <div class="w-12 rounded-full border border-base-200 bg-base-100">
+                            @if ($list->owner->avatar_url)
+                                <img src="{{ $list->owner->avatar_url }}" alt="" />
+                            @else
+                                <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
+                                    {{ mb_strtoupper(mb_substr($list->owner->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </div>
+                    </a>
+
+                    <div class="min-w-0">
+                        <div class="flex items-start gap-2 flex-wrap">
+                            <div class="text-xl font-semibold truncate">{{ $list->name }}</div>
+                            @if ($list->is_private)
+                                <span class="badge badge-outline badge-sm">Private</span>
+                            @endif
+                        </div>
+
+                        <div class="text-sm opacity-70 truncate">
+                            by <a class="link link-hover" href="{{ route('profile.show', ['user' => $list->owner]) }}" wire:navigate>&#64;{{ $list->owner->username }}</a>
+                            · {{ $list->members_count }} members
+                            · {{ $list->subscribers_count ?? 0 }} subscribers
+                        </div>
+
+                        @if ($list->description)
+                            <div class="pt-2 text-sm opacity-80">{{ $list->description }}</div>
+                        @endif
                     </div>
-                    @if ($list->description)
-                        <div class="pt-2">{{ $list->description }}</div>
-                    @endif
                 </div>
                 <div class="flex items-center gap-2">
                     <livewire:report-button :reportable-type="\App\Models\UserList::class" :reportable-id="$list->id" label="Report" :key="'report-list-'.$list->id" />
