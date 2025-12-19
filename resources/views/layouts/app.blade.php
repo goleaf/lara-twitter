@@ -133,7 +133,7 @@
                     </header>
                 @endif
 
-                <main class="max-w-7xl w-full mx-auto px-4 py-6">
+                <main class="max-w-7xl w-full mx-auto px-4 pt-6 pb-24 lg:pb-6">
                     @isset($slot)
                         {{ $slot }}
                     @else
