@@ -135,8 +135,7 @@ Write a Git commit subject line for the staged changes.
 Rules:
 - Output ONLY the subject line.
 - Imperative mood (e.g., "Add …", "Fix …", "Refactor …", "Enhance …", "Update …").
-- Max 72 characters.
-- No trailing period.
+- Maximum detailed inforamtion about all changes
 - Be specific (mention the main area if it helps), but keep it short.
 
 Changed files (name-status):

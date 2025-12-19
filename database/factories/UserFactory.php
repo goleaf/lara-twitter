@@ -23,11 +23,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $username = Str::of(fake()->unique()->userName())
-            ->replace(['.', '-'], '_')
-            ->lower()
-            ->substr(0, 30)
-            ->toString();
+        $username = Str::lower(fake()->unique()->bothify('user_##??##??##'));
 
         return [
             'name' => fake()->name(),

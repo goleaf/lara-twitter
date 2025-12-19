@@ -309,6 +309,7 @@ class SearchPage extends Component
             ->selectRaw('count(*) as uses_count')
             ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
             ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
+            ->where('posts.is_published', true)
             ->whereNull('posts.reply_to_id')
             ->where('posts.created_at', '>=', $since)
             ->groupBy('hashtags.id')

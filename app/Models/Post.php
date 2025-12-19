@@ -43,6 +43,7 @@ class Post extends Model
             'is_reply_like' => 'boolean',
             'is_published' => 'boolean',
             'scheduled_for' => 'datetime',
+            'high_engagement_notified_at' => 'datetime',
         ];
     }
 

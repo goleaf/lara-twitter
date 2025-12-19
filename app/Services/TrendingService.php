@@ -40,6 +40,13 @@ class TrendingService
             $query->whereRaw('lower(users.location) like ?', [$needle]);
         }
 
+        if ($viewer) {
+            $excluded = $viewer->excludedUserIds();
+            if ($excluded->isNotEmpty()) {
+                $query->whereNotIn('posts.user_id', $excluded);
+            }
+        }
+
         $candidates = $query
             ->orderByDesc('recent_uses_count')
             ->orderByDesc('uses_count')
@@ -87,6 +94,106 @@ class TrendingService
             ->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0))
             ->values()
             ->take($limit);
+    }
+
+    public function trendingTopics(?User $viewer, int $limit = 10, ?string $location = null): Collection
+    {
+        $since = now()->subDay();
+        $recentSince = $this->recentWindowStart();
+
+        $categories = app(DiscoverService::class)->categoryHashtags();
+
+        $labels = [
+            'news' => 'News',
+            'sports' => 'Sports',
+            'entertainment' => 'Entertainment',
+            'technology' => 'Technology',
+        ];
+
+        $location = is_string($location) ? trim($location) : null;
+        $interests = $this->normalizedInterests($viewer);
+
+        $rows = collect();
+
+        foreach ($categories as $category => $tags) {
+            $tags = array_values(array_filter($tags, fn ($t) => is_string($t) && $t !== ''));
+
+            if (! count($tags)) {
+                continue;
+            }
+
+            $query = Post::query()
+                ->whereNull('reply_to_id')
+                ->where('is_reply_like', false)
+                ->where('posts.created_at', '>=', $since)
+                ->whereHas('hashtags', fn ($q) => $q->whereIn('tag', $tags));
+
+            if ($location) {
+                $needle = '%'.mb_strtolower($location).'%';
+                $query->whereHas('user', fn ($q) => $q->whereRaw('lower(location) like ?', [$needle]));
+            }
+
+            if ($viewer) {
+                $excluded = $viewer->excludedUserIds();
+                if ($excluded->isNotEmpty()) {
+                    $query->whereNotIn('posts.user_id', $excluded);
+                }
+
+                $this->applyMutedTermsToPostsQuery($query, $viewer);
+            }
+
+            $count = (int) (clone $query)->count();
+            if ($count === 0) {
+                continue;
+            }
+
+            $recentCount = (int) (clone $query)
+                ->where('posts.created_at', '>=', $recentSince)
+                ->count();
+
+            $baseline = max(0, $count - $recentCount);
+            $score = ($recentCount * $recentCount) / ($baseline + 1) + ($count * 0.01);
+
+            $rows->push([
+                'category' => (string) $category,
+                'topic' => $labels[$category] ?? ucfirst((string) $category),
+                'count' => $count,
+                'recent_count' => $recentCount,
+                'score' => $score,
+            ]);
+        }
+
+        if (count($interests)) {
+            [$preferred, $other] = $rows->partition(function (array $row) use ($categories, $interests): bool {
+                $tags = $categories[$row['category']] ?? [];
+                $tags = collect($tags)->map(fn ($t) => mb_strtolower((string) $t))->all();
+
+                return (bool) count(array_intersect($interests, $tags));
+            });
+
+            $preferred = $preferred->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
+            $other = $other->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
+
+            return $preferred
+                ->merge($other)
+                ->values()
+                ->take($limit)
+                ->map(function (array $row) {
+                    unset($row['score']);
+
+                    return $row;
+                });
+        }
+
+        return $rows
+            ->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0))
+            ->values()
+            ->take($limit)
+            ->map(function (array $row) {
+                unset($row['score']);
+
+                return $row;
+            });
     }
 
     public function trendingConversations(?User $viewer, int $limit = 10, ?string $location = null): Collection

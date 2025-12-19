@@ -18,7 +18,7 @@ class HashtagFactory extends Factory
     public function definition(): array
     {
         return [
-            'tag' => Str::of(fake()->unique()->word())->lower()->substr(0, 50)->toString(),
+            'tag' => Str::lower(fake()->unique()->bothify('tag_##########')),
         ];
     }
 }

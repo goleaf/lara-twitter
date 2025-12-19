@@ -58,6 +58,11 @@ class Space extends Model
         return $this->hasMany(SpaceParticipant::class);
     }
 
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(SpaceReaction::class);
+    }
+
     public function speakerRequests(): HasMany
     {
         return $this->hasMany(SpaceSpeakerRequest::class);

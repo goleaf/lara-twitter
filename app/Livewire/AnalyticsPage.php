@@ -357,6 +357,7 @@ class AnalyticsPage extends Component
         $mentions = (int) DB::table('mentions')
             ->join('posts', 'mentions.post_id', '=', 'posts.id')
             ->where('mentions.mentioned_user_id', $userId)
+            ->where('posts.is_published', true)
             ->where('posts.created_at', '>=', $sinceDateTime)
             ->where('posts.created_at', '<', $untilDateTime)
             ->count();
@@ -370,6 +371,7 @@ class AnalyticsPage extends Component
         $postsPublished = (int) DB::table('posts')
             ->where('user_id', $userId)
             ->where('body', '!=', '')
+            ->where('is_published', true)
             ->where('created_at', '>=', $sinceDateTime)
             ->where('created_at', '<', $untilDateTime)
             ->count();
@@ -382,12 +384,14 @@ class AnalyticsPage extends Component
 
         $reposts = empty($postIds) ? 0 : (int) DB::table('posts')
             ->whereIn('repost_of_id', $postIds)
+            ->where('is_published', true)
             ->where('created_at', '>=', $sinceDateTime)
             ->where('created_at', '<', $untilDateTime)
             ->count();
 
         $replies = empty($postIds) ? 0 : (int) DB::table('posts')
             ->whereIn('reply_to_id', $postIds)
+            ->where('is_published', true)
             ->where('created_at', '>=', $sinceDateTime)
             ->where('created_at', '<', $untilDateTime)
             ->count();

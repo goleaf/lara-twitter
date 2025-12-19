@@ -79,6 +79,7 @@ class DiscoverService
                 ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
                 ->select('posts.user_id', DB::raw('count(*) as interest_posts_count'))
                 ->whereIn('hashtags.tag', $interestTags)
+                ->where('posts.is_published', true)
                 ->whereNull('posts.reply_to_id')
                 ->where('posts.is_reply_like', false)
                 ->where('posts.created_at', '>=', now()->subDays(30))

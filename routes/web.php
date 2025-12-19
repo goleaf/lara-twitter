@@ -40,6 +40,7 @@ Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashb
 
 Route::view('help', 'help.index')->name('help.index');
 Route::view('help/likes', 'help.likes')->name('help.likes');
+Route::view('help/mentions', 'help.mentions')->name('help.mentions');
 Route::view('help/hashtags', 'help.hashtags')->name('help.hashtags');
 Route::view('help/profile', 'help.profile')->name('help.profile');
 Route::view('help/direct-messages', 'help.direct-messages')->name('help.direct-messages');
