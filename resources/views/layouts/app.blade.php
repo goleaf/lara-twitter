@@ -102,35 +102,35 @@
                                                 @endif
                                             </div>
                                         </div>
-                                    </div>
+                                        </div>
                                         <ul tabindex="0" class="dropdown-content menu bg-base-100 border border-base-200 rounded-box shadow-lg mt-2 w-56 p-2">
-                                        <li>
-                                            <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
-                                                Profile
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('profile') }}" wire:navigate>
-                                                Settings
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ route('help.index') }}" wire:navigate>
-                                                Help
-                                            </a>
-                                        </li>
-                                        @if (auth()->user()->is_admin)
-                                            <li><a href="{{ url('/admin') }}">Admin</a></li>
-                                        @endif
-                                        <li class="mt-1">
-                                            <form method="POST" action="{{ url('/logout') }}">
-                                                @csrf
-                                                <button class="btn btn-ghost btn-sm w-full justify-start" type="submit">
-                                                    Logout
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
+                                            <li>
+                                                <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
+                                                    Profile
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('profile') }}" wire:navigate>
+                                                    Settings
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('help.index') }}" wire:navigate>
+                                                    Help
+                                                </a>
+                                            </li>
+                                            @if (auth()->user()->is_admin)
+                                                <li><a href="{{ url('/admin') }}">Admin</a></li>
+                                            @endif
+                                            <li class="mt-1">
+                                                <form method="POST" action="{{ url('/logout') }}">
+                                                    @csrf
+                                                    <button class="btn btn-ghost btn-sm w-full justify-start" type="submit">
+                                                        Logout
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
                                 </div>
                             @else
                                 <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Login</a>
