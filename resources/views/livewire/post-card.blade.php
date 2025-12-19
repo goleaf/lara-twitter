@@ -1,7 +1,7 @@
 @php($primary = $this->primaryPost())
 @php($replyingTo = $this->replyingToUsername())
 
-<div class="card bg-base-100 border hover:border-base-300 hover:shadow-sm transition">
+<div class="card bg-base-100 card-hover">
     <div class="card-body p-4">
         <div class="flex gap-3">
             <a class="shrink-0" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate aria-label="View profile">
@@ -76,7 +76,7 @@
             @php($showResults = $poll->ends_at->isPast() || $myVoteOptionId)
 
             <div class="pt-2">
-                <div class="card bg-base-200 border">
+                <div class="card bg-base-200 shadow-none">
                     <div class="card-body gap-2">
                         @if ($showResults)
                             @foreach ($options as $option)
@@ -130,7 +130,7 @@
                     target="_blank"
                     rel="nofollow noopener noreferrer"
                 >
-                    <div class="card bg-base-200 border overflow-hidden">
+                    <div class="card bg-base-200 shadow-none overflow-hidden">
                         @if ($preview->image_url)
                             <figure>
                                 <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
@@ -168,7 +168,7 @@
 
         @if ($post->repostOf && ! $this->isRepost())
             <div class="pt-2">
-                <div class="card bg-base-200 border">
+                <div class="card bg-base-200 shadow-none">
                     <div class="card-body gap-2">
                         <div class="flex items-center justify-between">
                             <a class="font-semibold link link-hover" href="{{ route('profile.show', ['user' => $post->repostOf->user->username, 'from_post' => $post->repostOf->id]) }}" wire:navigate>
@@ -197,7 +197,7 @@
                             @php($showResults = $poll->ends_at->isPast() || $myVoteOptionId)
 
                             <div class="pt-2">
-                                <div class="card bg-base-100 border">
+                                <div class="card bg-base-100 shadow-none">
                                     <div class="card-body gap-2">
                                         @if ($showResults)
                                             @foreach ($options as $option)
@@ -251,7 +251,7 @@
                                     target="_blank"
                                     rel="nofollow noopener noreferrer"
                                 >
-                                    <div class="card bg-base-100 border overflow-hidden">
+                                    <div class="card bg-base-100 shadow-none overflow-hidden">
                                         @if ($preview->image_url)
                                             <figure>
                                                 <img class="w-full max-h-48 object-cover" src="{{ $preview->image_url }}" alt="" loading="lazy" />
@@ -293,17 +293,25 @@
         <div class="flex flex-wrap items-center gap-2 pt-2">
             <button
                 wire:click="toggleLike"
-                class="btn btn-ghost btn-sm {{ $this->hasLiked() ? 'text-error' : '' }}"
+                class="btn btn-ghost btn-sm gap-2 {{ $this->hasLiked() ? 'text-error' : '' }}"
                 @disabled(!auth()->check())
                 aria-label="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 title="{{ $this->hasLiked() ? 'Unlike' : 'Like' }}"
                 aria-pressed="{{ $this->hasLiked() ? 'true' : 'false' }}"
             >
-                <span class="text-lg leading-none">♥</span>
+                @if ($this->hasLiked())
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21s-7-4.35-7-11.5S8.5 2 12 7.5C15.5 2 19 2 19 9.5S12 21 12 21Z" />
+                    </svg>
+                @else
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.687-4.5-1.935 0-3.597 1.126-4.313 2.733-.716-1.607-2.378-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                @endif
             </button>
 
             <a class="btn btn-ghost btn-sm" href="{{ route('posts.likes', $primary) }}" wire:navigate aria-label="View likes">
-                <span class="badge badge-neutral">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
+                Likes <span class="badge badge-neutral badge-sm">{{ $primary->likes_count ?? $primary->likes()->count() }}</span>
             </a>
 
             <button
@@ -330,7 +338,7 @@
             </button>
 
             <a class="btn btn-ghost btn-sm" href="{{ route('posts.reposts', $primary) }}" wire:navigate>
-                Reposts <span class="badge badge-neutral">{{ $primary->reposts_count ?? $primary->reposts()->count() }}</span>
+                Reposts <span class="badge badge-neutral badge-sm">{{ $primary->reposts_count ?? $primary->reposts()->count() }}</span>
             </a>
 
             <button wire:click="openQuote" class="btn btn-ghost btn-sm" @disabled(!auth()->check())>
@@ -355,7 +363,7 @@
         @if ($isReplying || $showThread)
             <div class="pt-3 space-y-3 pl-6 border-l border-base-300">
                 @if ($isReplying)
-                    <div class="card bg-base-200 border">
+                    <div class="card bg-base-200 shadow-none">
                         <div class="card-body gap-3">
                             <div class="font-semibold">Reply</div>
                             <livewire:reply-composer :post="$primary" :key="'inline-reply-composer-'.$post->id" />
@@ -385,7 +393,7 @@
 
         @if ($isQuoting)
             <div class="pt-3">
-                <div class="card bg-base-200 border">
+                <div class="card bg-base-200 shadow-none">
                     <div class="card-body">
                         <div class="font-semibold">Quote tweet</div>
 
