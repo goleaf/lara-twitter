@@ -137,7 +137,7 @@ class DatabaseSeeder extends Seeder
 
         return Post::factory()
             ->count($modelCount)
-            ->state(fn () => ['user_id' => $this->randomId($userIds)])
+            ->state(fn () => ['user_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 
@@ -187,7 +187,7 @@ class DatabaseSeeder extends Seeder
 
         return UserList::factory()
             ->count($modelCount)
-            ->state(fn () => ['owner_id' => $this->randomId($userIds)])
+            ->state(fn () => ['owner_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 
@@ -199,7 +199,7 @@ class DatabaseSeeder extends Seeder
 
         return Conversation::factory()
             ->count($modelCount)
-            ->state(fn () => ['created_by_user_id' => $this->randomId($userIds)])
+            ->state(fn () => ['created_by_user_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 
@@ -212,8 +212,8 @@ class DatabaseSeeder extends Seeder
         return Message::factory()
             ->count($modelCount)
             ->state(fn () => [
-                'conversation_id' => $this->randomId($conversationIds),
-                'user_id' => $this->randomId($userIds),
+                'conversation_id' => $conversationIds[array_rand($conversationIds)],
+                'user_id' => $userIds[array_rand($userIds)],
             ])
             ->create();
     }
@@ -226,7 +226,7 @@ class DatabaseSeeder extends Seeder
 
         return Space::factory()
             ->count($modelCount)
-            ->state(fn () => ['host_user_id' => $this->randomId($userIds)])
+            ->state(fn () => ['host_user_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 
@@ -252,7 +252,7 @@ class DatabaseSeeder extends Seeder
 
         return Moment::factory()
             ->count($modelCount)
-            ->state(fn () => ['owner_id' => $this->randomId($userIds)])
+            ->state(fn () => ['owner_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 
@@ -346,7 +346,7 @@ class DatabaseSeeder extends Seeder
 
         PostImage::factory()
             ->count($relationCount)
-            ->state(fn () => ['post_id' => $this->randomId($postIds)])
+            ->state(fn () => ['post_id' => $postIds[array_rand($postIds)]])
             ->create();
     }
 
@@ -482,7 +482,7 @@ class DatabaseSeeder extends Seeder
 
         MessageAttachment::factory()
             ->count($relationCount)
-            ->state(fn () => ['message_id' => $this->randomId($messageIds)])
+            ->state(fn () => ['message_id' => $messageIds[array_rand($messageIds)]])
             ->create();
     }
 
@@ -537,7 +537,7 @@ class DatabaseSeeder extends Seeder
 
         MutedTerm::factory()
             ->count($relationCount)
-            ->state(fn () => ['user_id' => $this->randomId($userIds)])
+            ->state(fn () => ['user_id' => $userIds[array_rand($userIds)]])
             ->create();
     }
 

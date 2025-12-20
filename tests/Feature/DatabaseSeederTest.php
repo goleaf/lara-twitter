@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Tests\TestCase;
 
 class DatabaseSeederTest extends TestCase
@@ -12,13 +12,6 @@ class DatabaseSeederTest extends TestCase
 
     public function test_database_seeder_creates_expected_records(): void
     {
-        config([
-            'seeding.model_count' => 3,
-            'seeding.relation_count' => 3,
-        ]);
-
-        Artisan::call('migrate:fresh', ['--seed' => true]);
-
         $this->assertDatabaseCount('users', 3);
         $this->assertDatabaseCount('posts', 3);
         $this->assertDatabaseCount('hashtags', 3);
@@ -51,5 +44,22 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('space_reactions', 3);
         $this->assertDatabaseCount('moment_items', 3);
         $this->assertDatabaseCount('reports', 18);
+    }
+
+    protected function beforeRefreshingDatabase(): void
+    {
+        config([
+            'seeding.model_count' => 3,
+            'seeding.relation_count' => 3,
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        RefreshDatabaseState::$migrated = false;
+        RefreshDatabaseState::$lazilyRefreshed = false;
+        RefreshDatabaseState::$inMemoryConnections = [];
+
+        parent::tearDown();
     }
 }
