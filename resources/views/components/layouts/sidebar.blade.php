@@ -1,7 +1,7 @@
 @props(['mobile' => false])
 
 @php
-    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-full transition-all font-medium';
+    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-full transition-all font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20';
     $itemActive = 'bg-primary/10 text-primary';
     $itemInactive = 'hover:bg-base-200';
 @endphp

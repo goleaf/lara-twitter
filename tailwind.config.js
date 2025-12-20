@@ -21,8 +21,8 @@ export default {
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0EA5E9',
-                    600: '#0284C7',
+                    DEFAULT: '#0F766E',
+                    600: '#0D6B63',
                 },
             },
             keyframes: {
@@ -105,25 +105,25 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0EA5E9',
-                    'primary-content': '#FFFFFF',
+                    primary: '#0F766E',
+                    'primary-content': '#F8FAFC',
 
-                    secondary: '#0F172A',
-                    'secondary-content': '#FFFFFF',
+                    secondary: '#111827',
+                    'secondary-content': '#F8FAFC',
 
-                    accent: '#F97316',
+                    accent: '#F59E0B',
                     'accent-content': '#1F2937',
 
                     neutral: '#475569',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FDFBF7',
-                    'base-200': '#F6F1E8',
-                    'base-300': '#E7DED3',
-                    'base-content': '#0F172A',
+                    'base-100': '#FDFAF6',
+                    'base-200': '#F4EFE7',
+                    'base-300': '#E5DCCF',
+                    'base-content': '#111827',
 
                     info: '#38BDF8',
-                    success: '#22C55E',
+                    success: '#16A34A',
                     warning: '#F59E0B',
                     error: '#EF4444',
 

@@ -12,12 +12,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class MomentResource extends Resource
 {
     protected static ?string $model = Moment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedNewspaper;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Content';
+
+    protected static ?int $navigationSort = 30;
 
     public static function form(Schema $schema): Schema
     {
@@ -37,4 +42,3 @@ class MomentResource extends Resource
         ];
     }
 }
-

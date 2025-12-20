@@ -40,9 +40,9 @@
 
         <div class="app-shell min-h-screen lg:flex">
             <div class="flex-1 min-w-0 xl:border-r xl:border-base-300">
-                <main id="main-content" tabindex="-1" class="min-h-screen px-4 pt-4 pb-20 lg:pb-4 space-y-4 page-reveal focus:outline-none">
+                <main id="main-content" tabindex="-1" class="min-h-screen px-4 pt-6 pb-20 lg:pb-6 space-y-5 page-reveal focus:outline-none">
                     @if (isset($header) || $__env->hasSection('header'))
-                        <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
+                        <div class="glass-panel">
                             <div class="card-body py-4">
                                 @isset($header)
                                     {{ $header }}
@@ -74,7 +74,7 @@
             @endunless
         </div>
 
-        <footer class="mt-6 border-t border-base-200">
+        <footer class="mt-6 border-t border-base-200/70">
             <div class="max-w-[1280px] mx-auto px-4 pt-4 pb-20 lg:pb-6">
                 <div class="flex flex-col gap-2 text-xs text-base-content/60 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex flex-wrap gap-x-3 gap-y-1">

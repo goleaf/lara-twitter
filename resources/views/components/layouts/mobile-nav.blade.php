@@ -2,7 +2,7 @@
     <a
         href="{{ route('timeline') }}"
         wire:navigate
-        class="{{ request()->routeIs('timeline') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+        class="{{ request()->routeIs('timeline') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
         aria-label="Home"
         @if (request()->routeIs('timeline')) aria-current="page" @endif
     >
@@ -16,7 +16,7 @@
         <a
             href="{{ route('explore') }}"
             wire:navigate
-            class="{{ request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Explore"
             @if (request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending')) aria-current="page" @endif
         >
@@ -26,7 +26,7 @@
             <span class="btm-nav-label">Explore</span>
         </a>
 
-        <a href="{{ route('timeline') }}#composer" wire:navigate class="text-primary" aria-label="New post">
+        <a href="{{ route('timeline') }}#composer" wire:navigate class="text-primary focus-ring" aria-label="New post">
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.5 19.313l-4.5 1.125 1.125-4.5L16.862 3.487Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 6.75 17.25 4.5" />
@@ -37,7 +37,7 @@
         <a
             href="{{ route('notifications') }}"
             wire:navigate
-            class="{{ request()->routeIs('notifications') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('notifications') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Notifications"
             @if (request()->routeIs('notifications')) aria-current="page" @endif
         >
@@ -53,7 +53,7 @@
         <a
             href="{{ route('messages.index') }}"
             wire:navigate
-            class="{{ request()->routeIs('messages.*') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('messages.*') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Messages"
             @if (request()->routeIs('messages.*')) aria-current="page" @endif
         >
@@ -66,7 +66,7 @@
         <a
             href="{{ route('explore') }}"
             wire:navigate
-            class="{{ request()->routeIs('explore') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('explore') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Explore"
             @if (request()->routeIs('explore')) aria-current="page" @endif
         >
@@ -79,7 +79,7 @@
         <a
             href="{{ route('search') }}"
             wire:navigate
-            class="{{ request()->routeIs('search') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('search') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Search"
             @if (request()->routeIs('search')) aria-current="page" @endif
         >
@@ -92,7 +92,7 @@
         <a
             href="{{ route('login') }}"
             wire:navigate
-            class="{{ request()->routeIs('login') ? 'active text-primary border-primary' : 'text-base-content/70' }}"
+            class="{{ request()->routeIs('login') ? 'active text-primary border-primary' : 'text-base-content/70' }} focus-ring"
             aria-label="Login"
             @if (request()->routeIs('login')) aria-current="page" @endif
         >

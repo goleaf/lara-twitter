@@ -12,12 +12,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SpaceResource extends Resource
 {
     protected static ?string $model = Space::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Spaces';
+
+    protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema
     {
@@ -37,4 +42,3 @@ class SpaceResource extends Resource
         ];
     }
 }
-

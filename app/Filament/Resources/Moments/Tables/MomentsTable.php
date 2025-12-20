@@ -6,7 +6,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class MomentsTable
@@ -15,6 +17,10 @@ class MomentsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('cover_image_path')
+                    ->label('Cover')
+                    ->disk('public')
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->searchable()
                     ->limit(40),
@@ -29,9 +35,12 @@ class MomentsTable
                     ->label('Posts')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->since()
+                    ->sortable(),
+            ])
+            ->filters([
+                TernaryFilter::make('is_public')
+                    ->label('Public'),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -40,7 +49,7 @@ class MomentsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }
-

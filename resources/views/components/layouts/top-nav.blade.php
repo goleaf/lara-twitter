@@ -4,10 +4,10 @@
     use App\Support\PageTitle;
 
     $title = PageTitle::resolve($title);
-    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin px-1 py-1 rounded-full bg-base-200/70 border border-base-300/80 shadow-sm supports-[backdrop-filter]:bg-base-200/60';
-    $itemBase = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap';
-    $itemActive = 'bg-base-100 text-primary shadow-sm ring-1 ring-primary/10';
-    $itemInactive = 'text-base-content/70 hover:bg-base-100/80 hover:text-base-content';
+    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin px-1.5 py-1.5 rounded-full bg-base-100/75 border border-base-200/80 shadow-sm supports-[backdrop-filter]:bg-base-100/60 supports-[backdrop-filter]:backdrop-blur-sm';
+    $itemBase = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition whitespace-nowrap focus-ring';
+    $itemActive = 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20';
+    $itemInactive = 'text-base-content/60 hover:bg-base-100 hover:text-base-content';
     $iconClass = 'w-5 h-5';
     $isTimeline = request()->routeIs('timeline');
     $isExplore = request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending');
@@ -17,11 +17,11 @@
     $isProfile = request()->routeIs('profile.*');
 @endphp
 
-<div class="sticky top-0 z-40 border-b border-base-300 bg-base-100/80 backdrop-blur-xl topbar-shell">
+<div class="sticky top-0 z-40 border-b border-base-200/70 bg-base-100/80 backdrop-blur-xl supports-[backdrop-filter]:bg-base-100/70 shadow-sm topbar-shell">
     <div class="max-w-[1320px] mx-auto px-4">
         <div class="flex flex-wrap items-center justify-between gap-3 py-3">
             <div class="flex min-w-0 items-center gap-3">
-                <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-base-200 transition-colors" aria-label="Home">
+                <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-base-200 transition-colors focus-ring" aria-label="Home">
                     <x-brand-mark class="w-7 h-7 text-primary" />
                 </a>
                 <div class="min-w-0">
@@ -41,7 +41,7 @@
                     </a>
 
                     <div class="dropdown dropdown-bottom dropdown-end">
-                        <label tabindex="0" class="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-base-200 transition-colors cursor-pointer">
+                        <label tabindex="0" class="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-base-200 transition-colors cursor-pointer focus-ring">
                             <div class="avatar">
                                 <div class="w-8 h-8 rounded-full border border-base-200 bg-base-100">
                                     @if (auth()->user()->avatar_url)
