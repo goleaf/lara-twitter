@@ -37,6 +37,9 @@
 - Avoid eager-loading/counts when doing `exists()`/`max()` checks; use lean queries for activity probes.
 - Add indexes alongside new query patterns (especially for `reply_to_id`, `is_reply_like`, and date filtering).
 - Keep upgrade work scoped; document any cache/migration impacts in PR notes.
+- When caching personalized results, include viewer id + key inputs, and keep TTLs low (<= 2 minutes).
+- For dependency upgrades, update lockfiles and run `composer test` and `npm run build` to verify.
+- Memoize per-request derived sets (muted terms/excluded user ids) on the model to reduce duplicate queries.
 
 ## Testing Guidelines
 

@@ -439,13 +439,6 @@ class TrendingService
             return collect();
         }
 
-        return $viewer->mutedTerms()
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->where('mute_timeline', true)
-            ->latest()
-            ->limit(50)
-            ->get();
+        return $viewer->activeMutedTerms();
     }
 }

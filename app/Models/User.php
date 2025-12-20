@@ -19,6 +19,10 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected ?Collection $activeMutedTermsCache = null;
+
+    protected ?Collection $excludedUserIdsCache = null;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -398,6 +402,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(MutedTerm::class);
     }
 
+    public function activeMutedTerms(): Collection
+    {
+        if ($this->activeMutedTermsCache) {
+            return $this->activeMutedTermsCache;
+        }
+
+        $this->activeMutedTermsCache = $this->mutedTerms()
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->where('mute_timeline', true)
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        return $this->activeMutedTermsCache;
+    }
+
     public function hasBlocked(User $other): bool
     {
         return $this->blocksInitiated()->where('blocked_id', $other->id)->exists();
@@ -420,11 +442,17 @@ class User extends Authenticatable implements FilamentUser
 
     public function excludedUserIds(): Collection
     {
+        if ($this->excludedUserIdsCache) {
+            return $this->excludedUserIdsCache;
+        }
+
         $mutedIds = $this->mutesInitiated()->pluck('muted_id');
         $blockedIds = $this->blocksInitiated()->pluck('blocked_id');
         $blockedByIds = $this->blocksReceived()->pluck('blocker_id');
 
-        return $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
+        $this->excludedUserIdsCache = $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
+
+        return $this->excludedUserIdsCache;
     }
 
     public function spacesHosted(): HasMany

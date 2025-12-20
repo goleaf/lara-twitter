@@ -128,14 +128,7 @@ class TimelinePage extends Component
 
     private function applyMutedTermsToPostsQuery(Builder $query, \App\Models\User $viewer): void
     {
-        $terms = $viewer->mutedTerms()
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->where('mute_timeline', true)
-            ->latest()
-            ->limit(50)
-            ->get();
+        $terms = $viewer->activeMutedTerms();
 
         if ($terms->isEmpty()) {
             return;
