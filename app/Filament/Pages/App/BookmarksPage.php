@@ -13,6 +13,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -58,6 +59,7 @@ class BookmarksPage extends Page implements HasTable
             ->columns([
                 ViewLayout::make('filament.app.tables.bookmark-row'),
             ])
+            ->defaultKeySort(false)
             ->recordActions([
                 Action::make('remove')
                     ->label('Remove')
@@ -100,6 +102,28 @@ class BookmarksPage extends Page implements HasTable
             ->defaultPaginationPageOption(15);
     }
 
+    public function getTableRecordKey(Model | array $record): string
+    {
+        if (is_array($record)) {
+            return (string) ($record['post_id'] ?? '');
+        }
+
+        return (string) ($record->getAttribute('post_id') ?? $record->getKey());
+    }
+
+    protected function resolveTableRecord(?string $key): Model | array | null
+    {
+        if ($key === null) {
+            return null;
+        }
+
+        abort_unless(Auth::check(), 403);
+
+        return $this->getFilteredTableQuery()
+            ->where('bookmarks.post_id', $key)
+            ->first();
+    }
+
     private function getBookmarksQuery(): Builder
     {
         abort_unless(Auth::check(), 403);
@@ -127,4 +151,3 @@ class BookmarksPage extends Page implements HasTable
         ]);
     }
 }
-

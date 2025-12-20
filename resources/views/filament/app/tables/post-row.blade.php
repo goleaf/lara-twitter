@@ -1,5 +1,6 @@
 @php
     /** @var \App\Models\Post $record */
+    $record = $getRecord();
     $user = $record->user;
 @endphp
 
@@ -69,4 +70,3 @@
         </div>
     </div>
 </div>
-

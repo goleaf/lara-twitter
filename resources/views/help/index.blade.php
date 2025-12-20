@@ -7,10 +7,10 @@
 @section('content')
     <div class="max-w-2xl mx-auto space-y-4">
         <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="font-semibold">Topics</div>
-    
-                    <div class="space-y-1 pt-2">
+            <div class="card-body">
+                <div class="font-semibold">Topics</div>
+
+                <div class="space-y-1 pt-2">
                         <x-list-row href="{{ route('help.blocking') }}" wire:navigate>
                             <div class="min-w-0">
                                 <div class="font-medium">Block</div>

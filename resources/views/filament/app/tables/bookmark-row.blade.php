@@ -1,5 +1,6 @@
 @php
     /** @var \App\Models\Bookmark $record */
+    $record = $getRecord();
     $bookmark = $record;
     $post = $bookmark->post;
 @endphp
@@ -22,4 +23,3 @@
         </div>
     @endif
 </div>
-

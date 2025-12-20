@@ -12,6 +12,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Layout\View as ViewLayout;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\DatabaseNotification;
@@ -99,8 +101,29 @@ class NotificationsPage extends Page implements HasTable
                         $this->resetTable();
                     }),
             ])
-            ->paginated([30, 60, 100])
-            ->defaultPaginationPageOption(30);
+            ->filters([
+                Filter::make('unread')
+                    ->label('Unread only')
+                    ->query(fn (Builder $query): Builder => $query->whereNull('read_at'))
+                    ->toggle(),
+                Filter::make('today')
+                    ->label('Today')
+                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today()))
+                    ->toggle(),
+            ])
+            ->groups([
+                Group::make('type')
+                    ->label('Notification Type')
+                    ->collapsible(),
+                Group::make('created_at')
+                    ->label('Date')
+                    ->date()
+                    ->collapsible(),
+            ])
+            ->defaultGroup('created_at')
+            ->paginated([20, 50, 100])
+            ->defaultPaginationPageOption(20)
+            ->poll('15s');
     }
 
     private function getNotificationsQuery(): Builder
@@ -185,4 +208,3 @@ class NotificationsPage extends Page implements HasTable
         return User::query()->find($id);
     }
 }
-

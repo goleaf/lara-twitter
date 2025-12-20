@@ -1,5 +1,6 @@
 @php
     /** @var \Illuminate\Notifications\DatabaseNotification $record */
+    $record = $getRecord();
     $data = $record->data ?? [];
     $type = $data['type'] ?? null;
     $actorUsername = \App\Filament\Pages\App\NotificationsPage::actorUsername($record);
@@ -35,4 +36,3 @@
         </div>
     @endif
 </div>
-
