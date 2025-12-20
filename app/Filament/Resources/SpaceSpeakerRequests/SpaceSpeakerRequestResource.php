@@ -25,6 +25,12 @@ class SpaceSpeakerRequestResource extends Resource
 
     protected static ?int $navigationSort = 30;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['space', 'user', 'decidedBy']);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SpaceSpeakerRequestForm::configure($schema);

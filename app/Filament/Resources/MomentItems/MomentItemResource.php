@@ -25,6 +25,12 @@ class MomentItemResource extends Resource
 
     protected static ?int $navigationSort = 40;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['moment']);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return MomentItemForm::configure($schema);

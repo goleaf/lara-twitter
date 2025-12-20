@@ -25,6 +25,12 @@ class SpaceParticipantResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['space', 'user']);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SpaceParticipantForm::configure($schema);
