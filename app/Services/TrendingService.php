@@ -7,9 +7,23 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class TrendingService
 {
+    private function cacheTtl(): \DateTimeInterface
+    {
+        return now()->addSeconds(90);
+    }
+
+    private function trendingCacheKey(string $type, ?User $viewer, int $limit, ?string $location = null): string
+    {
+        $viewerId = $viewer?->id ?? 0;
+        $normalizedLocation = $location ? mb_strtolower(trim($location)) : 'global';
+
+        return 'trending:'.$type.':'.$viewerId.':'.$limit.':'.sha1($normalizedLocation);
+    }
+
     private function recentWindowStart(): \Illuminate\Support\Carbon
     {
         return now()->subHour();
@@ -17,117 +31,212 @@ class TrendingService
 
     public function trendingHashtags(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
-        $since = now()->subDay();
-        $recentSince = $this->recentWindowStart();
+        $key = $this->trendingCacheKey('hashtags', $viewer, $limit, $location);
 
-        $query = Hashtag::query()
-            ->select(['hashtags.*'])
-            ->selectRaw('count(*) as uses_count')
-            ->selectRaw('count(distinct posts.user_id) as users_count')
-            ->selectRaw('sum(case when posts.created_at >= ? then 1 else 0 end) as recent_uses_count', [$recentSince])
-            ->selectRaw('count(distinct case when posts.created_at >= ? then posts.user_id end) as recent_users_count', [$recentSince])
-            ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
-            ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
-            ->join('users', 'users.id', '=', 'posts.user_id')
-            ->whereNull('posts.reply_to_id')
-            ->where('posts.is_reply_like', false)
-            ->where('posts.created_at', '>=', $since)
-            ->groupBy('hashtags.id');
+        return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
+            $since = now()->subDay();
+            $recentSince = $this->recentWindowStart();
 
-        $location = is_string($location) ? trim($location) : null;
-        if ($location) {
-            $needle = '%'.mb_strtolower($location).'%';
-            $query->whereRaw('lower(users.location) like ?', [$needle]);
-        }
+            $query = Hashtag::query()
+                ->select(['hashtags.*'])
+                ->selectRaw('count(*) as uses_count')
+                ->selectRaw('count(distinct posts.user_id) as users_count')
+                ->selectRaw('sum(case when posts.created_at >= ? then 1 else 0 end) as recent_uses_count', [$recentSince])
+                ->selectRaw('count(distinct case when posts.created_at >= ? then posts.user_id end) as recent_users_count', [$recentSince])
+                ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
+                ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
+                ->join('users', 'users.id', '=', 'posts.user_id')
+                ->whereNull('posts.reply_to_id')
+                ->where('posts.is_reply_like', false)
+                ->where('posts.created_at', '>=', $since)
+                ->groupBy('hashtags.id');
 
-        if ($viewer) {
-            $excluded = $viewer->excludedUserIds();
-            if ($excluded->isNotEmpty()) {
-                $query->whereNotIn('posts.user_id', $excluded);
+            $location = is_string($location) ? trim($location) : null;
+            if ($location) {
+                $needle = '%'.mb_strtolower($location).'%';
+                $query->whereRaw('lower(users.location) like ?', [$needle]);
             }
-        }
 
-        $candidates = $query
-            ->orderByDesc('recent_uses_count')
-            ->orderByDesc('uses_count')
-            ->limit(max(25, $limit * 8))
-            ->get();
-
-        $mutedTerms = $this->activeMutedTerms($viewer);
-        if ($mutedTerms->isNotEmpty()) {
-            $matcher = app(MutedTermMatcher::class);
-            $candidates = $candidates->reject(function (Hashtag $tag) use ($mutedTerms, $matcher): bool {
-                $text = '#'.(string) $tag->tag;
-
-                foreach ($mutedTerms as $term) {
-                    if ($matcher->matches($text, $term)) {
-                        return true;
-                    }
+            if ($viewer) {
+                $excluded = $viewer->excludedUserIds();
+                if ($excluded->isNotEmpty()) {
+                    $query->whereNotIn('posts.user_id', $excluded);
                 }
+            }
 
-                return false;
+            $candidates = $query
+                ->orderByDesc('recent_uses_count')
+                ->orderByDesc('uses_count')
+                ->limit(max(25, $limit * 8))
+                ->get();
+
+            $mutedTerms = $this->activeMutedTerms($viewer);
+            if ($mutedTerms->isNotEmpty()) {
+                $matcher = app(MutedTermMatcher::class);
+                $candidates = $candidates->reject(function (Hashtag $tag) use ($mutedTerms, $matcher): bool {
+                    $text = '#'.(string) $tag->tag;
+
+                    foreach ($mutedTerms as $term) {
+                        if ($matcher->matches($text, $term)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
+            }
+
+            $candidates = $candidates->map(function (Hashtag $tag) {
+                $recent = (int) ($tag->recent_uses_count ?? 0);
+                $total = (int) ($tag->uses_count ?? 0);
+                $baseline = max(0, $total - $recent);
+                $recentUsers = (int) ($tag->recent_users_count ?? 0);
+
+                $tag->trend_score = ($recent * $recent) / ($baseline + 1) + ($total * 0.01) + ($recentUsers * 0.05);
+
+                return $tag;
             });
-        }
 
-        $candidates = $candidates->map(function (Hashtag $tag) {
-            $recent = (int) ($tag->recent_uses_count ?? 0);
-            $total = (int) ($tag->uses_count ?? 0);
-            $baseline = max(0, $total - $recent);
-            $recentUsers = (int) ($tag->recent_users_count ?? 0);
+            $interests = $this->normalizedInterests($viewer);
 
-            $tag->trend_score = ($recent * $recent) / ($baseline + 1) + ($total * 0.01) + ($recentUsers * 0.05);
+            if (count($interests)) {
+                [$preferred, $other] = $candidates->partition(fn (Hashtag $tag): bool => in_array(mb_strtolower((string) $tag->tag), $interests, true));
+                $preferred = $preferred->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0));
+                $other = $other->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0));
 
-            return $tag;
+                return $preferred->merge($other)->values()->take($limit);
+            }
+
+            return $candidates
+                ->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0))
+                ->values()
+                ->take($limit);
         });
-
-        $interests = $this->normalizedInterests($viewer);
-
-        if (count($interests)) {
-            [$preferred, $other] = $candidates->partition(fn (Hashtag $tag): bool => in_array(mb_strtolower((string) $tag->tag), $interests, true));
-            $preferred = $preferred->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0));
-            $other = $other->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0));
-
-            return $preferred->merge($other)->values()->take($limit);
-        }
-
-        return $candidates
-            ->sortByDesc(fn (Hashtag $tag) => (float) ($tag->trend_score ?? 0))
-            ->values()
-            ->take($limit);
     }
 
     public function trendingTopics(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
-        $since = now()->subDay();
-        $recentSince = $this->recentWindowStart();
+        $key = $this->trendingCacheKey('topics', $viewer, $limit, $location);
 
-        $categories = app(DiscoverService::class)->categoryHashtags();
+        return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
+            $since = now()->subDay();
+            $recentSince = $this->recentWindowStart();
 
-        $labels = [
-            'news' => 'News',
-            'sports' => 'Sports',
-            'entertainment' => 'Entertainment',
-            'technology' => 'Technology',
-        ];
+            $categories = app(DiscoverService::class)->categoryHashtags();
 
-        $location = is_string($location) ? trim($location) : null;
-        $interests = $this->normalizedInterests($viewer);
+            $labels = [
+                'news' => 'News',
+                'sports' => 'Sports',
+                'entertainment' => 'Entertainment',
+                'technology' => 'Technology',
+            ];
 
-        $rows = collect();
+            $location = is_string($location) ? trim($location) : null;
+            $interests = $this->normalizedInterests($viewer);
 
-        foreach ($categories as $category => $tags) {
-            $tags = array_values(array_filter($tags, fn ($t) => is_string($t) && $t !== ''));
+            $rows = collect();
 
-            if (! count($tags)) {
-                continue;
+            foreach ($categories as $category => $tags) {
+                $tags = array_values(array_filter($tags, fn ($t) => is_string($t) && $t !== ''));
+
+                if (! count($tags)) {
+                    continue;
+                }
+
+                $query = Post::query()
+                    ->whereNull('reply_to_id')
+                    ->where('is_reply_like', false)
+                    ->where('posts.created_at', '>=', $since)
+                    ->whereHas('hashtags', fn ($q) => $q->whereIn('tag', $tags));
+
+                if ($location) {
+                    $needle = '%'.mb_strtolower($location).'%';
+                    $query->whereHas('user', fn ($q) => $q->whereRaw('lower(location) like ?', [$needle]));
+                }
+
+                if ($viewer) {
+                    $excluded = $viewer->excludedUserIds();
+                    if ($excluded->isNotEmpty()) {
+                        $query->whereNotIn('posts.user_id', $excluded);
+                    }
+
+                    $this->applyMutedTermsToPostsQuery($query, $viewer);
+                }
+
+                $count = (int) (clone $query)->count();
+                if ($count === 0) {
+                    continue;
+                }
+
+                $recentCount = (int) (clone $query)
+                    ->where('posts.created_at', '>=', $recentSince)
+                    ->count();
+
+                $baseline = max(0, $count - $recentCount);
+                $score = ($recentCount * $recentCount) / ($baseline + 1) + ($count * 0.01);
+
+                $rows->push([
+                    'category' => (string) $category,
+                    'topic' => $labels[$category] ?? ucfirst((string) $category),
+                    'count' => $count,
+                    'recent_count' => $recentCount,
+                    'score' => $score,
+                ]);
             }
 
+            if (count($interests)) {
+                [$preferred, $other] = $rows->partition(function (array $row) use ($categories, $interests): bool {
+                    $tags = $categories[$row['category']] ?? [];
+                    $tags = collect($tags)->map(fn ($t) => mb_strtolower((string) $t))->all();
+
+                    return (bool) count(array_intersect($interests, $tags));
+                });
+
+                $preferred = $preferred->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
+                $other = $other->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
+
+                return $preferred
+                    ->merge($other)
+                    ->values()
+                    ->take($limit)
+                    ->map(function (array $row) {
+                        unset($row['score']);
+
+                        return $row;
+                    });
+            }
+
+            return $rows
+                ->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0))
+                ->values()
+                ->take($limit)
+                ->map(function (array $row) {
+                    unset($row['score']);
+
+                    return $row;
+                });
+        });
+    }
+
+    public function trendingConversations(?User $viewer, int $limit = 10, ?string $location = null): Collection
+    {
+        $key = $this->trendingCacheKey('conversations', $viewer, $limit, $location);
+
+        return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
+            $since = now()->subDay();
+
             $query = Post::query()
+                ->with([
+                    'user',
+                    'images',
+                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+                ])
+                ->withCount(['likes', 'reposts', 'replies'])
                 ->whereNull('reply_to_id')
                 ->where('is_reply_like', false)
-                ->where('posts.created_at', '>=', $since)
-                ->whereHas('hashtags', fn ($q) => $q->whereIn('tag', $tags));
+                ->where('posts.created_at', '>=', $since);
 
+            $location = is_string($location) ? trim($location) : null;
             if ($location) {
                 $needle = '%'.mb_strtolower($location).'%';
                 $query->whereHas('user', fn ($q) => $q->whereRaw('lower(location) like ?', [$needle]));
@@ -142,40 +251,121 @@ class TrendingService
                 $this->applyMutedTermsToPostsQuery($query, $viewer);
             }
 
-            $count = (int) (clone $query)->count();
-            if ($count === 0) {
-                continue;
+            return $query
+                ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
+                ->orderByDesc('posts.created_at')
+                ->limit($limit)
+                ->get();
+        });
+    }
+
+    public function trendingKeywords(?User $viewer, int $limit = 15, ?string $location = null): Collection
+    {
+        $key = $this->trendingCacheKey('keywords', $viewer, $limit, $location);
+
+        return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
+            $since = now()->subDay();
+            $recentSince = $this->recentWindowStart();
+
+            $postsQuery = Post::query()
+                ->whereNull('reply_to_id')
+                ->where('is_reply_like', false)
+                ->where('posts.created_at', '>=', $since)
+                ->latest('posts.created_at')
+                ->limit(800)
+                ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
+
+            $location = is_string($location) ? trim($location) : null;
+            if ($location) {
+                $needle = '%'.mb_strtolower($location).'%';
+                $postsQuery
+                    ->join('users', 'users.id', '=', 'posts.user_id')
+                    ->whereRaw('lower(users.location) like ?', [$needle])
+                    ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
             }
 
-            $recentCount = (int) (clone $query)
-                ->where('posts.created_at', '>=', $recentSince)
-                ->count();
+            if ($viewer) {
+                $excluded = $viewer->excludedUserIds();
+                if ($excluded->isNotEmpty()) {
+                    $postsQuery->whereNotIn('posts.user_id', $excluded);
+                }
+            }
 
-            $baseline = max(0, $count - $recentCount);
-            $score = ($recentCount * $recentCount) / ($baseline + 1) + ($count * 0.01);
+            $posts = $postsQuery->get();
 
-            $rows->push([
-                'category' => (string) $category,
-                'topic' => $labels[$category] ?? ucfirst((string) $category),
-                'count' => $count,
-                'recent_count' => $recentCount,
-                'score' => $score,
-            ]);
-        }
+            $stopwords = array_fill_keys([
+                'the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'you', 'are', 'was', 'were', 'have', 'has',
+                'not', 'but', 'all', 'can', 'will', 'just', 'like', 'about', 'into', 'over', 'when', 'what', 'why', 'how',
+                'than', 'then', 'them', 'they', 'our', 'out', 'who', 'its', 'it', 'a', 'an', 'to', 'of', 'in', 'on', 'at',
+                'is', 'as', 'be', 'or', 'we', 'i', 'me', 'my',
+            ], true);
 
-        if (count($interests)) {
-            [$preferred, $other] = $rows->partition(function (array $row) use ($categories, $interests): bool {
-                $tags = $categories[$row['category']] ?? [];
-                $tags = collect($tags)->map(fn ($t) => mb_strtolower((string) $t))->all();
+            $counts = [];
+            $recentCounts = [];
+            $userCounts = [];
+            $recentUserCounts = [];
 
-                return (bool) count(array_intersect($interests, $tags));
+            foreach ($posts as $post) {
+                $body = preg_replace('/https?:\\/\\/\\S+/i', ' ', (string) $post->body) ?? (string) $post->body;
+                $body = preg_replace('/[#@][A-Za-z0-9_\\-]+/u', ' ', $body) ?? $body;
+                $isRecent = (bool) ($post->created_at && $post->created_at->greaterThanOrEqualTo($recentSince));
+
+                if (! preg_match_all('/\\b[\\pL\\pN]{4,}\\b/u', $body, $matches)) {
+                    continue;
+                }
+
+                foreach ($matches[0] as $word) {
+                    $w = mb_strtolower($word);
+
+                    if (isset($stopwords[$w])) {
+                        continue;
+                    }
+
+                    $counts[$w] = ($counts[$w] ?? 0) + 1;
+                    $userCounts[$w][$post->user_id] = true;
+
+                    if ($isRecent) {
+                        $recentCounts[$w] = ($recentCounts[$w] ?? 0) + 1;
+                        $recentUserCounts[$w][$post->user_id] = true;
+                    }
+                }
+            }
+
+            $mutedTerms = $this->activeMutedTerms($viewer);
+
+            $rows = collect($counts)->map(function (int $count, string $word) use ($recentCounts, $userCounts, $recentUserCounts) {
+                $recent = (int) ($recentCounts[$word] ?? 0);
+                $baseline = max(0, $count - $recent);
+                $users = isset($userCounts[$word]) ? count($userCounts[$word]) : 0;
+                $recentUsers = isset($recentUserCounts[$word]) ? count($recentUserCounts[$word]) : 0;
+
+                $score = ($recent * $recent) / ($baseline + 1) + ($count * 0.01) + ($recentUsers * 0.05) + ($users * 0.005);
+
+                return [
+                    'keyword' => $word,
+                    'count' => $count,
+                    'recent_count' => $recent,
+                    'users_count' => $users,
+                    'recent_users_count' => $recentUsers,
+                    'score' => $score,
+                ];
             });
 
-            $preferred = $preferred->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
-            $other = $other->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0));
+            if ($mutedTerms->isNotEmpty()) {
+                $matcher = app(MutedTermMatcher::class);
+                $rows = $rows->reject(function (array $row) use ($mutedTerms, $matcher): bool {
+                    foreach ($mutedTerms as $term) {
+                        if ($matcher->matches($row['keyword'], $term)) {
+                            return true;
+                        }
+                    }
 
-            return $preferred
-                ->merge($other)
+                    return false;
+                });
+            }
+
+            $rows = $rows
+                ->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0))
                 ->values()
                 ->take($limit)
                 ->map(function (array $row) {
@@ -183,169 +373,9 @@ class TrendingService
 
                     return $row;
                 });
-        }
 
-        return $rows
-            ->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0))
-            ->values()
-            ->take($limit)
-            ->map(function (array $row) {
-                unset($row['score']);
-
-                return $row;
-            });
-    }
-
-    public function trendingConversations(?User $viewer, int $limit = 10, ?string $location = null): Collection
-    {
-        $since = now()->subDay();
-
-        $query = Post::query()
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies'])
-            ->whereNull('reply_to_id')
-            ->where('is_reply_like', false)
-            ->where('posts.created_at', '>=', $since);
-
-        $location = is_string($location) ? trim($location) : null;
-        if ($location) {
-            $needle = '%'.mb_strtolower($location).'%';
-            $query->whereHas('user', fn ($q) => $q->whereRaw('lower(location) like ?', [$needle]));
-        }
-
-        if ($viewer) {
-            $excluded = $viewer->excludedUserIds();
-            if ($excluded->isNotEmpty()) {
-                $query->whereNotIn('posts.user_id', $excluded);
-            }
-
-            $this->applyMutedTermsToPostsQuery($query, $viewer);
-        }
-
-        return $query
-            ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
-            ->orderByDesc('posts.created_at')
-            ->limit($limit)
-            ->get();
-    }
-
-    public function trendingKeywords(?User $viewer, int $limit = 15, ?string $location = null): Collection
-    {
-        $since = now()->subDay();
-        $recentSince = $this->recentWindowStart();
-
-        $postsQuery = Post::query()
-            ->whereNull('reply_to_id')
-            ->where('is_reply_like', false)
-            ->where('posts.created_at', '>=', $since)
-            ->latest('posts.created_at')
-            ->limit(800)
-            ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
-
-        $location = is_string($location) ? trim($location) : null;
-        if ($location) {
-            $needle = '%'.mb_strtolower($location).'%';
-            $postsQuery
-                ->join('users', 'users.id', '=', 'posts.user_id')
-                ->whereRaw('lower(users.location) like ?', [$needle])
-                ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
-        }
-
-        if ($viewer) {
-            $excluded = $viewer->excludedUserIds();
-            if ($excluded->isNotEmpty()) {
-                $postsQuery->whereNotIn('posts.user_id', $excluded);
-            }
-        }
-
-        $posts = $postsQuery->get();
-
-        $stopwords = array_fill_keys([
-            'the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'you', 'are', 'was', 'were', 'have', 'has',
-            'not', 'but', 'all', 'can', 'will', 'just', 'like', 'about', 'into', 'over', 'when', 'what', 'why', 'how',
-            'than', 'then', 'them', 'they', 'our', 'out', 'who', 'its', 'it', 'a', 'an', 'to', 'of', 'in', 'on', 'at',
-            'is', 'as', 'be', 'or', 'we', 'i', 'me', 'my',
-        ], true);
-
-        $counts = [];
-        $recentCounts = [];
-        $userCounts = [];
-        $recentUserCounts = [];
-
-        foreach ($posts as $post) {
-            $body = preg_replace('/https?:\\/\\/\\S+/i', ' ', (string) $post->body) ?? (string) $post->body;
-            $body = preg_replace('/[#@][A-Za-z0-9_\\-]+/u', ' ', $body) ?? $body;
-            $isRecent = (bool) ($post->created_at && $post->created_at->greaterThanOrEqualTo($recentSince));
-
-            if (! preg_match_all('/\\b[\\pL\\pN]{4,}\\b/u', $body, $matches)) {
-                continue;
-            }
-
-            foreach ($matches[0] as $word) {
-                $w = mb_strtolower($word);
-
-                if (isset($stopwords[$w])) {
-                    continue;
-                }
-
-                $counts[$w] = ($counts[$w] ?? 0) + 1;
-                $userCounts[$w][$post->user_id] = true;
-
-                if ($isRecent) {
-                    $recentCounts[$w] = ($recentCounts[$w] ?? 0) + 1;
-                    $recentUserCounts[$w][$post->user_id] = true;
-                }
-            }
-        }
-
-        $mutedTerms = $this->activeMutedTerms($viewer);
-
-        $rows = collect($counts)->map(function (int $count, string $word) use ($recentCounts, $userCounts, $recentUserCounts) {
-            $recent = (int) ($recentCounts[$word] ?? 0);
-            $baseline = max(0, $count - $recent);
-            $users = isset($userCounts[$word]) ? count($userCounts[$word]) : 0;
-            $recentUsers = isset($recentUserCounts[$word]) ? count($recentUserCounts[$word]) : 0;
-
-            $score = ($recent * $recent) / ($baseline + 1) + ($count * 0.01) + ($recentUsers * 0.05) + ($users * 0.005);
-
-            return [
-                'keyword' => $word,
-                'count' => $count,
-                'recent_count' => $recent,
-                'users_count' => $users,
-                'recent_users_count' => $recentUsers,
-                'score' => $score,
-            ];
+            return $rows;
         });
-
-        if ($mutedTerms->isNotEmpty()) {
-            $matcher = app(MutedTermMatcher::class);
-            $rows = $rows->reject(function (array $row) use ($mutedTerms, $matcher): bool {
-                foreach ($mutedTerms as $term) {
-                    if ($matcher->matches($row['keyword'], $term)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-        }
-
-        $rows = $rows
-            ->sortByDesc(fn (array $row) => (float) ($row['score'] ?? 0))
-            ->values()
-            ->take($limit)
-            ->map(function (array $row) {
-                unset($row['score']);
-
-                return $row;
-            });
-
-        return $rows;
     }
 
     private function normalizedInterests(?User $viewer): array

@@ -48,14 +48,14 @@ class TimelinePage extends Component
 
     public function mount(): void
     {
-        $value = $this->baseQuery()->max('created_at');
+        $value = $this->baseQuery(false)->max('created_at');
         $this->latestSeenAt = $value ? (string) $value : null;
     }
 
     public function updatedFeed(): void
     {
         $this->resetPage();
-        $value = $this->baseQuery()->max('created_at');
+        $value = $this->baseQuery(false)->max('created_at');
         $this->latestSeenAt = $value ? (string) $value : null;
         $this->hasNewPosts = false;
     }
@@ -83,16 +83,20 @@ class TimelinePage extends Component
         return Auth::user()->timelineSetting('show_retweets', true);
     }
 
-    private function baseQuery()
+    private function baseQuery(bool $withRelations = true)
     {
-        $query = Post::query()
-            ->with([
-                'user',
-                'images',
-                'replyTo.user',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies']);
+        $query = Post::query();
+
+        if ($withRelations) {
+            $query
+                ->with([
+                    'user',
+                    'images',
+                    'replyTo.user',
+                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+                ])
+                ->withCount(['likes', 'reposts', 'replies']);
+        }
 
         if (! $this->showReplies()) {
             $query->whereNull('reply_to_id')->where('is_reply_like', false);
@@ -300,7 +304,7 @@ class TimelinePage extends Component
             return;
         }
 
-        $this->hasNewPosts = $this->baseQuery()
+        $this->hasNewPosts = $this->baseQuery(false)
             ->where('created_at', '>', $this->latestSeenAt)
             ->exists();
     }
@@ -308,7 +312,7 @@ class TimelinePage extends Component
     public function refreshTimeline(): void
     {
         $this->resetPage();
-        $value = $this->baseQuery()->max('created_at');
+        $value = $this->baseQuery(false)->max('created_at');
         $this->latestSeenAt = $value ? (string) $value : null;
         $this->hasNewPosts = false;
     }

@@ -31,6 +31,13 @@
 - UI/theme: Tailwind 3 + daisyUI, light theme only (`tailwind.config.js`, `<html data-theme="light">`).
 - Formatting: use Laravel Pint: `./vendor/bin/pint`.
 
+## Performance & Upgrade Notes
+
+- Prefer short-lived caching for expensive aggregate queries (trending, discovery) and keep cache keys viewer-aware.
+- Avoid eager-loading/counts when doing `exists()`/`max()` checks; use lean queries for activity probes.
+- Add indexes alongside new query patterns (especially for `reply_to_id`, `is_reply_like`, and date filtering).
+- Keep upgrade work scoped; document any cache/migration impacts in PR notes.
+
 ## Testing Guidelines
 
 - Framework: PHPUnit via `php artisan test`.
