@@ -8,12 +8,10 @@ use Filament\Schemas\Schema;
 
 class SettingsPage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?string $slug = 'settings';
     protected static ?string $title = 'Settings';
     protected static ?int $navigationSort = 70;
-
-    protected static string $view = 'filament-panels::pages.page';
 
     protected static string | array $routeMiddleware = ['auth'];
 

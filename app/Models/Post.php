@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Searchable;
 
 class Post extends Model
 {
     use HasFactory;
+    use Searchable;
 
     public const REPLY_EVERYONE = 'everyone';
     public const REPLY_FOLLOWING = 'following';
@@ -169,5 +171,25 @@ class Post extends Model
     public function reports(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Report::class, 'reportable');
+    }
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing(['user', 'hashtags']);
+
+        return [
+            'id' => $this->id,
+            'content' => $this->body,
+            'user_name' => $this->user?->name,
+            'user_username' => $this->user?->username,
+            'hashtags' => $this->hashtags->pluck('tag')->all(),
+            'created_at' => $this->created_at?->timestamp,
+            'likes_count' => $this->likes_count ?? $this->likes()->count(),
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'posts_index';
     }
 }

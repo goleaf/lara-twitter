@@ -8,12 +8,10 @@ use Filament\Schemas\Schema;
 
 class SearchPage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-magnifying-glass';
     protected static ?string $slug = 'search';
     protected static ?string $title = 'Search';
     protected static ?int $navigationSort = 20;
-
-    protected static string $view = 'filament-panels::pages.page';
 
     public function content(Schema $schema): Schema
     {

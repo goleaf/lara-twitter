@@ -30,12 +30,10 @@ class HomePage extends Page implements HasTable
 {
     use \Filament\Tables\Concerns\InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
     protected static ?string $slug = 'home';
     protected static ?string $title = 'Home';
     protected static ?int $navigationSort = 0;
-
-    protected static string $view = 'filament-panels::pages.page';
 
     /**
      * @var array<string, mixed>

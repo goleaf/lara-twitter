@@ -8,12 +8,10 @@ use Filament\Schemas\Schema;
 
 class BookmarksPage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-bookmark';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bookmark';
     protected static ?string $slug = 'bookmarks';
     protected static ?string $title = 'Bookmarks';
     protected static ?int $navigationSort = 50;
-
-    protected static string $view = 'filament-panels::pages.page';
 
     protected static string | array $routeMiddleware = ['auth'];
 
