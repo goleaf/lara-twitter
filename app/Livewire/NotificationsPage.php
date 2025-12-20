@@ -22,7 +22,7 @@ class NotificationsPage extends Component
     public function mount(): void
     {
         abort_unless(Auth::check(), 403);
-        $this->tab = $this->normalizedTab();
+        $this->tab = $this->currentTab();
     }
 
     public function open(string $notificationId): void
@@ -80,6 +80,13 @@ class NotificationsPage extends Component
         return in_array($this->tab, ['all', 'verified'], true) ? $this->tab : 'all';
     }
 
+    private function currentTab(): string
+    {
+        $tab = request()->query('tab', $this->tab);
+
+        return in_array($tab, ['all', 'verified'], true) ? $tab : 'all';
+    }
+
     private function actorUserId(array $data): ?int
     {
         $id = Arr::get($data, 'actor_user_id');
@@ -97,7 +104,7 @@ class NotificationsPage extends Component
 
         $items = app(NotificationVisibilityService::class)->filter(Auth::user(), $items);
 
-        if ($this->normalizedTab() === 'verified') {
+        if ($this->currentTab() === 'verified') {
             $items = $this->applyVerifiedFilter($items);
         }
 

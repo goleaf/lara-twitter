@@ -46,8 +46,12 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('reports', 18);
     }
 
-    protected function beforeRefreshingDatabase(): void
+    protected function beforeRefreshingDatabase()
     {
+        RefreshDatabaseState::$migrated = false;
+        RefreshDatabaseState::$lazilyRefreshed = false;
+        RefreshDatabaseState::$inMemoryConnections = [];
+
         config([
             'seeding.model_count' => 3,
             'seeding.relation_count' => 3,

@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationsPage extends Page implements HasTable
@@ -138,11 +139,53 @@ class NotificationsPage extends Page implements HasTable
 
         $items = app(NotificationVisibilityService::class)->filter(Auth::user(), $items);
 
+        if ($this->currentTab() === 'verified') {
+            $items = $this->applyVerifiedFilter($items);
+        }
+
         $ids = $items->pluck('id')->all();
 
         return DatabaseNotification::query()
             ->whereIn('id', $ids ?: [-1])
             ->orderByRaw('case id ' . $this->orderCaseSql($ids) . ' end');
+    }
+
+    private function currentTab(): string
+    {
+        $tab = request()->query('tab', 'all');
+
+        return in_array($tab, ['all', 'verified'], true) ? $tab : 'all';
+    }
+
+    private function applyVerifiedFilter(Collection $items): Collection
+    {
+        $actorIds = $items
+            ->map(fn ($n) => $this->actorUserId($n->data ?? []))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $verifiedIds = User::query()
+            ->whereIn('id', $actorIds ?: [-1])
+            ->where('is_verified', true)
+            ->pluck('id')
+            ->all();
+
+        return $items
+            ->filter(function ($n) use ($verifiedIds) {
+                $id = $this->actorUserId($n->data ?? []);
+
+                return $id && in_array($id, $verifiedIds, true);
+            })
+            ->values();
+    }
+
+    private function actorUserId(array $data): ?int
+    {
+        $id = Arr::get($data, 'actor_user_id');
+
+        return is_numeric($id) ? (int) $id : null;
     }
 
     private function orderCaseSql(array $ids): string
