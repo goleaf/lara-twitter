@@ -234,16 +234,17 @@
         </div>
 
         <div class="space-y-4">
-                    <div class="card bg-base-100 border">
-                    <div class="card-body">
-                        <div class="font-semibold">Discover people</div>
-                        <div class="space-y-2 pt-2">
-                            @forelse ($this->recommendedUsers as $u)
-                                <x-list-row>
-                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-                                        <div class="avatar shrink-0">
-                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                @if ($u->avatar_url)
+            <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Discover people</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->recommendedUsers as $u)
+                            @php($isFollowing = $this->isFollowing($u->id))
+                            <x-list-row>
+                                <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                                    <div class="avatar shrink-0">
+                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                            @if ($u->avatar_url)
                                                 <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                             @else
                                                 <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -271,26 +272,26 @@
                                             <div class="text-xs opacity-60 truncate">
                                                 {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
                                             </div>
-                                            @endif
-                                        </div>
-                                    </a>
+                                        @endif
+                                    </div>
+                                </a>
 
                                 @auth
                                     <button
                                         type="button"
-                                        class="btn btn-xs {{ $this->isFollowing($u->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        class="btn btn-xs {{ $isFollowing ? 'btn-outline' : 'btn-primary' }}"
                                         wire:click="toggleFollow({{ $u->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="toggleFollow({{ $u->id }})"
                                     >
-                                        {{ $this->isFollowing($u->id) ? 'Following' : 'Follow' }}
+                                        {{ $isFollowing ? 'Following' : 'Follow' }}
                                     </button>
-                                    @endauth
-                                </x-list-row>
-                            @empty
-                                <x-empty-state>
-                                    No recommendations yet.
-                                </x-empty-state>
+                                @endauth
+                            </x-list-row>
+                        @empty
+                            <x-empty-state>
+                                No recommendations yet.
+                            </x-empty-state>
                         @endforelse
                     </div>
                 </div>

@@ -12,7 +12,9 @@ class Bookmark extends Model
 
     public $incrementing = false;
 
-    protected $primaryKey = null;
+    protected $primaryKey = 'post_id';
+
+    protected $keyType = 'int';
 
     protected $fillable = [
         'user_id',
@@ -29,4 +31,3 @@ class Bookmark extends Model
         return $this->belongsTo(Post::class);
     }
 }
-

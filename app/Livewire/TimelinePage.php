@@ -11,6 +11,7 @@ use App\Services\TrendingService;
 use App\Support\SqlHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -172,7 +173,8 @@ class TimelinePage extends Component
         }
     }
 
-    public function getPostsProperty()
+    #[Computed]
+    public function posts()
     {
         $query = $this->baseQuery();
 
@@ -204,7 +206,8 @@ class TimelinePage extends Component
             ->paginate(15);
     }
 
-    public function getLiveSpacesProperty()
+    #[Computed]
+    public function liveSpaces()
     {
         if (! Auth::check()) {
             return collect();
@@ -225,7 +228,8 @@ class TimelinePage extends Component
             ->get();
     }
 
-    public function getRecommendedUsersProperty()
+    #[Computed]
+    public function recommendedUsers()
     {
         if (! Auth::check()) {
             return collect();
@@ -247,7 +251,8 @@ class TimelinePage extends Component
         $this->dispatch('$refresh');
     }
 
-    public function getUpcomingSpacesProperty()
+    #[Computed]
+    public function upcomingSpaces()
     {
         if (! Auth::check()) {
             return collect();
@@ -281,12 +286,14 @@ class TimelinePage extends Component
         return $value === '' ? null : mb_substr($value, 0, 60);
     }
 
-    public function getTrendingHashtagsProperty()
+    #[Computed]
+    public function trendingHashtags()
     {
         return app(TrendingService::class)->trendingHashtags(Auth::user(), 8, $this->normalizedViewerLocation());
     }
 
-    public function getTrendingKeywordsProperty()
+    #[Computed]
+    public function trendingKeywords()
     {
         return app(TrendingService::class)->trendingKeywords(Auth::user(), 8, $this->normalizedViewerLocation());
     }

@@ -12,6 +12,7 @@ use App\Models\Message;
 use App\Models\User;
 use App\Notifications\MessageReceived;
 use App\Services\DirectMessageService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -428,7 +429,9 @@ class ConversationPage extends Component
 
         // Enforce DM privacy settings for other participants. Existing conversations are allowed
         // unless the recipient has set DM policy to "none".
-        $others = User::query()->whereIn('id', $otherIds)->get()->keyBy('id');
+        $others = empty($otherIds)
+            ? collect()
+            : User::query()->whereIn('id', $otherIds)->get();
         foreach ($others as $other) {
             if ($other->dm_policy === User::DM_NONE) {
                 abort(403);
@@ -453,7 +456,11 @@ class ConversationPage extends Component
         ]);
 
         foreach ($validated['attachments'] as $index => $file) {
-            $path = $file->storePublicly("messages/{$this->conversation->id}/{$message->id}", ['disk' => 'public']);
+            $path = $this->storeAttachment($file, "messages/{$this->conversation->id}/{$message->id}", 'public');
+
+            if (! $path) {
+                continue;
+            }
 
             $message->attachments()->create([
                 'path' => $path,
@@ -467,9 +474,7 @@ class ConversationPage extends Component
 
         $this->conversation->touch();
 
-        $recipients = User::query()
-            ->whereIn('id', $otherIds)
-            ->get()
+        $recipients = $others
             ->filter(fn (User $u) => ! $u->isBlockedEitherWay(Auth::user()));
 
         foreach ($recipients as $recipient) {
@@ -513,5 +518,37 @@ class ConversationPage extends Component
         $this->conversation->loadMissing(['participants.user']);
 
         return view('livewire.conversation-page')->layout('layouts.app');
+    }
+
+    private function storeAttachment(UploadedFile $file, string $directory, string $disk): ?string
+    {
+        $path = $file->storePublicly($directory, ['disk' => $disk]);
+
+        if ($path && Storage::disk($disk)->exists($path)) {
+            return $path;
+        }
+
+        $fallbackPath = trim($directory, '/').'/'.$file->hashName();
+
+        if (method_exists($file, 'readStream')) {
+            $stream = $file->readStream();
+
+            if (is_resource($stream)) {
+                Storage::disk($disk)->put($fallbackPath, $stream, ['visibility' => 'public']);
+                fclose($stream);
+
+                return $fallbackPath;
+            }
+        }
+
+        $contents = @file_get_contents($file->getPathname());
+
+        if ($contents === false) {
+            return null;
+        }
+
+        Storage::disk($disk)->put($fallbackPath, $contents, ['visibility' => 'public']);
+
+        return $fallbackPath;
     }
 }

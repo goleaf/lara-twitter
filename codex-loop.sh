@@ -32,7 +32,7 @@ EOF
 CODEX_BIN="${CODEX_BIN:-codex}"
 MODEL_NAME="${MODEL_NAME:-gpt-5.2-codex}"
 REASONING_EFFORT="${REASONING_EFFORT:-xhigh}"
-PROMPT_TEXT="${PROMPT_TEXT:-Large multi-part request (analyze, fix errors, optimize, design, run tests). Planning to scope and sequence work.}"
+PROMPT_TEXT="${PROMPT_TEXT:-Large multi-part request (analyze, fix errors, optimize, design, run tests). Planning to scope and sequence work. do not ask any questions, make all works automatically}"
 SANDBOX_MODE="${SANDBOX_MODE:-danger-full-access}"
 TEXT_VERBOSITY="${TEXT_VERBOSITY:-medium}"
 POST_RUN_SCRIPT="${POST_RUN_SCRIPT:-}"

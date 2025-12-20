@@ -31,29 +31,29 @@
                             loading="lazy"
                         />
                     @else
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-base-200 text-sm font-semibold text-base-content/70">
                             {{ mb_substr($user->name ?? $user->username ?? '?', 0, 1) }}
                         </div>
                     @endif
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2 text-sm">
-                        <a href="{{ route('profile.show', ['user' => $user->username]) }}" class="font-semibold hover:underline">
+                    <div class="flex flex-wrap items-center gap-2 text-sm text-base-content/70">
+                        <a href="{{ route('profile.show', ['user' => $user->username]) }}" class="font-semibold text-base-content hover:underline">
                             {{ $user->name }}
                         </a>
 
-                        <span class="text-gray-500">
+                        <span class="text-base-content/60">
                             @{{ $user->username }}
                         </span>
 
-                        <span class="text-gray-400">·</span>
+                        <span class="text-base-content/40">·</span>
 
-                        <a href="{{ route('posts.show', $displayPost) }}" class="text-gray-500 hover:underline">
+                        <a href="{{ route('posts.show', $displayPost) }}" class="text-base-content/60 hover:underline">
                             {{ $displayPost->created_at?->diffForHumans() }}
                         </a>
 
-                        <span class="text-gray-400">·</span>
+                        <span class="text-base-content/40">·</span>
 
                         <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5 text-xs text-base-content/70">
                             <x-filament::icon icon="heroicon-o-bookmark" class="h-3 w-3" />
@@ -62,13 +62,13 @@
                     </div>
 
                     @if ($repostedBy)
-                        <div class="mt-1 text-xs text-gray-500">
+                        <div class="mt-1 text-xs text-base-content/60">
                             Reposted by &#64;{{ $repostedBy->username }}
                         </div>
                     @endif
 
                     @if ($replyToUser)
-                        <div class="mt-1 text-sm text-gray-600">
+                        <div class="mt-1 text-sm text-base-content/60">
                             Replying to &#64;{{ $replyToUser->username }}
                         </div>
                     @endif
@@ -94,7 +94,7 @@
         @else
             <div>
                 <div class="font-semibold">This post is no longer available</div>
-                <div class="mt-1 text-sm text-gray-600">
+                <div class="mt-1 text-sm text-base-content/60">
                     Bookmarked {{ $bookmark->created_at?->diffForHumans() }}
                 </div>
             </div>

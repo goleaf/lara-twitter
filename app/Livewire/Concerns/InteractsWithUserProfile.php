@@ -7,6 +7,7 @@ use App\Models\Mute;
 use App\Models\UserList;
 use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 
 trait InteractsWithUserProfile
 {
@@ -89,7 +90,8 @@ trait InteractsWithUserProfile
         $this->user->loadCount(['followers', 'following']);
     }
 
-    public function getIsFollowingProperty(): bool
+    #[Computed]
+    public function isFollowing(): bool
     {
         if (! Auth::check() || Auth::id() === $this->user->id) {
             return false;
@@ -105,7 +107,8 @@ trait InteractsWithUserProfile
             ->exists();
     }
 
-    public function getIsMutedProperty(): bool
+    #[Computed]
+    public function isMuted(): bool
     {
         if (! Auth::check() || Auth::id() === $this->user->id) {
             return false;
@@ -118,7 +121,8 @@ trait InteractsWithUserProfile
         return Auth::user()->hasMuted($this->user);
     }
 
-    public function getHasBlockedProperty(): bool
+    #[Computed]
+    public function hasBlocked(): bool
     {
         if (! Auth::check() || Auth::id() === $this->user->id) {
             return false;
@@ -127,7 +131,8 @@ trait InteractsWithUserProfile
         return Auth::user()->hasBlocked($this->user);
     }
 
-    public function getListsCountProperty(): int
+    #[Computed]
+    public function listsCount(): int
     {
         return UserList::query()
             ->where('is_private', false)

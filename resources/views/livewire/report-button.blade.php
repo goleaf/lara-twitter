@@ -2,19 +2,19 @@
     <button
         type="button"
         wire:click="openModal"
-        class="{{ $buttonClass }}"
+        class="{{ $this->buttonClass }}"
         wire:loading.attr="disabled"
         wire:target="openModal"
         @disabled(!auth()->check())
     >
-        {{ $label }}
+        {{ $this->label }}
     </button>
 
-    @if ($showNotice && $submittedCaseNumber)
+    @if ($this->showNotice && $this->submittedCaseNumber)
         <x-callout type="success" class="mt-2" role="status">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                    Report submitted (case <span class="font-mono">{{ $submittedCaseNumber }}</span>)
+                    Report submitted (case <span class="font-mono">{{ $this->submittedCaseNumber }}</span>)
                 </div>
                 <div class="flex items-center gap-1">
                     <a class="btn btn-ghost btn-xs" href="{{ route('reports.index') }}" wire:navigate>View</a>
@@ -32,7 +32,7 @@
         </x-callout>
     @endif
 
-    <dialog class="modal" @if($open) open @endif wire:keydown.escape.prevent="closeModal">
+    <dialog class="modal" @if($this->open) open @endif wire:keydown.escape.prevent="closeModal">
         <div class="modal-box card bg-base-100 p-0">
             <div class="p-4">
                 <div class="flex items-start justify-between gap-3">
@@ -73,7 +73,7 @@
                     </div>
 
                     <div>
-                        @php($detailsRequired = in_array($reason, \App\Models\Report::reasonsRequiringDetails(), true))
+                        @php($detailsRequired = in_array($this->reason, \App\Models\Report::reasonsRequiringDetails(), true))
                         <label class="label">
                             <span class="label-text">Details {{ $detailsRequired ? '(required)' : '(optional)' }}</span>
                         </label>

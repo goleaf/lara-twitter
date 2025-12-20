@@ -4,6 +4,7 @@ namespace App\Filament\Pages\App;
 
 use App\Models\User;
 use App\Services\NotificationVisibilityService;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Pages\Page;
@@ -228,9 +229,19 @@ class NotificationsPage extends Page implements HasTable
         return null;
     }
 
-    public static function actorUsername(DatabaseNotification $notification): string
+    public static function actorUsername(DatabaseNotification | array | Closure | null $notification): string
     {
-        $data = $notification->data ?? [];
+        if ($notification instanceof Closure) {
+            $notification = $notification();
+        }
+
+        if ($notification instanceof DatabaseNotification) {
+            $data = $notification->data ?? [];
+        } elseif (is_array($notification)) {
+            $data = $notification;
+        } else {
+            $data = [];
+        }
 
         return (string) ($data['actor_username']
             ?? $data['follower_username']

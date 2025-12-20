@@ -9,6 +9,7 @@ use App\Support\SqlHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class TrendingService
 {
@@ -35,6 +36,10 @@ class TrendingService
         $key = $this->trendingCacheKey('hashtags', $viewer, $limit, $location);
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
+            if (! Schema::hasTable('hashtags') || ! Schema::hasTable('hashtag_post') || ! Schema::hasTable('posts')) {
+                return collect();
+            }
+
             $since = now()->subDay();
             $recentSince = $this->recentWindowStart();
 

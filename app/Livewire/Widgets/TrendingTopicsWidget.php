@@ -4,17 +4,20 @@ namespace App\Livewire\Widgets;
 
 use App\Services\TrendingService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class TrendingTopicsWidget extends Component
 {
-    public function getTrendingHashtagsProperty()
+    #[Computed]
+    public function trendingHashtags()
     {
         return app(TrendingService::class)
             ->trendingHashtags(Auth::user(), 6, $this->normalizedViewerLocation());
     }
 
-    public function getTrendingKeywordsProperty()
+    #[Computed]
+    public function trendingKeywords()
     {
         return app(TrendingService::class)
             ->trendingKeywords(Auth::user(), 6, $this->normalizedViewerLocation());

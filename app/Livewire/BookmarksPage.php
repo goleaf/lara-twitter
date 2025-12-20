@@ -57,12 +57,45 @@ class BookmarksPage extends Component
 
         return $query
             ->with([
-                'post' => fn ($q) => $q->with([
-                    'user',
-                    'images',
-                    'replyTo.user',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-                ])->withCount(['likes', 'reposts', 'replies']),
+                'post' => fn ($q) => $q
+                    ->select([
+                        'id',
+                        'user_id',
+                        'body',
+                        'reply_to_id',
+                        'repost_of_id',
+                        'created_at',
+                        'location',
+                        'video_path',
+                        'video_mime_type',
+                        'is_reply_like',
+                    ])
+                    ->with([
+                        'user:id,name,username,avatar_path,is_verified',
+                        'images:id,post_id,path,sort_order',
+                        'replyTo:id,user_id',
+                        'replyTo.user:id,username',
+                        'repostOf' => fn ($q) => $q
+                            ->select([
+                                'id',
+                                'user_id',
+                                'body',
+                                'reply_to_id',
+                                'created_at',
+                                'location',
+                                'video_path',
+                                'video_mime_type',
+                                'is_reply_like',
+                            ])
+                            ->with([
+                                'user:id,name,username,avatar_path,is_verified',
+                                'images:id,post_id,path,sort_order',
+                                'replyTo:id,user_id',
+                                'replyTo.user:id,username',
+                            ])
+                            ->withCount(['likes', 'reposts', 'replies']),
+                    ])
+                    ->withCount(['likes', 'reposts', 'replies']),
             ])
             ->paginate(15);
     }
