@@ -12,7 +12,14 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script>
+            window.AppConfig = @json([
+                'userId' => auth()->check() ? auth()->id() : null,
+            ]);
+        </script>
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body class="font-sans antialiased bg-gradient-to-b from-base-200 via-base-200 to-base-300/40 text-base-content">
         @php($unreadNotificationsCount = auth()->check() ? app(\App\Services\NotificationVisibilityService::class)->visibleUnreadCount(auth()->user()) : 0)
@@ -41,26 +48,9 @@
                                 <span class="truncate">MiniTwitter</span>
                             </a>
 
-                            <form
-                                action="{{ route('search') }}"
-                                method="GET"
-                                class="hidden lg:flex flex-1 max-w-md"
-                                data-livewire-navigate-search
-                            >
-                                <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70">
-                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
-                                    </svg>
-                                    <input
-                                        type="search"
-                                        name="q"
-                                        class="grow"
-                                        placeholder="Search"
-                                        value="{{ request('q') }}"
-                                        aria-label="Search"
-                                    />
-                                </label>
-                            </form>
+                            <div class="hidden lg:flex flex-1 max-w-md">
+                                <livewire:search.global-search />
+                            </div>
                         </div>
 
                         <div class="flex-none gap-1">
@@ -496,5 +486,7 @@
                 </a>
             @endauth
         </div>
+
+        @livewireScripts
     </body>
 </html>

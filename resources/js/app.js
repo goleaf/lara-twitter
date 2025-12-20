@@ -153,16 +153,18 @@ function setupEcho() {
         });
     }
 
-    echo.join('online')
-        .here((users) => {
-            window.dispatchEvent(new CustomEvent('presence-online', { detail: { users } }));
-        })
-        .joining((user) => {
-            window.dispatchEvent(new CustomEvent('presence-joining', { detail: { user } }));
-        })
-        .leaving((user) => {
-            window.dispatchEvent(new CustomEvent('presence-leaving', { detail: { user } }));
-        });
+    if (userId) {
+        echo.join('online')
+            .here((users) => {
+                window.dispatchEvent(new CustomEvent('presence-online', { detail: { users } }));
+            })
+            .joining((user) => {
+                window.dispatchEvent(new CustomEvent('presence-joining', { detail: { user } }));
+            })
+            .leaving((user) => {
+                window.dispatchEvent(new CustomEvent('presence-leaving', { detail: { user } }));
+            });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', setupEcho);
