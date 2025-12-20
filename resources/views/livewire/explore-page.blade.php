@@ -11,7 +11,7 @@
                     <p class="text-sm opacity-70">Track the pulse, discover new voices, and dive into curated moments.</p>
                 </div>
 
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 explore-spotlight">
                     @if ($topHashtag)
                         <a class="explore-pill" href="{{ route('hashtags.show', ['tag' => $topHashtag->tag]) }}" wire:navigate>
                             <svg class="h-4 w-4 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -37,16 +37,16 @@
 
             <form wire:submit="search">
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <div class="relative flex-1">
+                    <div class="relative flex-1 explore-search">
                         <svg class="w-4 h-4 text-base-content/60 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.85-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
                             type="text"
-                            class="input input-bordered w-full pl-10"
+                            class="input input-bordered w-full pl-10 explore-search-input"
                             placeholder="Search posts, people, hashtags"
                             aria-label="Search posts, people, hashtags"
-                            wire:model="q"
+                            wire:model.debounce.300ms="q"
                         />
                     </div>
                     <button

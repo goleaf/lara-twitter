@@ -41,7 +41,7 @@
             </div>
 
             <div class="flex flex-col gap-3">
-                <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70">
+                <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70 search-input">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
                     </svg>
@@ -69,7 +69,7 @@
                     </select>
                 </div>
 
-                <details class="collapse collapse-arrow bg-base-200/40 border border-base-200" @if ($hasAdvanced) open @endif>
+                <details class="collapse collapse-arrow bg-base-200/40 border border-base-200 search-advanced" wire:ignore.self @if ($hasAdvanced) open @endif>
                     <summary class="collapse-title text-sm font-medium">Advanced filters</summary>
                     <div class="collapse-content pt-0">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -108,12 +108,14 @@
                 </details>
 
                 @if ($activeFilters->isNotEmpty())
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-[0.6rem] uppercase tracking-[0.3em] text-base-content/50">Active</span>
-                        @foreach ($activeFilters as $filter)
-                            <span class="badge badge-ghost badge-sm" wire:key="search-filter-{{ md5($filter) }}">{{ $filter }}</span>
-                        @endforeach
-                        <a class="link link-hover text-xs" href="{{ route('search') }}" wire:navigate>Clear</a>
+                    <div class="search-filter-bar">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-[0.6rem] uppercase tracking-[0.3em] text-base-content/50">Active</span>
+                            @foreach ($activeFilters as $filter)
+                                <span class="badge badge-ghost badge-sm search-filter-pill" wire:key="search-filter-{{ md5($filter) }}">{{ $filter }}</span>
+                            @endforeach
+                            <a class="link link-hover text-xs search-filter-clear" href="{{ route('search') }}" wire:navigate>Clear</a>
+                        </div>
                     </div>
                 @endif
             </div>

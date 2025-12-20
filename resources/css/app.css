@@ -472,6 +472,62 @@
             linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(255, 252, 246, 1));
     }
 
+    .search-input {
+        @apply relative overflow-hidden border border-base-200/70 bg-base-100/85 shadow-sm transition;
+        box-shadow: 0 18px 38px -32px rgba(15, 23, 42, 0.45);
+    }
+
+    .search-input > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .search-input::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(320px 140px at 10% -10%, rgba(var(--hero-sky), 0.14), transparent 60%);
+        opacity: 0.9;
+        pointer-events: none;
+    }
+
+    .search-input::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(260px 120px at 90% 0%, rgba(var(--hero-sun), 0.18), transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .search-input:focus-within::after {
+        opacity: 1;
+    }
+
+    .search-advanced {
+        background-image:
+            radial-gradient(520px 180px at 0% 0%, rgba(var(--hero-sky), 0.08), transparent 60%),
+            radial-gradient(420px 160px at 100% 0%, rgba(var(--hero-sun), 0.06), transparent 60%);
+    }
+
+    .search-filter-bar {
+        @apply rounded-box border border-base-200/70 bg-base-100/85 px-3 py-2;
+        background-image:
+            radial-gradient(360px 160px at 90% -10%, rgba(var(--hero-sky), 0.14), transparent 60%),
+            linear-gradient(180deg, rgba(255, 252, 246, 0.9), rgba(255, 252, 246, 1));
+        box-shadow: 0 16px 35px -30px rgba(15, 23, 42, 0.4);
+    }
+
+    .search-filter-pill {
+        @apply border border-base-200/70 bg-base-100/85 shadow-sm;
+    }
+
+    .search-filter-clear {
+        @apply uppercase tracking-[0.25em];
+    }
+
     .legal-hero {
         background-image:
             radial-gradient(960px 340px at 12% -20%, rgba(var(--hero-sky), 0.18), transparent 60%),
@@ -517,6 +573,40 @@
 
     .explore-pill:focus-visible {
         @apply outline-none ring-2 ring-primary/20;
+    }
+
+    .explore-spotlight {
+        @apply rounded-box border border-base-200/70 bg-base-100/85 px-2 py-2;
+        background-image:
+            radial-gradient(260px 120px at 10% 0%, rgba(var(--hero-sky), 0.12), transparent 60%),
+            radial-gradient(240px 120px at 90% 0%, rgba(var(--hero-sun), 0.1), transparent 65%),
+            linear-gradient(180deg, rgba(255, 252, 246, 0.85), rgba(255, 252, 246, 1));
+        box-shadow: 0 16px 35px -30px rgba(15, 23, 42, 0.4);
+    }
+
+    .explore-search::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 0.75rem;
+        background: radial-gradient(240px 140px at 90% 0%, rgba(var(--hero-sky), 0.14), transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .explore-search > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .explore-search:focus-within::after {
+        opacity: 1;
+    }
+
+    .explore-search-input {
+        background-image:
+            radial-gradient(320px 140px at 0% -20%, rgba(var(--hero-sky), 0.08), transparent 60%);
     }
 
     .explore-stat {
