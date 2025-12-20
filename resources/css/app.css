@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
     html {
@@ -7,17 +9,51 @@
     }
 
     body {
-        @apply text-base-content antialiased;
+        @apply antialiased;
+        color: var(--color-base-content);
         text-rendering: optimizeLegibility;
     }
 
-    :root {
+    :root,
+    html[data-theme='light'] {
         --hero-sky: 14 165 233;
         --hero-sun: 249 115 22;
         --hero-ink: 15 23 42;
         --hero-paper: 253 251 247;
         --surface-glow: 255 252 248;
         --shadow-ink: 15 23 42;
+        --color-primary: #0ea5e9;
+        --color-primary-content: #ffffff;
+        --color-secondary: #0f172a;
+        --color-secondary-content: #ffffff;
+        --color-accent: #f97316;
+        --color-accent-content: #1f2937;
+        --color-neutral: #475569;
+        --color-neutral-content: #ffffff;
+        --color-base-100: #fdfbf7;
+        --color-base-200: #f6f1e8;
+        --color-base-300: #e7ded3;
+        --color-base-content: #0f172a;
+        --color-info: #38bdf8;
+        --color-info-content: #0f172a;
+        --color-success: #22c55e;
+        --color-success-content: #ffffff;
+        --color-warning: #f59e0b;
+        --color-warning-content: #0f172a;
+        --color-error: #ef4444;
+        --color-error-content: #ffffff;
+        --radius-box: 1rem;
+        --radius-field: 0.85rem;
+        --radius-selector: 1rem;
+        --size-field: 0.25rem;
+        --size-selector: 0.25rem;
+        --border: 1px;
+        --depth: 0;
+        --noise: 0;
+        --btn-text-case: none;
+        --btn-focus-scale: 0.98;
+        --animation-btn: 0.15s;
+        --animation-input: 0.15s;
     }
 
     h1,
@@ -99,7 +135,8 @@
     }
 
     .topbar-kicker {
-        @apply text-[0.6rem] uppercase tracking-[0.35em] text-base-content/60;
+        @apply text-[0.6rem] uppercase tracking-[0.35em];
+        color: rgb(var(--hero-ink) / 0.6);
     }
 
     .widget-card {
@@ -134,7 +171,8 @@
     }
 
     .widget-kicker {
-        @apply text-[0.6rem] uppercase tracking-[0.35em] text-base-content/60;
+        @apply text-[0.6rem] uppercase tracking-[0.35em];
+        color: rgb(var(--hero-ink) / 0.6);
     }
 
     .widget-title {
@@ -204,7 +242,8 @@
     }
 
     .prose {
-        @apply text-sm leading-relaxed text-base-content;
+        @apply text-sm leading-relaxed;
+        color: var(--color-base-content);
     }
 
     .prose a {
@@ -419,7 +458,8 @@
     }
 
     .guest-hero-chip {
-        @apply inline-flex items-center rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-content/70 shadow-sm;
+        @apply inline-flex items-center rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] shadow-sm;
+        color: rgb(var(--hero-ink) / 0.7);
     }
 
     .guest-hero-tile {
@@ -465,16 +505,18 @@
     }
 
     .timeline-pill {
-        @apply inline-flex items-center gap-2 rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] text-base-content/70 shadow-sm transition;
+        @apply inline-flex items-center gap-2 rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] shadow-sm transition;
         box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.5);
         transform: translateY(0);
         will-change: transform;
+        color: rgb(var(--hero-ink) / 0.7);
     }
 
     .timeline-pill:hover {
-        @apply border-base-300 bg-base-100 text-base-content;
+        @apply border-base-300 bg-base-100;
         transform: translateY(-1px);
         box-shadow: 0 18px 34px -26px rgba(15, 23, 42, 0.55);
+        color: var(--color-base-content);
     }
 
     .timeline-pill:focus-visible {

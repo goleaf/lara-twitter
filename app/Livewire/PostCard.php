@@ -340,9 +340,9 @@ class PostCard extends Component
 
         abort_if($poll->ends_at->isPast(), 403);
 
-        $allowedPostIds = [$this->primaryPost()->id];
-        if ($this->post->repostOf) {
-            $allowedPostIds[] = $this->post->repostOf->id;
+        $allowedPostIds = [$this->primaryId];
+        if ($this->post->repost_of_id) {
+            $allowedPostIds[] = (int) $this->post->repost_of_id;
         }
 
         abort_unless(in_array((int) $poll->post_id, array_unique($allowedPostIds), true), 403);

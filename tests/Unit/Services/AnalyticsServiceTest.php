@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use App\Models\User;
 use App\Services\AnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Session;
 use Mockery;
 use Tests\TestCase;
 
@@ -14,30 +15,22 @@ class AnalyticsServiceTest extends TestCase
 
     public function test_record_unique_skips_when_viewer_key_missing(): void
     {
-        $originalSession = app('session');
-        $session = Mockery::mock();
-        $session->shouldReceive('getId')->andReturn(null);
-        $this->app->instance('session', $session);
+        $this->mockSessionId(null);
 
         $service = new AnalyticsService();
         $service->recordUnique('profile_view', 10);
 
         $this->assertDatabaseCount('analytics_uniques', 0);
-
-        $this->app->instance('session', $originalSession);
     }
 
     public function test_record_unique_uses_guest_session_key(): void
     {
-        $originalSession = app('session');
-        $session = Mockery::mock();
-        $session->shouldReceive('getId')->andReturn('guest-session');
-        $this->app->instance('session', $session);
+        $this->mockSessionId('guest-session-id');
 
         $service = new AnalyticsService();
         $service->recordUnique('profile_view', 42);
 
-        $expectedKey = 'guest:'.substr(hash('sha256', 'guest-session'), 0, 32);
+        $expectedKey = 'guest:'.substr(hash('sha256', 'guest-session-id'), 0, 32);
 
         $this->assertDatabaseHas('analytics_uniques', [
             'type' => 'profile_view',
@@ -45,8 +38,6 @@ class AnalyticsServiceTest extends TestCase
             'day' => now()->toDateString(),
             'viewer_key' => $expectedKey,
         ]);
-
-        $this->app->instance('session', $originalSession);
     }
 
     public function test_record_unique_uses_authenticated_user_key(): void
@@ -63,5 +54,15 @@ class AnalyticsServiceTest extends TestCase
             'day' => now()->toDateString(),
             'viewer_key' => 'user:'.$user->id,
         ]);
+    }
+
+    private function mockSessionId(?string $sessionId): void
+    {
+        $sessionManager = $this->app->make('session');
+        $mock = Mockery::mock($sessionManager)->makePartial();
+        $mock->shouldReceive('getId')->andReturn($sessionId);
+
+        $this->app->instance('session', $mock);
+        Session::swap($mock);
     }
 }

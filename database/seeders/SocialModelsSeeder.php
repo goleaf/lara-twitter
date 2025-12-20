@@ -106,18 +106,45 @@ class SocialModelsSeeder extends Seeder
             return collect();
         }
 
-        $admin = User::factory()->create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'is_admin' => true,
-            'bio' => 'Admin account (Filament access).',
-        ]);
+        $admin = $this->seedAdminUser();
 
         $users = User::factory(max($modelCount - 1, 0))->create();
 
         return $users->prepend($admin);
+    }
+
+    private function seedAdminUser(): User
+    {
+        $email = 'admin@admin.com';
+        $baseUsername = 'admin';
+
+        $user = User::query()->where('email', $email)->first();
+
+        if (! $user) {
+            $candidate = $baseUsername;
+            $suffix = 1;
+
+            while (User::query()->where('username', $candidate)->exists()) {
+                $suffix++;
+                $candidate = $baseUsername . $suffix;
+            }
+
+            return User::factory()->create([
+                'name' => 'Admin',
+                'username' => $candidate,
+                'email' => $email,
+                'password' => Hash::make('admin'),
+                'is_admin' => true,
+                'bio' => 'Admin account (Filament access).',
+            ]);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make('admin'),
+            'is_admin' => true,
+        ])->save();
+
+        return $user;
     }
 
     private function seedHashtags(int $modelCount): Collection

@@ -80,12 +80,11 @@ class PageTitleTest extends TestCase
     {
         $route = new Route(['GET'], '/', fn () => null);
         $route->name($name);
+        $request = Request::create('/');
+        $route->bind($request);
         foreach ($params as $key => $value) {
             $route->setParameter($key, $value);
         }
-
-        $request = Request::create('/');
-        $route->bind($request);
         $request->setRouteResolver(fn () => $route);
 
         $original = app('request');

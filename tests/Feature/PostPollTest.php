@@ -7,6 +7,7 @@ use App\Livewire\PostComposer;
 use App\Models\Post;
 use App\Models\PostPoll;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -83,5 +84,51 @@ class PostPollTest extends TestCase
 
         $this->assertSame(1, $poll->votes()->where('user_id', $user->id)->count());
     }
-}
 
+    public function test_vote_in_poll_for_reposted_post_does_not_lazy_load(): void
+    {
+        Model::preventLazyLoading();
+
+        try {
+            $viewer = User::factory()->create();
+            $author = User::factory()->create();
+
+            $original = Post::query()->create([
+                'user_id' => $author->id,
+                'body' => 'Original post',
+            ]);
+
+            $poll = PostPoll::query()->create([
+                'post_id' => $original->id,
+                'ends_at' => now()->addDay(),
+            ]);
+
+            $option = $poll->options()->create([
+                'option_text' => 'Yes',
+                'sort_order' => 0,
+            ]);
+
+            $quote = Post::query()->create([
+                'user_id' => $author->id,
+                'repost_of_id' => $original->id,
+                'body' => 'Quote',
+            ]);
+
+            $this->actingAs($viewer);
+
+            $component = new PostCard();
+            $component->post = $quote;
+            $component->primaryId = (int) $quote->id;
+
+            $component->voteInPoll($option->id);
+
+            $this->assertDatabaseHas('post_poll_votes', [
+                'post_poll_id' => $poll->id,
+                'post_poll_option_id' => $option->id,
+                'user_id' => $viewer->id,
+            ]);
+        } finally {
+            Model::preventLazyLoading(false);
+        }
+    }
+}
