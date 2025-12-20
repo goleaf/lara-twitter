@@ -1,14 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
     html {
         @apply scroll-smooth;
+        color-scheme: light;
     }
 
     body {
-        @apply text-base-content;
+        @apply text-base-content antialiased;
+        text-rendering: optimizeLegibility;
     }
 
     :root {
@@ -16,6 +16,8 @@
         --hero-sun: 249 115 22;
         --hero-ink: 15 23 42;
         --hero-paper: 253 251 247;
+        --surface-glow: 255 252 248;
+        --shadow-ink: 15 23 42;
     }
 
     h1,
@@ -43,22 +45,35 @@
     .bg-ambient {
         @apply bg-base-100;
         background-image:
-            radial-gradient(1200px 600px at 10% -15%, rgba(14, 165, 233, 0.18), transparent 60%),
-            radial-gradient(900px 500px at 90% -10%, rgba(249, 115, 22, 0.16), transparent 55%),
-            linear-gradient(180deg, rgba(253, 251, 247, 0.9), rgba(253, 251, 247, 1)),
+            radial-gradient(1400px 620px at 12% -20%, rgba(var(--hero-sky), 0.22), transparent 62%),
+            radial-gradient(1000px 520px at 88% -15%, rgba(var(--hero-sun), 0.18), transparent 58%),
+            radial-gradient(720px 460px at 20% 120%, rgba(var(--hero-sky), 0.08), transparent 65%),
+            linear-gradient(180deg, rgba(var(--hero-paper), 0.96), rgba(253, 251, 247, 1)),
             repeating-linear-gradient(
-                120deg,
-                rgba(15, 23, 42, 0.03),
-                rgba(15, 23, 42, 0.03) 1px,
+                135deg,
+                rgba(var(--hero-ink), 0.035),
+                rgba(var(--hero-ink), 0.035) 1px,
                 transparent 1px,
-                transparent 12px
+                transparent 14px
             );
         background-attachment: fixed;
     }
 
+    .skip-link {
+        @apply fixed left-4 top-4 z-[70] -translate-y-16 rounded-full border border-base-200/80 bg-base-100/90 px-4 py-2 text-sm font-semibold shadow-lg backdrop-blur transition;
+    }
+
+    .skip-link:focus-visible {
+        @apply translate-y-0 ring-2 ring-primary/20;
+    }
+
+    .app-shell {
+        @apply relative mx-auto max-w-[1320px] lg:gap-6 lg:px-4;
+    }
+
     .card {
         @apply border border-base-200/80 shadow-sm;
-        box-shadow: 0 20px 45px -35px rgba(15, 23, 42, 0.45);
+        box-shadow: 0 24px 52px -40px rgba(var(--shadow-ink), 0.5);
     }
 
     .topbar-shell {
@@ -75,11 +90,11 @@
         border-radius: 999px;
         background-image: linear-gradient(
             90deg,
-            rgba(var(--hero-sky), 0.65),
-            rgba(var(--hero-sun), 0.55),
-            rgba(var(--hero-sky), 0.4)
+            rgba(var(--hero-sky), 0.7),
+            rgba(var(--hero-sun), 0.6),
+            rgba(var(--hero-sky), 0.45)
         );
-        opacity: 0.6;
+        opacity: 0.7;
         pointer-events: none;
     }
 
@@ -150,8 +165,8 @@
     }
 
     .card.card-hover {
-        @apply transition hover:border-base-300 focus-within:ring-2 focus-within:ring-primary/20;
-        box-shadow: 0 22px 50px -36px rgba(15, 23, 42, 0.5);
+        @apply transition-[transform,box-shadow,border-color,background-color] duration-200 hover:border-base-300 focus-within:ring-2 focus-within:ring-primary/20;
+        box-shadow: 0 26px 58px -42px rgba(var(--shadow-ink), 0.55);
         transform: translateY(0);
         will-change: transform;
     }
@@ -173,7 +188,7 @@
     }
 
     .menu a.active {
-        @apply bg-primary/15 text-primary font-semibold;
+        @apply bg-primary/15 text-primary font-semibold shadow-sm;
     }
 
     .menu a:not(.active) {
@@ -220,23 +235,27 @@
     #navigate-progress-bar {
         background-image: linear-gradient(
             90deg,
-            rgba(14, 165, 233, 0.35),
-            rgba(249, 115, 22, 0.7),
-            rgba(14, 165, 233, 0.6)
+            rgba(var(--hero-sky), 0.35),
+            rgba(var(--hero-sun), 0.7),
+            rgba(var(--hero-sky), 0.6)
         );
-        box-shadow: 0 0 18px rgba(14, 165, 233, 0.35);
+        box-shadow: 0 0 18px rgba(var(--hero-sky), 0.35);
     }
 
     .btn-announce {
         @apply btn btn-sm w-full border-none text-primary-content shadow-md hover:shadow-lg;
         background-image: linear-gradient(
             120deg,
-            rgba(14, 165, 233, 0.95),
-            rgba(249, 115, 22, 0.95),
-            rgba(14, 165, 233, 0.95)
+            rgba(var(--hero-sky), 0.95),
+            rgba(var(--hero-sun), 0.95),
+            rgba(var(--hero-sky), 0.95)
         );
         background-size: 200% 100%;
         animation: announce-sheen 4s linear infinite;
+    }
+
+    .mobile-nav {
+        box-shadow: 0 -16px 36px -30px rgba(var(--shadow-ink), 0.5);
     }
 
     .hero-card {

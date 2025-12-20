@@ -143,6 +143,7 @@
                                         wire:click="removeMedia({{ $index }})"
                                         wire:loading.attr="disabled"
                                         wire:target="removeMedia({{ $index }})"
+                                        aria-label="Remove media"
                                     >
                                         Remove
                                     </button>

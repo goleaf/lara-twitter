@@ -28,6 +28,7 @@
         @livewireStyles
     </head>
     <body class="antialiased bg-base-100 text-base-content bg-ambient">
+        <a href="#main-content" class="skip-link">Skip to content</a>
         <div class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5">
             <div id="navigate-progress-bar" class="h-full w-0 bg-primary opacity-0 transition-[width,opacity] duration-300"></div>
         </div>
@@ -37,9 +38,9 @@
 
         <x-layouts.top-nav :title="$topbarTitle" />
 
-        <div class="min-h-screen max-w-[1280px] mx-auto lg:flex">
+        <div class="app-shell min-h-screen lg:flex">
             <div class="flex-1 min-w-0 xl:border-r xl:border-base-300">
-                <main class="min-h-screen px-4 pt-4 pb-20 lg:pb-4 space-y-4 page-reveal">
+                <main id="main-content" tabindex="-1" class="min-h-screen px-4 pt-4 pb-20 lg:pb-4 space-y-4 page-reveal focus:outline-none">
                     @if (isset($header) || $__env->hasSection('header'))
                         <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
                             <div class="card-body py-4">
@@ -68,21 +69,25 @@
                         <livewire:widgets.trending-topics-widget />
 
                         <livewire:widgets.who-to-follow-widget />
-
-                        <div class="text-xs text-base-content/60 space-y-2 px-4">
-                            <div class="flex flex-wrap gap-x-3 gap-y-1">
-                                <a href="{{ route('help.index') }}" class="hover:underline" wire:navigate>Help</a>
-                                <a href="{{ route('terms') }}" class="hover:underline" wire:navigate>Terms</a>
-                                <a href="{{ route('privacy') }}" class="hover:underline" wire:navigate>Privacy</a>
-                                <a href="{{ route('cookies') }}" class="hover:underline" wire:navigate>Cookies</a>
-                                <a href="{{ route('about') }}" class="hover:underline" wire:navigate>About</a>
-                            </div>
-                            <div>Copyright {{ date('Y') }} {{ config('app.name', 'MiniTwitter') }}</div>
-                        </div>
                     </div>
                 </div>
             @endunless
         </div>
+
+        <footer class="mt-6 border-t border-base-200">
+            <div class="max-w-[1280px] mx-auto px-4 pt-4 pb-20 lg:pb-6">
+                <div class="flex flex-col gap-2 text-xs text-base-content/60 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-wrap gap-x-3 gap-y-1">
+                        <a href="{{ route('help.index') }}" class="hover:underline" wire:navigate>Help</a>
+                        <a href="{{ route('terms') }}" class="hover:underline" wire:navigate>Terms</a>
+                        <a href="{{ route('privacy') }}" class="hover:underline" wire:navigate>Privacy</a>
+                        <a href="{{ route('cookies') }}" class="hover:underline" wire:navigate>Cookies</a>
+                        <a href="{{ route('about') }}" class="hover:underline" wire:navigate>About</a>
+                    </div>
+                    <div>Copyright 2025 Laravel</div>
+                </div>
+            </div>
+        </footer>
 
         @unless ($isTest)
             <div class="lg:hidden">

@@ -4,15 +4,21 @@
     use App\Support\PageTitle;
 
     $title = PageTitle::resolve($title);
-    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin px-1 py-1 rounded-full bg-base-200/70 border border-base-300/80 shadow-sm';
+    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin px-1 py-1 rounded-full bg-base-200/70 border border-base-300/80 shadow-sm supports-[backdrop-filter]:bg-base-200/60';
     $itemBase = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap';
-    $itemActive = 'bg-base-100 text-primary shadow-sm';
+    $itemActive = 'bg-base-100 text-primary shadow-sm ring-1 ring-primary/10';
     $itemInactive = 'text-base-content/70 hover:bg-base-100/80 hover:text-base-content';
     $iconClass = 'w-5 h-5';
+    $isTimeline = request()->routeIs('timeline');
+    $isExplore = request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending');
+    $isNotifications = request()->routeIs('notifications');
+    $isMessages = request()->routeIs('messages.*');
+    $isBookmarks = request()->routeIs('bookmarks');
+    $isProfile = request()->routeIs('profile.*');
 @endphp
 
-<div class="sticky top-0 z-40 border-b border-base-300 bg-base-100/80 backdrop-blur-xl">
-    <div class="max-w-[1280px] mx-auto px-4">
+<div class="sticky top-0 z-40 border-b border-base-300 bg-base-100/80 backdrop-blur-xl topbar-shell">
+    <div class="max-w-[1320px] mx-auto px-4">
         <div class="flex flex-wrap items-center justify-between gap-3 py-3">
             <div class="flex min-w-0 items-center gap-3">
                 <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-base-200 transition-colors" aria-label="Home">
@@ -77,11 +83,12 @@
         </div>
 
         <div class="border-t border-base-200/70 pt-3 pb-3">
-            <nav class="{{ $menuShell }} lg:flex-wrap lg:overflow-visible">
+            <nav class="{{ $menuShell }} lg:flex-wrap lg:overflow-visible" aria-label="Primary">
                 <a
                     href="{{ route('timeline') }}"
                     wire:navigate
-                    class="{{ $itemBase }} {{ request()->routeIs('timeline') ? $itemActive : $itemInactive }}"
+                    class="{{ $itemBase }} {{ $isTimeline ? $itemActive : $itemInactive }}"
+                    @if ($isTimeline) aria-current="page" @endif
                 >
                     <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -92,7 +99,8 @@
                 <a
                     href="{{ route('explore') }}"
                     wire:navigate
-                    class="{{ $itemBase }} {{ request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending') ? $itemActive : $itemInactive }}"
+                    class="{{ $itemBase }} {{ $isExplore ? $itemActive : $itemInactive }}"
+                    @if ($isExplore) aria-current="page" @endif
                 >
                     <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
@@ -104,7 +112,8 @@
                     <a
                         href="{{ route('notifications') }}"
                         wire:navigate
-                        class="{{ $itemBase }} {{ request()->routeIs('notifications') ? $itemActive : $itemInactive }} relative"
+                        class="{{ $itemBase }} {{ $isNotifications ? $itemActive : $itemInactive }} relative"
+                        @if ($isNotifications) aria-current="page" @endif
                     >
                         <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -116,7 +125,8 @@
                     <a
                         href="{{ route('messages.index') }}"
                         wire:navigate
-                        class="{{ $itemBase }} {{ request()->routeIs('messages.*') ? $itemActive : $itemInactive }}"
+                        class="{{ $itemBase }} {{ $isMessages ? $itemActive : $itemInactive }}"
+                        @if ($isMessages) aria-current="page" @endif
                     >
                         <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a8.5 8.5 0 1 1-2.5-6.01L21 8.5V12Z" />
@@ -127,7 +137,8 @@
                     <a
                         href="{{ route('bookmarks') }}"
                         wire:navigate
-                        class="{{ $itemBase }} {{ request()->routeIs('bookmarks') ? $itemActive : $itemInactive }}"
+                        class="{{ $itemBase }} {{ $isBookmarks ? $itemActive : $itemInactive }}"
+                        @if ($isBookmarks) aria-current="page" @endif
                     >
                         <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16Z" />
@@ -138,7 +149,8 @@
                     <a
                         href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
                         wire:navigate
-                        class="{{ $itemBase }} {{ request()->routeIs('profile.*') ? $itemActive : $itemInactive }}"
+                        class="{{ $itemBase }} {{ $isProfile ? $itemActive : $itemInactive }}"
+                        @if ($isProfile) aria-current="page" @endif
                     >
                         <svg class="{{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z" />
