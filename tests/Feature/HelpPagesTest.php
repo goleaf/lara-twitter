@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class HelpPagesTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_help_pages_render(): void
     {
         $this->get(route('help.index'))
