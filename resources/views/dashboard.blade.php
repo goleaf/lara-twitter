@@ -22,37 +22,37 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-4 py-3 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
+                    <x-list-row href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate size="lg">
                         <div class="min-w-0">
                             <div class="font-semibold">Profile</div>
                             <div class="text-sm opacity-70 truncate">&#64;{{ auth()->user()->username }}</div>
                         </div>
                         <div class="text-sm opacity-60">View</div>
-                    </a>
+                    </x-list-row>
 
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-4 py-3 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('messages.index') }}" wire:navigate>
+                    <x-list-row href="{{ route('messages.index') }}" wire:navigate size="lg">
                         <div class="min-w-0">
                             <div class="font-semibold">Messages</div>
                             <div class="text-sm opacity-70">Direct messages and groups</div>
                         </div>
                         <div class="text-sm opacity-60">Open</div>
-                    </a>
+                    </x-list-row>
 
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-4 py-3 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('bookmarks') }}" wire:navigate>
+                    <x-list-row href="{{ route('bookmarks') }}" wire:navigate size="lg">
                         <div class="min-w-0">
                             <div class="font-semibold">Bookmarks</div>
                             <div class="text-sm opacity-70">Saved posts</div>
                         </div>
                         <div class="text-sm opacity-60">Open</div>
-                    </a>
+                    </x-list-row>
 
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-4 py-3 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile') }}" wire:navigate>
+                    <x-list-row href="{{ route('profile') }}" wire:navigate size="lg">
                         <div class="min-w-0">
                             <div class="font-semibold">Settings</div>
                             <div class="text-sm opacity-70">Account and preferences</div>
                         </div>
                         <div class="text-sm opacity-60">Manage</div>
-                    </a>
+                    </x-list-row>
                 </div>
             </div>
         </div>
