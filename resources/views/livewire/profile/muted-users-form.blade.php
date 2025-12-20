@@ -86,7 +86,9 @@ new class extends Component
                 </button>
             </div>
         @empty
-            <div class="opacity-70 text-sm">{{ __('No muted accounts.') }}</div>
+            <x-empty-state>
+                {{ __('No muted accounts.') }}
+            </x-empty-state>
         @endforelse
     </div>
 

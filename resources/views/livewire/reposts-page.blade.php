@@ -33,11 +33,9 @@
             @forelse ($rows as $quote)
                 <livewire:post-card :post="$quote" :key="'quote-'.$quote->id" />
             @empty
-                <div class="card bg-base-100 border">
-                    <div class="card-body">
-                        <div class="opacity-70">No quote tweets yet.</div>
-                    </div>
-                </div>
+                <x-empty-state>
+                    No quote tweets yet.
+                </x-empty-state>
             @endforelse
         </div>
 
@@ -81,9 +79,9 @@
                             <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
                         </a>
                     @empty
-                        <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
-                            <div class="text-sm opacity-70">No retweets yet.</div>
-                        </div>
+                        <x-empty-state>
+                            No retweets yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
