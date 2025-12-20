@@ -16,7 +16,7 @@ class AnalyticsExportControllerTest extends TestCase
     public function test_export_requires_auth(): void
     {
         $this->get(route('analytics.export'))
-            ->assertStatus(403);
+            ->assertRedirect(route('login'));
     }
 
     public function test_export_requires_analytics_permission(): void

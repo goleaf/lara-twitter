@@ -19,7 +19,10 @@ class TrendingServiceTest extends TestCase
         Cache::flush();
 
         $tag = Hashtag::factory()->create(['tag' => 'laravel']);
-        $post = Post::factory()->create(['created_at' => now()->subHours(2)]);
+        $post = Post::factory()->create([
+            'body' => 'Plain post',
+            'created_at' => now()->subHours(2),
+        ]);
         $post->hashtags()->attach($tag->id);
 
         $service = app(TrendingService::class);
