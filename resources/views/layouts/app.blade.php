@@ -2,8 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
         @php
             use App\Support\PageTitle;
@@ -42,7 +44,7 @@
                     <x-layouts.topbar :title="$topbarTitle" />
                 </div>
 
-                <main class="min-h-screen px-4 py-4 space-y-4">
+                <main class="min-h-screen px-4 py-4 space-y-4 page-reveal">
                     @if (isset($header) || $__env->hasSection('header'))
                         <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
                             <div class="card-body py-4">
@@ -75,10 +77,10 @@
                         <div class="text-xs text-base-content/60 space-y-2 px-4">
                             <div class="flex flex-wrap gap-x-3 gap-y-1">
                                 <a href="{{ route('help.index') }}" class="hover:underline" wire:navigate>Help</a>
-                                <a href="/terms" class="hover:underline">Terms</a>
-                                <a href="/privacy" class="hover:underline">Privacy</a>
-                                <a href="/cookies" class="hover:underline">Cookies</a>
-                                <a href="/about" class="hover:underline">About</a>
+                                <a href="{{ route('terms') }}" class="hover:underline" wire:navigate>Terms</a>
+                                <a href="{{ route('privacy') }}" class="hover:underline" wire:navigate>Privacy</a>
+                                <a href="{{ route('cookies') }}" class="hover:underline" wire:navigate>Cookies</a>
+                                <a href="{{ route('about') }}" class="hover:underline" wire:navigate>About</a>
                             </div>
                             <div>Copyright {{ date('Y') }} {{ config('app.name', 'MiniTwitter') }}</div>
                         </div>
@@ -90,14 +92,17 @@
         @unless ($isTest)
         <div class="lg:hidden min-h-screen pb-16">
             <div class="sticky top-0 z-30 backdrop-blur-xl bg-base-100/80 border-b border-base-300">
-                <div class="flex items-center justify-between px-4 h-14">
+                <div class="flex items-center justify-between px-4 h-16 topbar-shell">
                     <button class="btn btn-ghost btn-circle" aria-label="Open menu" @click="$dispatch('open-sidebar')">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
 
-                    <h1 class="text-xl font-bold truncate">{{ $topbarTitle }}</h1>
+                    <div class="min-w-0 leading-tight text-center">
+                        <div class="topbar-kicker">{{ config('app.name', 'MiniTwitter') }}</div>
+                        <h1 class="text-base font-semibold truncate">{{ $topbarTitle }}</h1>
+                    </div>
 
                     @auth
                         <div class="relative">
@@ -114,7 +119,7 @@
                 </div>
             </div>
 
-            <main class="px-4 py-4 space-y-4">
+            <main class="px-4 py-4 space-y-4 page-reveal">
                 @if (isset($header) || $__env->hasSection('header'))
                     <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
                         <div class="card-body py-4">

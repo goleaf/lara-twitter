@@ -29,6 +29,7 @@ class AnalyticsExportController
         $sinceDateTime = now()->subDays($days);
 
         $posts = Post::query()
+            ->select(['id', 'created_at', 'body'])
             ->where('user_id', $user->id)
             ->where('body', '!=', '')
             ->where('created_at', '>=', $sinceDateTime)
@@ -118,4 +119,3 @@ class AnalyticsExportController
         ]);
     }
 }
-

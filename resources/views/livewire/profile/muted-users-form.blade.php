@@ -52,7 +52,7 @@ new class extends Component
                 @continue
             @endif
 
-            <div class="flex items-center justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40">
+            <div class="flex items-center justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40" wire:key="muted-user-{{ $mute->id }}">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="avatar">
                         <div class="w-10 rounded-full border border-base-200 bg-base-100">

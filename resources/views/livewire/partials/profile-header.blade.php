@@ -83,7 +83,7 @@
             @endif
 
             @if ($user->website)
-                <a class="badge badge-outline badge-sm" href="{{ $user->website }}" target="_blank" rel="noreferrer">
+                <a class="badge badge-outline badge-sm" href="{{ $user->website }}" target="_blank" rel="noopener noreferrer">
                     {{ preg_replace('#^https?://#', '', $user->website) }}
                 </a>
             @endif

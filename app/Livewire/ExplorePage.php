@@ -8,6 +8,7 @@ use App\Services\DiscoverService;
 use App\Services\FollowService;
 use App\Services\TrendingService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -122,13 +123,21 @@ class ExplorePage extends Component
 
     public function getTopStoriesProperty()
     {
-        return Moment::query()
-            ->where('is_public', true)
-            ->with(['owner', 'firstItem.post.user', 'firstItem.post.repostOf.user'])
-            ->withCount('items')
-            ->latest()
-            ->limit(5)
-            ->get();
+        return Cache::remember('explore:top-stories', now()->addSeconds(90), function () {
+            return Moment::query()
+                ->select(['id', 'owner_id', 'title', 'description', 'cover_image_path', 'is_public'])
+                ->where('is_public', true)
+                ->with([
+                    'owner:id,username',
+                    'firstItem:id,moment_id,post_id,sort_order',
+                    'firstItem.post:id,user_id,body,created_at,repost_of_id',
+                    'firstItem.post.repostOf:id,user_id,body,created_at',
+                ])
+                ->withCount('items')
+                ->latest()
+                ->limit(5)
+                ->get();
+        });
     }
 
     public function getCategoryPostsProperty()

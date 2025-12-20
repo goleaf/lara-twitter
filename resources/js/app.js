@@ -10,6 +10,8 @@ function setupNavigateProgress() {
         return;
     }
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     let progressTimer;
     let finishTimer;
 
@@ -27,6 +29,13 @@ function setupNavigateProgress() {
     const start = () => {
         clearTimers();
 
+        if (prefersReducedMotion.matches) {
+            bar.style.transitionDuration = '0ms';
+            bar.style.width = '100%';
+            bar.style.opacity = '1';
+            return;
+        }
+
         bar.style.transitionDuration = '0ms';
         bar.style.width = '0%';
         bar.style.opacity = '1';
@@ -43,6 +52,13 @@ function setupNavigateProgress() {
 
     const finish = () => {
         clearTimers();
+
+        if (prefersReducedMotion.matches) {
+            bar.style.transitionDuration = '0ms';
+            bar.style.opacity = '0';
+            bar.style.width = '0%';
+            return;
+        }
 
         bar.style.transitionDuration = '250ms';
         bar.style.width = '100%';
@@ -76,7 +92,9 @@ function scrollToHash() {
     }
 
     requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const behavior = prefersReducedMotion ? 'auto' : 'smooth';
+        target.scrollIntoView({ behavior, block: 'start' });
     });
 }
 

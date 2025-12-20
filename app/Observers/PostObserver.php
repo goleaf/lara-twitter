@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Hashtag;
 use App\Models\Mention;
+use App\Models\Mute;
 use App\Models\Post;
 use App\Models\PostLinkPreview;
 use App\Models\User;
@@ -226,22 +227,46 @@ class PostObserver
         $post->loadMissing('user');
 
         $author = $post->user;
-        $followers = $author->followers()->get();
+
+        $blockedSet = array_fill_keys(
+            $author->blockedUserIds()
+                ->merge($author->blockedByUserIds())
+                ->unique()
+                ->values()
+                ->all(),
+            true,
+        );
+        $mutedBySet = array_fill_keys(
+            Mute::query()
+                ->where('muted_id', $author->id)
+                ->pluck('muter_id')
+                ->all(),
+            true,
+        );
+        $authorIsVerified = (bool) $author->is_verified;
+        $authorHasAvatar = (bool) $author->avatar_path;
+        $authorHasVerifiedEmail = (bool) $author->email_verified_at;
+
+        $followers = $author->followers()
+            ->select(['users.id', 'users.notification_settings'])
+            ->cursor();
 
         foreach ($followers as $follower) {
             if (! $follower->wantsNotification('followed_posts')) {
                 continue;
             }
 
-            if ($author->isBlockedEitherWay($follower)) {
+            if (isset($blockedSet[$follower->id]) || isset($mutedBySet[$follower->id])) {
                 continue;
             }
 
-            if ($follower->hasMuted($author)) {
+            $settings = $follower->notification_settings ?? [];
+
+            if ((bool) ($settings['only_verified'] ?? false) && ! $authorIsVerified) {
                 continue;
             }
 
-            if (! $follower->allowsNotificationFrom($author, 'followed_posts')) {
+            if ((bool) ($settings['quality_filter'] ?? false) && (! $authorHasAvatar || ! $authorHasVerifiedEmail)) {
                 continue;
             }
 

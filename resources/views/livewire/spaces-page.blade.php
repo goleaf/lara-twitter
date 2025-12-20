@@ -77,7 +77,7 @@
             </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($liveSpaces as $space)
-                        <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
+                        <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate wire:key="live-space-row-{{ $space->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -121,7 +121,7 @@
             </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($upcomingSpaces as $space)
-                        <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
+                        <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate wire:key="upcoming-space-row-{{ $space->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">

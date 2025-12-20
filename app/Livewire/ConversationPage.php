@@ -45,6 +45,10 @@ class ConversationPage extends Component
             return null;
         }
 
+        if ($this->conversation->relationLoaded('participants')) {
+            return $this->conversation->participants->firstWhere('user_id', Auth::id());
+        }
+
         return $this->conversation
             ->participants()
             ->where('user_id', Auth::id())
@@ -55,7 +59,23 @@ class ConversationPage extends Component
     {
         abort_unless(Auth::check(), 403);
 
-        $conversation->load(['participants.user']);
+        $conversation->load([
+            'participants' => fn ($q) => $q->select([
+                'id',
+                'conversation_id',
+                'user_id',
+                'role',
+                'is_request',
+                'is_pinned',
+                'last_read_at',
+            ]),
+            'participants.user' => fn ($q) => $q->select([
+                'id',
+                'name',
+                'username',
+                'avatar_path',
+            ]),
+        ]);
 
         abort_unless($conversation->hasParticipant(Auth::user()), 403);
 
@@ -91,9 +111,9 @@ class ConversationPage extends Component
             ->where('user_id', Auth::id())
             ->delete();
 
-        if (! $this->conversation->is_group && $this->conversation->participants()->count() < 2) {
-            $this->conversation->delete();
-        } elseif ($this->conversation->participants()->count() === 0) {
+        $participantsCount = $this->conversation->participants()->count();
+
+        if ($participantsCount === 0 || (! $this->conversation->is_group && $participantsCount < 2)) {
             $this->conversation->delete();
         }
 
@@ -103,8 +123,13 @@ class ConversationPage extends Component
     public function getMessagesProperty()
     {
         return Message::query()
+            ->select(['id', 'conversation_id', 'user_id', 'body', 'created_at'])
             ->where('conversation_id', $this->conversation->id)
-            ->with(['user', 'attachments', 'reactions'])
+            ->with([
+                'user:id,username',
+                'attachments:id,message_id,path,mime_type',
+                'reactions:id,message_id,user_id,emoji',
+            ])
             ->latest()
             ->paginate(30);
     }
@@ -138,7 +163,8 @@ class ConversationPage extends Component
 
         $participants = $this->conversation
             ->participants()
-            ->with('user')
+            ->select(['id', 'conversation_id', 'user_id'])
+            ->with('user:id,username')
             ->where('user_id', '!=', Auth::id())
             ->get();
 

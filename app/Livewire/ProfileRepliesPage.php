@@ -27,19 +27,20 @@ class ProfileRepliesPage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         return Post::query()
             ->where('user_id', $this->user->id)
             ->where(function ($q) {
                 $q->whereNotNull('reply_to_id')->orWhere('is_reply_like', true);
             })
+            ->withPostCardRelations($viewer)
             ->with([
-                'user',
-                'images',
-                'replyTo.user',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+                'replyTo:id,user_id',
+                'replyTo.user:id,username',
             ])
-            ->withCount(['likes', 'reposts'])
             ->latest()
+            ->orderByDesc('id')
             ->paginate(15);
     }
 

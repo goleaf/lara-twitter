@@ -338,13 +338,12 @@ class SpacePage extends Component
             $this->space->refresh();
         }
 
+        $viewer = Auth::user();
+
         $this->space
             ->load([
                 'host',
-                'pinnedPost.user',
-                'pinnedPost.images',
-                'pinnedPost.repostOf.user',
-                'pinnedPost.repostOf.images',
+                'pinnedPost' => fn ($q) => $q->withPostCardRelations($viewer),
             ])
             ->loadCount('participants');
     }

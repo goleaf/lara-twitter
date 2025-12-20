@@ -16,6 +16,8 @@ class ListPage extends Component
 {
     use WithPagination;
 
+    private const MEMBER_PREVIEW_LIMIT = 12;
+
     public UserList $list;
 
     public string $member_username = '';
@@ -113,27 +115,38 @@ class ListPage extends Component
 
     public function getMembersProperty()
     {
-        return $this->list->members()->orderBy('username')->get();
+        return $this->list->members()
+            ->orderBy('username')
+            ->simplePaginate(
+                25,
+                ['users.id', 'users.name', 'users.username', 'users.avatar_path', 'users.is_verified'],
+                pageName: 'membersPage'
+            );
+    }
+
+    public function getMemberPreviewProperty()
+    {
+        return $this->list->members()
+            ->orderBy('username')
+            ->limit(self::MEMBER_PREVIEW_LIMIT)
+            ->get(['users.id', 'users.name', 'users.username', 'users.avatar_path', 'users.is_verified']);
     }
 
     public function getPostsProperty()
     {
         $memberIdsQuery = $this->list->members()->select('users.id');
+        $viewer = Auth::user();
 
         $query = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
             ->whereIn('user_id', $memberIdsQuery)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies'])
-            ->latest();
+            ->withPostCardRelations($viewer, true)
+            ->latest()
+            ->orderByDesc('id');
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }

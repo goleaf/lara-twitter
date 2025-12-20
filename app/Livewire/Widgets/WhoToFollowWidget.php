@@ -6,11 +6,13 @@ use App\Models\User;
 use App\Services\DiscoverService;
 use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class WhoToFollowWidget extends Component
 {
-    public function getRecommendedUsersProperty()
+    #[Computed]
+    public function recommendedUsers()
     {
         if (! Auth::check()) {
             return collect();

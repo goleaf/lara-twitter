@@ -64,6 +64,86 @@ class Post extends Model
         ];
     }
 
+    public function scopeWithViewerContext(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer) {
+            return $query;
+        }
+
+        return $query->withExists([
+            'likes as liked_by_viewer' => fn (Builder $q) => $q->where('user_id', $viewer->id),
+            'bookmarks as bookmarked_by_viewer' => fn (Builder $q) => $q->where('user_id', $viewer->id),
+            'reposts as reposted_by_viewer' => fn (Builder $q) => $q
+                ->where('user_id', $viewer->id)
+                ->whereNull('reply_to_id')
+                ->where('body', ''),
+        ]);
+    }
+
+    public function scopeWithPostCardRelations(Builder $query, ?User $viewer = null, bool $withReplies = false): Builder
+    {
+        if ($viewer) {
+            $query->withViewerContext($viewer);
+        }
+
+        $postColumns = [
+            'posts.id',
+            'posts.user_id',
+            'posts.body',
+            'posts.reply_to_id',
+            'posts.repost_of_id',
+            'posts.reply_policy',
+            'posts.created_at',
+            'posts.location',
+            'posts.video_path',
+            'posts.video_mime_type',
+            'posts.is_reply_like',
+        ];
+
+        if ($query->getQuery()->columns === null) {
+            $query->select($postColumns);
+        }
+
+        $counts = $withReplies ? ['likes', 'reposts', 'replies'] : ['likes', 'reposts'];
+        $userColumns = ['id', 'name', 'username', 'avatar_path', 'is_verified', 'analytics_enabled', 'is_admin'];
+        $imageColumns = ['id', 'post_id', 'path', 'sort_order'];
+        $linkPreviewColumns = ['id', 'post_id', 'url', 'site_name', 'title', 'description', 'image_url'];
+        $pollColumns = ['id', 'post_id', 'ends_at'];
+        $pollOptionColumns = ['id', 'post_poll_id', 'option_text', 'sort_order'];
+        $repostColumns = [
+            'id',
+            'user_id',
+            'body',
+            'reply_to_id',
+            'repost_of_id',
+            'reply_policy',
+            'created_at',
+            'location',
+            'video_path',
+            'video_mime_type',
+            'is_reply_like',
+        ];
+
+        return $query->with([
+            'user' => fn ($q) => $q->select($userColumns),
+            'images' => fn ($q) => $q->select($imageColumns),
+            'linkPreview' => fn ($q) => $q->select($linkPreviewColumns),
+            'poll' => fn ($q) => $q->select($pollColumns),
+            'poll.options' => fn ($q) => $q->select($pollOptionColumns)->withCount('votes'),
+            'repostOf' => fn ($q) => $q
+                ->select($repostColumns)
+                ->when($viewer, fn ($q) => $q->withViewerContext($viewer))
+                ->with([
+                    'user' => fn ($q) => $q->select($userColumns),
+                    'images' => fn ($q) => $q->select($imageColumns),
+                    'linkPreview' => fn ($q) => $q->select($linkPreviewColumns),
+                    'poll' => fn ($q) => $q->select($pollColumns),
+                    'poll.options' => fn ($q) => $q->select($pollOptionColumns)->withCount('votes'),
+                ])
+                ->withCount($counts),
+        ])->withCount($counts);
+    }
+
     public function canBeRepliedBy(?User $user): bool
     {
         if (! $user) {

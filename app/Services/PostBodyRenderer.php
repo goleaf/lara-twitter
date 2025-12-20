@@ -6,8 +6,19 @@ use Illuminate\Support\HtmlString;
 
 class PostBodyRenderer
 {
+    /**
+     * @var array<string, HtmlString>
+     */
+    private static array $renderCache = [];
+
     public function render(string $text, ?int $postId = null): HtmlString
     {
+        $cacheKey = $this->cacheKey($text, $postId);
+
+        if (isset(self::$renderCache[$cacheKey])) {
+            return self::$renderCache[$cacheKey];
+        }
+
         $pattern = '/(?P<url>https?:\\/\\/[^\s<]+)|(?P<hashtag>(?P<hashtag_prefix>^|[^\pL\pN_])#(?P<hashtag_tag>[\pL\pN][\pL\pN_]{0,49}))|(?P<mention>(?P<mention_prefix>^|[^A-Za-z0-9_])@(?P<mention_username>[A-Za-z0-9_-]{3,30}))/u';
 
         $output = '';
@@ -50,7 +61,15 @@ class PostBodyRenderer
         $output .= e(substr($text, $offset));
         $output = nl2br($output);
 
-        return new HtmlString($output);
+        $result = new HtmlString($output);
+        self::$renderCache[$cacheKey] = $result;
+
+        return $result;
+    }
+
+    private function cacheKey(string $text, ?int $postId): string
+    {
+        return ($postId ?? 0).':'.sha1($text);
     }
 
     /**

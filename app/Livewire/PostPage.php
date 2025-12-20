@@ -22,18 +22,17 @@ class PostPage extends Component
 
     public function mount(Post $post): void
     {
-        $this->post = $post
-            ->load([
-                'user',
-                'images',
-                'replyTo.user',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
+        $viewer = Auth::user();
+
+        $this->post = Post::query()
+            ->withPostCardRelations($viewer)
+            ->with([
+                'replyTo:id,user_id',
+                'replyTo.user:id,username',
             ])
-            ->loadCount(['likes', 'reposts']);
+            ->findOrFail($post->id);
 
-        if (Auth::check()) {
-            $viewer = Auth::user();
-
+        if ($viewer) {
             $authors = collect([$this->post->user])
                 ->merge($this->post->repostOf ? [$this->post->repostOf->user] : [])
                 ->filter()
@@ -72,6 +71,7 @@ class PostPage extends Component
     private function loadAncestors(Post $post): array
     {
         $ancestors = [];
+        $viewer = Auth::user();
 
         $current = $post;
         $maxDepth = 20;
@@ -79,19 +79,14 @@ class PostPage extends Component
 
         while ($current->reply_to_id && $depth < $maxDepth) {
             $parent = Post::query()
-                ->with([
-                    'user',
-                    'images',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-                ])
-                ->withCount(['likes', 'reposts'])
+                ->withPostCardRelations($viewer)
                 ->find($current->reply_to_id);
 
             if (! $parent) {
                 break;
             }
 
-            if (Auth::check() && Auth::user()->isBlockedEitherWay($parent->user)) {
+            if ($viewer && $viewer->isBlockedEitherWay($parent->user)) {
                 abort(403);
             }
 
@@ -105,18 +100,16 @@ class PostPage extends Component
 
     public function getRepliesProperty()
     {
+        $viewer = Auth::user();
+
         $query = Post::query()
             ->where('reply_to_id', $this->post->id)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts'])
-            ->oldest();
+            ->withPostCardRelations($viewer)
+            ->oldest()
+            ->orderBy('id');
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }

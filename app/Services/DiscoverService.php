@@ -26,6 +26,27 @@ class DiscoverService
         return 'discover:'.$type.':'.$viewerId.':'.sha1((string) $payload);
     }
 
+    private function recommendedUsersQuery(): Builder
+    {
+        return User::query()
+            ->select(['id', 'name', 'username', 'avatar_path', 'is_verified'])
+            ->withCount('followers');
+    }
+
+    public function forgetRecommendedUsersCache(User $viewer, array $limits = [5, 8, 10]): void
+    {
+        $seen = [];
+
+        foreach ($limits as $limit) {
+            if (! is_int($limit) || $limit <= 0 || isset($seen[$limit])) {
+                continue;
+            }
+
+            $seen[$limit] = true;
+            Cache::forget($this->cacheKey('recommended-users', $viewer, [$limit]));
+        }
+    }
+
     public function categoryHashtags(): array
     {
         return [
@@ -43,8 +64,7 @@ class DiscoverService
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit) {
             if (! $viewer) {
-                return User::query()
-                    ->withCount('followers')
+                return $this->recommendedUsersQuery()
                     ->orderByDesc('followers_count')
                     ->latest()
                     ->limit($limit)
@@ -52,8 +72,8 @@ class DiscoverService
             }
 
             $followingIds = $viewer->followingIds()->all();
-            $blockedIds = $viewer->blocksInitiated()->pluck('blocked_id')->all();
-            $blockedByIds = $viewer->blocksReceived()->pluck('blocker_id')->all();
+            $blockedIds = $viewer->blockedUserIds()->all();
+            $blockedByIds = $viewer->blockedByUserIds()->all();
             $excludeIds = array_values(array_unique(array_merge([$viewer->id], $followingIds)));
             $excludeIds = array_values(array_unique(array_merge($excludeIds, $blockedIds, $blockedByIds)));
 
@@ -72,8 +92,7 @@ class DiscoverService
             $users = collect();
 
             if (! empty($candidateIds)) {
-                $users = User::query()
-                    ->withCount('followers')
+                $users = $this->recommendedUsersQuery()
                     ->whereIn('id', $candidateIds)
                     ->get()
                     ->each(function (User $u) use ($mutuals) {
@@ -112,8 +131,7 @@ class DiscoverService
                 $interestCandidateIds = $interestRows->keys()->all();
 
                 if (! empty($interestCandidateIds)) {
-                    $interestUsers = User::query()
-                        ->withCount('followers')
+                    $interestUsers = $this->recommendedUsersQuery()
                         ->whereIn('id', $interestCandidateIds)
                         ->get()
                         ->each(function (User $u) use ($interestRows) {
@@ -141,8 +159,7 @@ class DiscoverService
                 return $users;
             }
 
-            $fallback = User::query()
-                ->withCount('followers')
+            $fallback = $this->recommendedUsersQuery()
                 ->whereNotIn('id', array_merge($excludeIds, $users->pluck('id')->all()))
                 ->orderByDesc('followers_count')
                 ->latest()
@@ -162,12 +179,7 @@ class DiscoverService
                 ->whereNull('reply_to_id')
                 ->where('is_reply_like', false)
                 ->where('created_at', '>=', now()->subDays(7))
-                ->with([
-                    'user',
-                    'images',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-                ])
-                ->withCount(['likes', 'reposts', 'replies']);
+                ->withPostCardRelations($viewer, true);
 
             $this->applyViewerExclusions($query, $viewer);
 
@@ -188,7 +200,7 @@ class DiscoverService
                 $followingIds = $viewer->followingIds()->all();
                 $idsCsv = implode(',', array_map('intval', $followingIds));
                 if ($idsCsv !== '') {
-                    $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
+                    $query->orderByRaw("case when user_id in ($idsCsv) then 0 else 1 end asc");
                 }
             }
 
@@ -212,12 +224,7 @@ class DiscoverService
                 ->whereNull('reply_to_id')
                 ->where('is_reply_like', false)
                 ->where('created_at', '>=', now()->subDays(7))
-                ->with([
-                    'user',
-                    'images',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-                ])
-                ->withCount(['likes', 'reposts', 'replies']);
+                ->withPostCardRelations($viewer, true);
 
             $this->applyViewerExclusions($query, $viewer);
 
@@ -235,7 +242,7 @@ class DiscoverService
                 $followingIds = $viewer->followingIds()->all();
                 $idsCsv = implode(',', array_map('intval', $followingIds));
                 if ($idsCsv !== '') {
-                    $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
+                    $query->orderByRaw("case when user_id in ($idsCsv) then 0 else 1 end asc");
                 }
             }
 
@@ -272,18 +279,13 @@ class DiscoverService
             }
 
             $query = Post::query()
-                ->select('posts.*', 'hashtag_post.hashtag_id')
                 ->join('hashtag_post', 'hashtag_post.post_id', '=', 'posts.id')
                 ->whereIn('hashtag_post.hashtag_id', $hashtagIds->values()->all())
                 ->whereNull('posts.reply_to_id')
                 ->where('posts.is_reply_like', false)
                 ->where('posts.created_at', '>=', now()->subDay())
-                ->with([
-                    'user',
-                    'images',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-                ])
-                ->withCount(['likes', 'reposts', 'replies']);
+                ->withPostCardRelations($viewer, true)
+                ->addSelect('hashtag_post.hashtag_id');
 
             $this->applyViewerExclusions($query, $viewer);
 

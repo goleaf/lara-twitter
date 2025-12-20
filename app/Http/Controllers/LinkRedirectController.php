@@ -20,7 +20,7 @@ class LinkRedirectController
             abort(400);
         }
 
-        $post->loadMissing('user');
+        $post->loadMissing(['user:id,analytics_enabled,is_admin']);
         if ($post->user->analytics_enabled || $post->user->is_admin) {
             $analytics->recordUnique('post_link_click', $post->id);
         }
@@ -47,4 +47,3 @@ class LinkRedirectController
         return true;
     }
 }
-

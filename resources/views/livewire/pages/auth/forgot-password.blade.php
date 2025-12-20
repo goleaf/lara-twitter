@@ -43,7 +43,8 @@ new #[Layout('layouts.app')] class extends Component
         </a>
     </div>
 
-    <div class="card bg-base-100">
+    <div class="card bg-base-100 hero-card guest-hero">
+        <div class="hero-edge" aria-hidden="true"></div>
         <div class="card-body space-y-4">
             <div class="space-y-1">
                 <h1 class="text-xl font-semibold">Reset password</h1>

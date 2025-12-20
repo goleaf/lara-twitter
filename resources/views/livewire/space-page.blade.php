@@ -133,7 +133,7 @@
                             @if ($this->reactionCounts->isNotEmpty())
                                 <div class="flex flex-wrap items-center gap-1">
                                     @foreach ($this->reactionCounts as $r)
-                                        <span class="badge badge-ghost badge-sm">{{ $r->emoji }} {{ $r->count }}</span>
+                                        <span class="badge badge-ghost badge-sm" wire:key="space-reaction-{{ $space->id }}-{{ md5($r->emoji) }}">{{ $r->emoji }} {{ $r->count }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -166,7 +166,7 @@
                             @continue
                         @endif
 
-                        <x-list-row>
+                        <x-list-row wire:key="speaker-request-{{ $req->id }}">
                             <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
                                 <div class="avatar">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -216,7 +216,7 @@
                         @continue
                     @endif
 
-                    <x-list-row>
+                    <x-list-row wire:key="space-participant-{{ $p->id }}">
                         <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
                             <div class="avatar">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">

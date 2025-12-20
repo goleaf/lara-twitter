@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Http;
 
 class PostLinkPreviewService
 {
+    /**
+     * @var array<string, array<int, array<string, mixed>>>
+     */
+    private array $dnsCache = [];
+
     public function extractFirstUrl(string $text): ?string
     {
         if (! preg_match('/https?:\\/\\/[^\s<]+/i', $text, $matches)) {
@@ -152,8 +157,13 @@ class PostLinkPreviewService
             return $this->isPublicIp($host);
         }
 
-        $records = @dns_get_record($host, DNS_A + DNS_AAAA);
-        if (! is_array($records) || count($records) === 0) {
+        if (! array_key_exists($host, $this->dnsCache)) {
+            $records = @dns_get_record($host, DNS_A + DNS_AAAA);
+            $this->dnsCache[$host] = is_array($records) ? $records : [];
+        }
+
+        $records = $this->dnsCache[$host];
+        if (count($records) === 0) {
             return false;
         }
 
@@ -253,6 +263,10 @@ class PostLinkPreviewService
         }
 
         $scheme = $base['scheme'] ?? 'https';
+
+        if (str_starts_with($maybeRelative, '//')) {
+            return $scheme.':'.$maybeRelative;
+        }
         $host = $base['host'] ?? '';
         $port = isset($base['port']) ? ':'.$base['port'] : '';
 
@@ -301,4 +315,3 @@ class PostLinkPreviewService
         return [$url, $suffix];
     }
 }
-

@@ -121,6 +121,7 @@ class AnalyticsPage extends Component
         }
 
         $posts = Post::query()
+            ->select(['id', 'created_at', 'body'])
             ->whereIn('id', $topPostIds)
             ->withCount([
                 'likes as likes_count_range' => fn ($q) => $q->where('created_at', '>=', $sinceDateTime),
@@ -164,6 +165,7 @@ class AnalyticsPage extends Component
         $sinceDateTime = now()->subDays($days);
 
         $posts = Post::query()
+            ->select(['id', 'created_at', 'body'])
             ->where('user_id', $userId)
             ->where('body', '!=', '')
             ->where('created_at', '>=', $sinceDateTime)

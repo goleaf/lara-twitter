@@ -11,6 +11,7 @@ use App\Services\TrendingService;
 use App\Support\SqlHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -50,21 +51,30 @@ class TimelinePage extends Component
 
     public function mount(): void
     {
-        $value = $this->baseQuery(false)->max('created_at');
-        $this->latestSeenAt = $value ? (string) $value : null;
+        $this->feed = $this->normalizedFeed();
+        $this->updateLatestSeenAt();
     }
 
     public function updatedFeed(): void
     {
+        $normalized = $this->normalizedFeed();
+        if ($this->feed !== $normalized) {
+            $this->feed = $normalized;
+        }
         $this->resetPage();
-        $value = $this->baseQuery(false)->max('created_at');
-        $this->latestSeenAt = $value ? (string) $value : null;
+        $this->updateLatestSeenAt();
         $this->hasNewPosts = false;
     }
 
     private function normalizedFeed(): string
     {
-        return in_array($this->feed, ['following', 'for-you'], true) ? $this->feed : 'following';
+        $normalized = in_array($this->feed, ['following', 'for-you'], true) ? $this->feed : 'following';
+
+        if (! Auth::check()) {
+            return 'for-you';
+        }
+
+        return $normalized;
     }
 
     private function showReplies(): bool
@@ -85,19 +95,26 @@ class TimelinePage extends Component
         return Auth::user()->timelineSetting('show_retweets', true);
     }
 
+    private function updateLatestSeenAt(): void
+    {
+        $value = $this->feedQuery(false)->max('created_at');
+        $this->latestSeenAt = $value ? (string) $value : now()->toDateTimeString();
+    }
+
     private function baseQuery(bool $withRelations = true)
     {
         $query = Post::query();
+        $viewer = Auth::user();
 
         if ($withRelations) {
-            $query
-                ->with([
-                    'user',
-                    'images',
-                    'replyTo.user',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-                ])
-                ->withCount(['likes', 'reposts', 'replies']);
+            $query->withPostCardRelations($viewer, true);
+
+            if ($this->showReplies()) {
+                $query->with([
+                    'replyTo:id,user_id',
+                    'replyTo.user:id,username',
+                ]);
+            }
         }
 
         if (! $this->showReplies()) {
@@ -110,9 +127,7 @@ class TimelinePage extends Component
             });
         }
 
-        if (Auth::check()) {
-            $viewer = Auth::user();
-
+        if ($viewer) {
             $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
@@ -122,6 +137,22 @@ class TimelinePage extends Component
         }
 
         return $query;
+    }
+
+    private function feedQuery(bool $withRelations = true): Builder
+    {
+        $query = $this->baseQuery($withRelations);
+
+        if ($this->normalizedFeed() === 'following') {
+            if (Auth::check()) {
+                $followingIds = Auth::user()->followingIdsWithSelf();
+                $query->whereIn('user_id', $followingIds);
+            }
+
+            return $query;
+        }
+
+        return $query->where('created_at', '>=', now()->subDays(7));
     }
 
     private function applyMutedTermsToPostsQuery(Builder $query, \App\Models\User $viewer): void
@@ -176,21 +207,15 @@ class TimelinePage extends Component
     #[Computed]
     public function posts()
     {
-        $query = $this->baseQuery();
+        $query = $this->feedQuery();
+        $feed = $this->normalizedFeed();
 
-        if ($this->normalizedFeed() === 'following') {
-            $query->when(Auth::check(), function (Builder $query): void {
-                $followingIds = Auth::user()->followingIdsWithSelf();
-                $query->whereIn('user_id', $followingIds);
-            });
-
-            return $query->latest()->paginate(15);
+        if ($feed === 'following') {
+            return $query->latest()->orderByDesc('id')->simplePaginate(15);
         }
 
         // "For You": include broader content, ranked by engagement + recency,
         // with a small bias towards followed accounts when signed in.
-        $query->where('created_at', '>=', now()->subDays(7));
-
         if (Auth::check()) {
             $followingIds = Auth::user()->followingIdsWithSelf()->all();
             $idsCsv = implode(',', array_map('intval', $followingIds));
@@ -203,7 +228,8 @@ class TimelinePage extends Component
         return $query
             ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
             ->orderByDesc('created_at')
-            ->paginate(15);
+            ->orderByDesc('id')
+            ->simplePaginate(15);
     }
 
     #[Computed]
@@ -214,18 +240,23 @@ class TimelinePage extends Component
         }
 
         $viewer = Auth::user();
-        $followingIds = $viewer->followingIdsWithSelf();
-        $exclude = $viewer->excludedUserIds();
+        $cacheKey = 'timeline:live-spaces:'.$viewer->id;
 
-        return Space::query()
-            ->whereNotNull('started_at')
-            ->whereNull('ended_at')
-            ->whereIn('host_user_id', $followingIds)
-            ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
-            ->with(['host'])
-            ->latest('started_at')
-            ->limit(8)
-            ->get();
+        return Cache::remember($cacheKey, $this->spacesCacheTtl(), function () use ($viewer) {
+            $followingIds = $viewer->followingIdsWithSelf();
+            $exclude = $viewer->excludedUserIds();
+
+            return Space::query()
+                ->select(['id', 'host_user_id', 'title', 'started_at'])
+                ->whereNotNull('started_at')
+                ->whereNull('ended_at')
+                ->whereIn('host_user_id', $followingIds)
+                ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
+                ->with(['host:id,name,username,avatar_path'])
+                ->latest('started_at')
+                ->limit(8)
+                ->get();
+        });
     }
 
     #[Computed]
@@ -236,6 +267,19 @@ class TimelinePage extends Component
         }
 
         return app(DiscoverService::class)->recommendedUsers(Auth::user(), 5);
+    }
+
+    #[Computed]
+    public function timelineFilters(): array
+    {
+        if (! Auth::check()) {
+            return [];
+        }
+
+        return [
+            'replies' => $this->showReplies(),
+            'retweets' => $this->showRetweets(),
+        ];
     }
 
     public function toggleFollow(int $userId): void
@@ -259,20 +303,30 @@ class TimelinePage extends Component
         }
 
         $viewer = Auth::user();
-        $followingIds = $viewer->followingIdsWithSelf();
-        $exclude = $viewer->excludedUserIds();
+        $cacheKey = 'timeline:upcoming-spaces:'.$viewer->id;
 
-        return Space::query()
-            ->whereNull('started_at')
-            ->whereNull('ended_at')
-            ->whereNotNull('scheduled_for')
-            ->where('scheduled_for', '>=', now())
-            ->whereIn('host_user_id', $followingIds)
-            ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
-            ->with(['host'])
-            ->orderBy('scheduled_for')
-            ->limit(8)
-            ->get();
+        return Cache::remember($cacheKey, $this->spacesCacheTtl(), function () use ($viewer) {
+            $followingIds = $viewer->followingIdsWithSelf();
+            $exclude = $viewer->excludedUserIds();
+
+            return Space::query()
+                ->select(['id', 'host_user_id', 'title', 'scheduled_for'])
+                ->whereNull('started_at')
+                ->whereNull('ended_at')
+                ->whereNotNull('scheduled_for')
+                ->where('scheduled_for', '>=', now())
+                ->whereIn('host_user_id', $followingIds)
+                ->when($exclude->isNotEmpty(), fn ($q) => $q->whereNotIn('host_user_id', $exclude))
+                ->with(['host:id,name,username,avatar_path'])
+                ->orderBy('scheduled_for')
+                ->limit(8)
+                ->get();
+        });
+    }
+
+    private function spacesCacheTtl(): \DateTimeInterface
+    {
+        return now()->addSeconds(60);
     }
 
     private function normalizedViewerLocation(): ?string
@@ -300,20 +354,35 @@ class TimelinePage extends Component
 
     public function checkForNewPosts(): void
     {
-        if (! $this->latestSeenAt) {
+        if (! Auth::check()) {
+            $this->skipRender();
             return;
         }
 
-        $this->hasNewPosts = $this->baseQuery(false)
+        if ($this->hasNewPosts) {
+            $this->skipRender();
+            return;
+        }
+
+        if (! $this->latestSeenAt) {
+            $this->updateLatestSeenAt();
+            $this->skipRender();
+            return;
+        }
+
+        $this->hasNewPosts = $this->feedQuery(false)
             ->where('created_at', '>', $this->latestSeenAt)
             ->exists();
+
+        if (! $this->hasNewPosts) {
+            $this->skipRender();
+        }
     }
 
     public function refreshTimeline(): void
     {
         $this->resetPage();
-        $value = $this->baseQuery(false)->max('created_at');
-        $this->latestSeenAt = $value ? (string) $value : null;
+        $this->updateLatestSeenAt();
         $this->hasNewPosts = false;
     }
 

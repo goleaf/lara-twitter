@@ -1,5 +1,6 @@
 <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
-    <div class="card bg-base-100 border">
+    <div class="card bg-base-100 border hero-card notifications-hero">
+        <div class="hero-edge" aria-hidden="true"></div>
         <div class="card-body">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div class="space-y-1">
@@ -9,9 +10,12 @@
                     </div>
                     <div class="text-sm opacity-70">Mentions, likes, reposts, and messages in one place.</div>
                 </div>
-                <button type="button" wire:click="markAllRead" class="btn btn-ghost btn-sm" wire:loading.attr="disabled" wire:target="markAllRead">
-                    Mark all as read
-                </button>
+                <div class="flex items-center gap-3">
+                    <div class="text-xs uppercase tracking-[0.35em] text-base-content/60">Inbox</div>
+                    <button type="button" wire:click="markAllRead" class="btn btn-ghost btn-sm" wire:loading.attr="disabled" wire:target="markAllRead">
+                        Mark all as read
+                    </button>
+                </div>
             </div>
 
             <div class="tabs tabs-boxed mt-4">
@@ -71,6 +75,7 @@
                 wire:click.prevent="open('{{ $notification->id }}')"
                 wire:loading.class="pointer-events-none opacity-70"
                 wire:target="open('{{ $notification->id }}')"
+                wire:key="notification-{{ $notification->id }}"
             >
                 <div class="card-body py-4">
                     <div class="flex items-start gap-3">

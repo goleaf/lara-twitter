@@ -58,17 +58,26 @@ class FollowersPage extends Component
             return false;
         }
 
+        return in_array($targetUserId, $this->followingIds, true);
+    }
+
+    public function getFollowingIdsProperty(): array
+    {
+        if (! Auth::check()) {
+            return [];
+        }
+
         return Auth::user()
-            ->following()
-            ->where('followed_id', $targetUserId)
-            ->exists();
+            ->followingIds()
+            ->map(fn ($id) => (int) $id)
+            ->all();
     }
 
     public function getFollowersProperty()
     {
         return $this->user
             ->followers()
-            ->getQuery()
+            ->select(['users.id', 'users.name', 'users.username', 'users.avatar_path', 'users.is_verified'])
             ->orderBy('follows.created_at', 'desc')
             ->paginate(20);
     }

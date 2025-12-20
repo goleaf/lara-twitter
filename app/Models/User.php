@@ -33,6 +33,8 @@ class User extends Authenticatable implements FilamentUser
 
     protected ?Collection $followingIdsCache = null;
 
+    protected ?Collection $followingIdsWithSelfCache = null;
+
     public function flushCachedRelations(): void
     {
         $this->activeMutedTermsCache = null;
@@ -42,6 +44,7 @@ class User extends Authenticatable implements FilamentUser
         $this->blockedUserIdsCache = null;
         $this->blockedByUserIdsCache = null;
         $this->followingIdsCache = null;
+        $this->followingIdsWithSelfCache = null;
     }
 
     /**
@@ -227,10 +230,16 @@ class User extends Authenticatable implements FilamentUser
 
     public function followingIdsWithSelf(): Collection
     {
-        return $this->followingIds()
+        if ($this->followingIdsWithSelfCache) {
+            return $this->followingIdsWithSelfCache;
+        }
+
+        $this->followingIdsWithSelfCache = $this->followingIds()
             ->concat([$this->id])
             ->unique()
             ->values();
+
+        return $this->followingIdsWithSelfCache;
     }
 
     public function getAvatarUrlAttribute(): ?string

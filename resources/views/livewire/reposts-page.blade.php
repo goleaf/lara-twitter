@@ -52,7 +52,7 @@
                             @continue
                         @endif
 
-                            <x-list-row href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
+                            <x-list-row href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate wire:key="retweet-row-{{ $retweet->id }}">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="avatar">
                                         <div class="w-9 rounded-full border border-base-200 bg-base-100">

@@ -27,18 +27,16 @@ class ProfileMediaPage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         return Post::query()
             ->where('user_id', $this->user->id)
             ->where(function ($q) {
                 $q->whereHas('images')->orWhereNotNull('video_path');
             })
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies'])
+            ->withPostCardRelations($viewer, true)
             ->latest()
+            ->orderByDesc('id')
             ->paginate(15);
     }
 

@@ -51,22 +51,31 @@ class PostCard extends Component
         $this->primaryId = ($post->repost_of_id && $post->body === '') ? (int) $post->repost_of_id : (int) $post->id;
 
         if (Auth::check()) {
-            $this->bookmarked = Bookmark::query()
-                ->where('user_id', Auth::id())
-                ->where('post_id', $this->primaryId)
-                ->exists();
+            $viewerId = Auth::id();
+            $primary = $this->primaryPost();
+            $attributes = $primary->getAttributes();
 
-            $this->liked = $this->primaryPost()
-                ->likes()
-                ->where('user_id', Auth::id())
-                ->exists();
+            $this->bookmarked = array_key_exists('bookmarked_by_viewer', $attributes)
+                ? (bool) $primary->bookmarked_by_viewer
+                : Bookmark::query()
+                    ->where('user_id', $viewerId)
+                    ->where('post_id', $this->primaryId)
+                    ->exists();
 
-            $this->reposted = Post::query()
-                ->where('user_id', Auth::id())
-                ->where('repost_of_id', $this->primaryId)
-                ->whereNull('reply_to_id')
-                ->where('body', '')
-                ->exists();
+            $this->liked = array_key_exists('liked_by_viewer', $attributes)
+                ? (bool) $primary->liked_by_viewer
+                : $primary->likes()
+                    ->where('user_id', $viewerId)
+                    ->exists();
+
+            $this->reposted = array_key_exists('reposted_by_viewer', $attributes)
+                ? (bool) $primary->reposted_by_viewer
+                : Post::query()
+                    ->where('user_id', $viewerId)
+                    ->where('repost_of_id', $this->primaryId)
+                    ->whereNull('reply_to_id')
+                    ->where('body', '')
+                    ->exists();
         }
     }
 
@@ -172,6 +181,8 @@ class PostCard extends Component
         if ($this->post->relationLoaded('repostOf') && $this->post->repostOf) {
             $this->post->repostOf = $post;
         }
+
+        $this->dispatch('post-created');
     }
 
     public function openQuote(): void
@@ -269,20 +280,16 @@ class PostCard extends Component
     public function getThreadRepliesProperty(): Collection
     {
         $limit = 3;
+        $viewer = Auth::user();
 
         $query = Post::query()
+            ->withPostCardRelations($viewer)
             ->where('reply_to_id', $this->primaryId)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts'])
             ->latest()
             ->limit($limit);
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }

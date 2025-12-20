@@ -1,23 +1,26 @@
-<div class="card bg-base-100 border">
-    <div class="card-body">
-        <div class="flex items-center justify-between">
-            <div class="font-semibold">Who to follow</div>
+<div class="card bg-base-100 border widget-card">
+    <div class="card-body gap-4">
+        <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1">
+                <div class="widget-kicker">Suggestions</div>
+                <div class="widget-title">Who to follow</div>
+            </div>
             <a class="link link-primary text-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
         </div>
 
         @guest
-            <div class="pt-3 text-sm text-base-content/70">
+            <div class="text-sm text-base-content/70">
                 Sign in to follow people you are interested in.
             </div>
         @endguest
 
         @auth
-            <div class="space-y-1 pt-3">
+            <div class="space-y-1">
                 @forelse ($this->recommendedUsers as $u)
                     @php($mutualCount = (int) ($u->getAttribute('mutual_count') ?? 0))
                     @php($interestPostsCount = (int) ($u->getAttribute('interest_posts_count') ?? 0))
 
-                    <x-list-row>
+                    <x-list-row wire:key="who-to-follow-{{ $u->id }}">
                         <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
                             <div class="avatar shrink-0">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">

@@ -19,10 +19,21 @@ class ProfilePage extends Component
 
     public function mount(User $user): void
     {
-        $this->user = $user->loadCount(['followers', 'following'])->loadMissing(['pinnedPost.user', 'pinnedPost.images', 'pinnedPost.repostOf.user', 'pinnedPost.repostOf.images']);
+        $this->user = $user->loadCount(['followers', 'following']);
 
         if (Auth::check() && Auth::id() !== $this->user->id) {
             abort_if(Auth::user()->isBlockedEitherWay($this->user), 403);
+        }
+
+        if ($this->user->pinned_post_id) {
+            $viewer = Auth::user();
+            $pinnedPost = Post::query()
+                ->withPostCardRelations($viewer)
+                ->find($this->user->pinned_post_id);
+
+            if ($pinnedPost) {
+                $this->user->setRelation('pinnedPost', $pinnedPost);
+            }
         }
 
         if (! ($this->user->analytics_enabled || $this->user->is_admin)) {
@@ -60,18 +71,16 @@ class ProfilePage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         return Post::query()
             ->where('user_id', $this->user->id)
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
             ->when($this->user->pinned_post_id, fn ($q) => $q->where('id', '!=', $this->user->pinned_post_id))
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts'])
+            ->withPostCardRelations($viewer)
             ->latest()
+            ->orderByDesc('id')
             ->paginate(15);
     }
 

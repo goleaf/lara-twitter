@@ -23,32 +23,29 @@
 
     <div class="space-y-3">
         @forelse ($this->bookmarks as $bookmark)
-            @if ($bookmark->post)
-                @php($post = $bookmark->post)
-                @if ($post->reply_to_id && $post->replyTo)
-                    <div class="opacity-70 text-sm">
-                        Replying to
-                        <a class="link link-primary" href="{{ route('profile.show', ['user' => $post->replyTo->user->username]) }}" wire:navigate>
-                            &#64;{{ $post->replyTo->user->username }}
-                        </a>
-                    </div>
-                @endif
-                <livewire:post-card :post="$post" :key="'bookmark-post-'.$bookmark->post_id" />
-            @else
-                <div class="card bg-base-100 border">
-                    <div class="card-body gap-3">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <div class="font-semibold">This post is no longer available</div>
-                                <div class="text-sm opacity-70">Bookmarked {{ $bookmark->created_at?->diffForHumans() }}</div>
+            <div class="space-y-3" wire:key="bookmark-{{ $bookmark->id }}">
+                @if ($bookmark->post)
+                    @php($post = $bookmark->post)
+                    @if ($post->reply_to_id && $post->replyTo)
+                        <x-replying-to :username="$post->replyTo->user->username" />
+                    @endif
+                    <livewire:post-card :post="$post" :key="'bookmark-post-'.$bookmark->post_id" />
+                @else
+                    <div class="card bg-base-100 border">
+                        <div class="card-body gap-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="font-semibold">This post is no longer available</div>
+                                    <div class="text-sm opacity-70">Bookmarked {{ $bookmark->created_at?->diffForHumans() }}</div>
+                                </div>
+                                <button type="button" class="btn btn-ghost btn-sm" wire:click="remove({{ (int) $bookmark->post_id }})" wire:loading.attr="disabled" wire:target="remove({{ (int) $bookmark->post_id }})">
+                                    Remove
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-ghost btn-sm" wire:click="remove({{ (int) $bookmark->post_id }})" wire:loading.attr="disabled" wire:target="remove({{ (int) $bookmark->post_id }})">
-                                Remove
-                            </button>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         @empty
             <x-empty-state>
                 <x-slot:icon>

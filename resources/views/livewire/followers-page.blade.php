@@ -18,13 +18,14 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-                <div class="space-y-2">
-                    @forelse ($followers as $follower)
-                        <x-list-row>
-                            <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $follower->username]) }}" wire:navigate>
-                                <div class="avatar">
-                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                        @if ($follower->avatar_url)
+            <div class="space-y-2">
+                @forelse ($followers as $follower)
+                    @php($isFollowing = $this->isFollowing($follower->id))
+                    <x-list-row wire:key="follower-row-{{ $follower->id }}">
+                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $follower->username]) }}" wire:navigate>
+                            <div class="avatar">
+                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                    @if ($follower->avatar_url)
                                         <img src="{{ $follower->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -62,21 +63,21 @@
                                 @if (auth()->id() !== $follower->id)
                                     <button
                                         type="button"
-                                        class="btn btn-sm {{ $this->isFollowing($follower->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        class="btn btn-sm {{ $isFollowing ? 'btn-outline' : 'btn-primary' }}"
                                         wire:click="toggleFollow({{ $follower->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="toggleFollow({{ $follower->id }})"
                                     >
-                                        {{ $this->isFollowing($follower->id) ? 'Unfollow' : 'Follow' }}
+                                        {{ $isFollowing ? 'Unfollow' : 'Follow' }}
                                     </button>
-                                    @endif
-                                @endauth
-                            </div>
-                        </x-list-row>
-                    @empty
-                        <x-empty-state>
-                            No followers yet.
-                        </x-empty-state>
+                                @endif
+                            @endauth
+                        </div>
+                    </x-list-row>
+                @empty
+                    <x-empty-state>
+                        No followers yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>

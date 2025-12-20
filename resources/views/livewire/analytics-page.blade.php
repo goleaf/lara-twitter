@@ -71,7 +71,7 @@
                             </thead>
                             <tbody>
                                 @forelse ($this->tweetRows as $post)
-                                    <tr>
+                                    <tr wire:key="analytics-post-{{ $post->id }}">
                                         <td class="min-w-[16rem] max-w-md">
                                             <a class="link link-hover" href="{{ route('posts.show', $post) }}" wire:navigate>
                                                 {{ \Illuminate\Support\Str::limit($post->body, 120) }}
@@ -105,7 +105,7 @@
                     <div class="font-semibold">Follower growth ({{ $s['days'] }} days)</div>
                     <div class="space-y-1 pt-2">
                         @forelse ($this->followerGrowth as $row)
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between" wire:key="follower-growth-{{ $row->day }}">
                                 <div class="text-sm">{{ $row->day }}</div>
                                 <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
@@ -123,7 +123,7 @@
                     <div class="font-semibold">Top follower locations</div>
                     <div class="space-y-1 pt-2">
                         @forelse ($this->topFollowerLocations as $row)
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between" wire:key="follower-location-{{ md5($row->location) }}">
                                 <div class="text-sm truncate">{{ $row->location }}</div>
                                 <div class="text-sm opacity-70 tabular-nums">{{ $row->followers }}</div>
                             </div>
@@ -142,7 +142,7 @@
                     <div class="font-semibold">Followers also follow</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->alsoFollowedAccounts as $row)
-                            <x-list-row href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
+                            <x-list-row href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate wire:key="also-followed-{{ $row->username }}">
                                 <div class="min-w-0">
                                     <div class="font-medium truncate">{{ $row->name }}</div>
                                     <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
@@ -293,7 +293,7 @@
                     <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
                     <div class="space-y-2 pt-2">
                         @forelse ($this->topPosts as $post)
-                            <x-list-row href="{{ route('posts.show', $post) }}" wire:navigate class="items-start">
+                            <x-list-row href="{{ route('posts.show', $post) }}" wire:navigate class="items-start" wire:key="top-post-{{ $post->id }}">
                                 <div class="min-w-0">
                                     <div class="font-medium truncate">{{ $post->body }}</div>
                                     <div class="text-xs opacity-60 tabular-nums">

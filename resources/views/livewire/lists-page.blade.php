@@ -46,7 +46,7 @@
             </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->subscribedLists as $list)
-                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
+                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate wire:key="subscribed-list-{{ $list->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -93,7 +93,7 @@
             </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->ownedLists as $list)
-                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
+                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate wire:key="owned-list-{{ $list->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -140,7 +140,7 @@
             </div>
                 <div class="space-y-2 pt-2">
                     @forelse ($this->memberLists as $list)
-                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
+                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate wire:key="member-list-{{ $list->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">

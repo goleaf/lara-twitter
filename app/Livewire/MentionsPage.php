@@ -13,18 +13,16 @@ class MentionsPage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         $query = Post::query()
             ->whereHas('mentions', fn ($q) => $q->where('mentioned_user_id', Auth::id()))
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts'])
-            ->latest();
+            ->withPostCardRelations($viewer)
+            ->latest()
+            ->orderByDesc('id');
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }

@@ -62,8 +62,27 @@ class MessagesPage extends Component
                 });
             })
             ->with([
-                'participants.user',
-                'messages' => fn ($q) => $q->latest()->limit(1)->with('attachments'),
+                'participants' => fn ($q) => $q->select([
+                    'id',
+                    'conversation_id',
+                    'user_id',
+                    'role',
+                    'is_pinned',
+                    'is_request',
+                    'last_read_at',
+                ]),
+                'participants.user' => fn ($q) => $q->select([
+                    'id',
+                    'name',
+                    'username',
+                    'avatar_path',
+                    'is_verified',
+                ]),
+                'messages' => fn ($q) => $q
+                    ->select(['id', 'conversation_id', 'user_id', 'body', 'created_at'])
+                    ->latest()
+                    ->limit(1)
+                    ->withCount('attachments'),
             ])
             ->orderByDesc('cp.is_pinned')
             ->orderByDesc('conversations.updated_at')

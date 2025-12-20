@@ -56,17 +56,32 @@
                 @endif
             @endauth
 
-            <div class="flex flex-wrap gap-2">
-                @foreach ($this->members as $member)
-                    <a class="badge badge-outline badge-sm" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
-                        &#64;{{ $member->username }}
-                    </a>
-                @endforeach
+            @php($previewCount = $this->memberPreview->count())
+            @php($membersRemaining = max(0, (int) ($list->members_count ?? 0) - $previewCount))
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm font-semibold">Members</div>
+                    <div class="text-xs text-base-content/60">{{ (int) ($list->members_count ?? 0) }} total</div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    @foreach ($this->memberPreview as $member)
+                        <a class="badge badge-outline badge-sm" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate wire:key="list-member-badge-{{ $member->id }}">
+                            &#64;{{ $member->username }}
+                        </a>
+                    @endforeach
+                    @if ($membersRemaining > 0)
+                        @if (auth()->check() && auth()->id() === $list->owner_id)
+                            <a class="badge badge-ghost badge-sm" href="#manage-members">+{{ $membersRemaining }} more</a>
+                        @else
+                            <span class="badge badge-ghost badge-sm">+{{ $membersRemaining }} more</span>
+                        @endif
+                    @endif
+                </div>
             </div>
 
             @auth
                 @if (auth()->id() === $list->owner_id)
-                    <div class="rounded-box border border-base-200 bg-base-200/40 p-4 space-y-3">
+                    <div id="manage-members" class="rounded-box border border-base-200 bg-base-200/40 p-4 space-y-3">
                         <div class="space-y-1">
                             <div class="font-semibold">Manage members</div>
                             <div class="text-sm opacity-70">Add or remove people by username.</div>
@@ -86,13 +101,13 @@
                         </form>
                         <x-input-error class="mt-2" :messages="$errors->get('member_username')" />
 
-                            <div class="space-y-2">
-                                @foreach ($this->members as $member)
-                                    <x-list-row>
-                                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
-                                            <div class="avatar shrink-0">
-                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                    @if ($member->avatar_url)
+                        <div class="space-y-2">
+                            @foreach ($this->members as $member)
+                                <x-list-row wire:key="list-member-row-{{ $member->id }}">
+                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
+                                        <div class="avatar shrink-0">
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($member->avatar_url)
                                                     <img src="{{ $member->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                                 @else
                                                     <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -119,12 +134,18 @@
                                         wire:click="removeMember({{ $member->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="removeMember({{ $member->id }})"
-                                        >
-                                            Remove
-                                        </button>
-                                    </x-list-row>
-                                @endforeach
+                                    >
+                                        Remove
+                                    </button>
+                                </x-list-row>
+                            @endforeach
+                        </div>
+
+                        @if ($this->members->hasPages())
+                            <div class="pt-2">
+                                {{ $this->members->links() }}
                             </div>
+                        @endif
                     </div>
                 @endif
             @endauth

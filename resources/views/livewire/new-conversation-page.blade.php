@@ -42,7 +42,7 @@
             @if ($recipientCount)
                 <div class="space-y-2">
                     @foreach ($this->recipients as $user)
-                        <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 border border-base-200 bg-base-200/40 focus-within:ring-2 focus-within:ring-primary/20">
+                        <div class="flex items-center justify-between gap-3 rounded-box px-3 py-2 border border-base-200 bg-base-200/40 focus-within:ring-2 focus-within:ring-primary/20" wire:key="recipient-{{ $user->id }}">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">

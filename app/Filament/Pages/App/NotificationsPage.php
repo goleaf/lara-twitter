@@ -110,7 +110,14 @@ class NotificationsPage extends Page implements HasTable
                     ->toggle(),
                 Filter::make('today')
                     ->label('Today')
-                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today()))
+                    ->query(function (Builder $query): Builder {
+                        $start = now()->startOfDay();
+                        $end = $start->copy()->addDay();
+
+                        return $query
+                            ->where('created_at', '>=', $start)
+                            ->where('created_at', '<', $end);
+                    })
                     ->toggle(),
             ])
             ->groups([
@@ -136,7 +143,7 @@ class NotificationsPage extends Page implements HasTable
             ->notifications()
             ->latest()
             ->limit(200)
-            ->get();
+            ->get(['id', 'type', 'data', 'read_at', 'created_at']);
 
         $items = app(NotificationVisibilityService::class)->filter(Auth::user(), $items);
 

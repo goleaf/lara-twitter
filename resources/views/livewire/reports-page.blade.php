@@ -12,7 +12,7 @@
                     <select wire:model.live="status" class="select select-bordered select-sm">
                         <option value="all">All</option>
                         @foreach ($statuses as $s)
-                            <option value="{{ $s }}">{{ ucfirst($s) }}</option>
+                            <option value="{{ $s }}" wire:key="report-status-{{ $s }}">{{ ucfirst($s) }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -36,7 +36,7 @@
                     <tbody>
                         @forelse ($this->reports as $report)
                             @php($target = $report->reportable)
-                            <tr>
+                            <tr wire:key="report-row-{{ $report->id }}">
                                 <td class="font-mono text-xs whitespace-nowrap">{{ $report->case_number }}</td>
 
                                 <td>

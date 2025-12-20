@@ -14,7 +14,7 @@
                         @if ($conversation->is_group)
                             <div class="avatar-group -space-x-3">
                                 @foreach ($avatarUsers as $u)
-                                    <div class="avatar">
+                                    <div class="avatar" wire:key="group-avatar-{{ $conversation->id }}-{{ $u->id }}">
                                         <div class="w-10 rounded-full border border-base-200 bg-base-100">
                                             @if ($u->avatar_url)
                                                 <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
@@ -120,7 +120,7 @@
 
                 <div class="flex flex-wrap gap-2">
                     @foreach ($conversation->participants as $participant)
-                        <a class="badge badge-outline" href="{{ route('profile.show', ['user' => $participant->user]) }}" wire:navigate>
+                        <a class="badge badge-outline" href="{{ route('profile.show', ['user' => $participant->user]) }}" wire:navigate wire:key="group-participant-{{ $conversation->id }}-{{ $participant->id }}">
                             &#64;{{ $participant->user->username }}
                             @if ($participant->role === 'admin')
                                 <span class="opacity-60 ms-1">(admin)</span>
@@ -167,6 +167,7 @@
                                     wire:click="removeMember({{ $participant->user_id }})"
                                     wire:loading.attr="disabled"
                                     wire:target="removeMember({{ $participant->user_id }})"
+                                    wire:key="group-remove-{{ $conversation->id }}-{{ $participant->id }}"
                                 >
                                     Remove &#64;{{ $participant->user->username }}
                                 </button>
@@ -180,7 +181,7 @@
 
     <div class="space-y-2">
         @foreach ($this->messages as $message)
-            <div class="chat {{ $message->user_id === $me->id ? 'chat-end' : 'chat-start' }}">
+            <div class="chat {{ $message->user_id === $me->id ? 'chat-end' : 'chat-start' }}" wire:key="message-{{ $message->id }}">
                 <div class="chat-header opacity-70 text-xs">
                     &#64;{{ $message->user->username }}
                     <time class="ms-1">{{ $message->created_at->format('H:i') }}</time>
@@ -213,23 +214,23 @@
                                 @php($ratio = $isWide ? '16 / 9' : '1 / 1')
 
                                 @if (str_starts_with($attachment->mime_type, 'image/'))
-                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};" wire:key="message-attachment-{{ $message->id }}-{{ $attachment->id }}">
                                         <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" decoding="async" />
                                     </div>
                                 @elseif (str_starts_with($attachment->mime_type, 'video/'))
-                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+                                    <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};" wire:key="message-attachment-{{ $message->id }}-{{ $attachment->id }}">
                                         <video class="h-full w-full" controls preload="metadata">
                                             <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
                                         </video>
                                     </div>
                                 @elseif (str_starts_with($attachment->mime_type, 'audio/'))
-                                    <div class="rounded-box border border-base-200 bg-base-200/40 p-2 {{ $spanClass }}">
+                                    <div class="rounded-box border border-base-200 bg-base-200/40 p-2 {{ $spanClass }}" wire:key="message-attachment-{{ $message->id }}-{{ $attachment->id }}">
                                         <audio class="w-full" controls>
                                             <source src="{{ $url }}" type="{{ $attachment->mime_type }}" />
                                         </audio>
                                     </div>
                                 @else
-                                    <a class="btn btn-ghost btn-sm justify-start w-full {{ $spanClass }}" href="{{ $url }}" target="_blank" rel="noreferrer">
+                                    <a class="btn btn-ghost btn-sm justify-start w-full {{ $spanClass }}" href="{{ $url }}" target="_blank" rel="noopener noreferrer" wire:key="message-attachment-{{ $message->id }}-{{ $attachment->id }}">
                                         {{ basename($attachment->path) }}
                                     </a>
                                 @endif
@@ -254,6 +255,7 @@
                                 wire:loading.attr="disabled"
                                 wire:target="toggleReaction({{ $message->id }}, @js($emoji))"
                                 @disabled($myParticipant?->is_request)
+                                wire:key="message-reaction-{{ $message->id }}-{{ md5($emoji) }}"
                             >
                                 {{ $emoji }} {{ $items->count() }}
                             </button>
@@ -274,6 +276,7 @@
                                             wire:click="toggleReaction({{ $message->id }}, @js($emoji))"
                                             wire:loading.attr="disabled"
                                             wire:target="toggleReaction({{ $message->id }}, @js($emoji))"
+                                            wire:key="message-reaction-picker-{{ $message->id }}-{{ md5($emoji) }}"
                                         >
                                             {{ $emoji }}
                                         </button>

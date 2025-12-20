@@ -1,7 +1,7 @@
 @php($primary = $this->primaryPost())
 @php($replyingTo = $this->replyingToUsername())
 
-<div class="card bg-base-100 card-hover">
+<div class="card bg-base-100 card-hover post-card">
     <div class="card-body p-4">
         <div class="flex gap-3">
             <a class="shrink-0" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate aria-label="View profile">
@@ -65,7 +65,7 @@
                     </a>
 
                     <div class="flex items-center gap-2 shrink-0">
-                        <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $primary) }}" wire:navigate>
+                        <a class="text-sm opacity-60 link link-hover tabular-nums" href="{{ route('posts.show', $primary) }}" wire:navigate>
                             {{ $primary->created_at->diffForHumans() }}
                         </a>
                         @if ($primary->location)
@@ -127,7 +127,7 @@
                                 @php($count = (int) ($option->votes_count ?? 0))
                                 @php($pct = $totalVotes ? (int) round(($count / $totalVotes) * 100) : 0)
 
-                                <div class="space-y-1">
+                                <div class="space-y-1" wire:key="poll-result-{{ $poll->id }}-{{ $option->id }}">
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="{{ (int) $myVoteOptionId === (int) $option->id ? 'font-semibold' : '' }}">
                                             {{ $option->option_text }}
@@ -152,6 +152,7 @@
                                         wire:click="voteInPoll({{ $option->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="voteInPoll({{ $option->id }})"
+                                        wire:key="poll-option-{{ $poll->id }}-{{ $option->id }}"
                                     >
                                         {{ $option->option_text }}
                                     </button>
@@ -212,8 +213,8 @@
                         @php($isWide = $imageCount === 1 || ($imageCount === 3 && $loop->last))
                         @php($spanClass = $imageCount === 3 && $loop->last ? 'col-span-2' : '')
                         @php($ratio = $isWide ? '16 / 9' : '1 / 1')
-    
-                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+
+                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};" wire:key="post-image-{{ $primary->id }}-{{ $loop->index }}">
                             <img class="h-full w-full object-cover" src="{{ $url }}" alt="" loading="lazy" decoding="async" />
                         </div>
                     @endforeach
@@ -230,7 +231,7 @@
                                 <span class="opacity-60 font-normal">&#64;{{ $post->repostOf->user->username }}</span>
                             </a>
                             <div class="flex items-center gap-2 shrink-0">
-                                <a class="text-sm opacity-60 link link-hover" href="{{ route('posts.show', $post->repostOf) }}" wire:navigate>
+                                <a class="text-sm opacity-60 link link-hover tabular-nums" href="{{ route('posts.show', $post->repostOf) }}" wire:navigate>
                                     {{ $post->repostOf->created_at->diffForHumans() }}
                                 </a>
                                 @if ($post->repostOf->location)
@@ -258,7 +259,7 @@
                                                 @php($count = (int) ($option->votes_count ?? 0))
                                                 @php($pct = $totalVotes ? (int) round(($count / $totalVotes) * 100) : 0)
 
-                                                <div class="space-y-1">
+                                                <div class="space-y-1" wire:key="repost-poll-result-{{ $poll->id }}-{{ $option->id }}">
                                                     <div class="flex items-center justify-between text-sm">
                                                         <span class="{{ (int) $myVoteOptionId === (int) $option->id ? 'font-semibold' : '' }}">
                                                             {{ $option->option_text }}
@@ -283,6 +284,7 @@
                                                         wire:click="voteInPoll({{ $option->id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="voteInPoll({{ $option->id }})"
+                                                        wire:key="repost-poll-option-{{ $poll->id }}-{{ $option->id }}"
                                                     >
                                                         {{ $option->option_text }}
                                                     </button>
@@ -342,8 +344,8 @@
                                         @php($isWide = $repostImagesCount === 1 || ($repostImagesCount === 3 && $loop->last))
                                         @php($spanClass = $repostImagesCount === 3 && $loop->last ? 'col-span-2' : '')
                                         @php($ratio = $isWide ? '16 / 9' : '1 / 1')
-    
-                                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
+
+                                        <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};" wire:key="repost-image-{{ $post->id }}-{{ $image->id }}">
                                             <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'))->url($image->path) }}" alt="" loading="lazy" decoding="async" />
                                         </div>
                                     @endforeach

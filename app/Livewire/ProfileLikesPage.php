@@ -27,21 +27,19 @@ class ProfileLikesPage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         $query = $this->user
             ->likedPosts()
             ->getQuery()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts'])
-            ->latest('likes.created_at');
+            ->withPostCardRelations($viewer)
+            ->latest('likes.created_at')
+            ->orderByDesc('posts.id');
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('posts.user_id', $exclude);
             }

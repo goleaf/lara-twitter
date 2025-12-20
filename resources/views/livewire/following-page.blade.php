@@ -18,13 +18,14 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-                <div class="space-y-2">
-                    @forelse ($following as $followed)
-                        <x-list-row>
-                            <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
-                                <div class="avatar">
-                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                        @if ($followed->avatar_url)
+            <div class="space-y-2">
+                @forelse ($following as $followed)
+                    @php($isFollowing = $this->isFollowing($followed->id))
+                    <x-list-row wire:key="following-row-{{ $followed->id }}">
+                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
+                            <div class="avatar">
+                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                    @if ($followed->avatar_url)
                                         <img src="{{ $followed->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -50,21 +51,21 @@
                                 @if (auth()->id() !== $followed->id)
                                     <button
                                         type="button"
-                                        class="btn btn-sm {{ $this->isFollowing($followed->id) ? 'btn-outline' : 'btn-primary' }}"
+                                        class="btn btn-sm {{ $isFollowing ? 'btn-outline' : 'btn-primary' }}"
                                         wire:click="toggleFollow({{ $followed->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="toggleFollow({{ $followed->id }})"
                                     >
-                                        {{ $this->isFollowing($followed->id) ? 'Unfollow' : 'Follow' }}
+                                        {{ $isFollowing ? 'Unfollow' : 'Follow' }}
                                     </button>
-                                    @endif
-                                @endauth
-                            </div>
-                        </x-list-row>
-                    @empty
-                        <x-empty-state>
-                            Not following anyone yet.
-                        </x-empty-state>
+                                @endif
+                            @endauth
+                        </div>
+                    </x-list-row>
+                @empty
+                    <x-empty-state>
+                        Not following anyone yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>

@@ -49,6 +49,10 @@ final class PageTitle
             request()->routeIs('profile') => 'Settings',
 
             request()->routeIs('help.*') => 'Help',
+            request()->routeIs('terms') => 'Terms',
+            request()->routeIs('privacy') => 'Privacy',
+            request()->routeIs('cookies') => 'Cookies',
+            request()->routeIs('about') => 'About',
 
             request()->routeIs('profile.*') => (function (): string {
                 $user = request()->route('user');

@@ -2,7 +2,7 @@
     'title' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'rounded-box border border-base-200 bg-base-200/40 px-4 py-3']) }}>
+<div {{ $attributes->merge(['class' => 'empty-state-card rounded-box px-4 py-3']) }}>
     <div class="flex items-start gap-3">
         @isset($icon)
             <div class="shrink-0 opacity-60">

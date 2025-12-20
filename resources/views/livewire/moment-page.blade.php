@@ -103,7 +103,7 @@
 
     <div class="space-y-3">
         @forelse ($this->items as $item)
-            <div class="space-y-2">
+            <div class="space-y-2" wire:key="moment-item-{{ $item->id }}">
                 @if ($this->editing_item_id === $item->id)
                     <div class="card bg-base-100 border">
                         <div class="card-body py-4 space-y-2">

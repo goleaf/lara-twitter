@@ -7,10 +7,12 @@ use App\Models\Moment;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class MomentsPage extends Component
 {
     use WithFileUploads;
+    use WithPagination;
 
     public string $title = '';
 
@@ -61,18 +63,23 @@ class MomentsPage extends Component
             return collect();
         }
 
-        return Auth::user()->moments()->latest()->withCount('items')->get();
+        return Auth::user()
+            ->moments()
+            ->select(['id', 'owner_id', 'title', 'description', 'cover_image_path', 'is_public', 'created_at'])
+            ->withCount('items')
+            ->latest()
+            ->paginate(8, pageName: 'momentsPage');
     }
 
     public function getPublicMomentsProperty()
     {
         return Moment::query()
+            ->select(['id', 'owner_id', 'title', 'description', 'cover_image_path', 'is_public', 'created_at'])
             ->where('is_public', true)
-            ->with(['owner'])
+            ->with(['owner:id,name,username,avatar_path'])
             ->withCount('items')
             ->latest()
-            ->limit(20)
-            ->get();
+            ->paginate(8, pageName: 'publicMomentsPage');
     }
 
     public function render()

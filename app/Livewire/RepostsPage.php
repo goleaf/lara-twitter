@@ -56,7 +56,8 @@ class RepostsPage extends Component
             ->whereNull('reply_to_id')
             ->where('body', '')
             ->with('user')
-            ->latest();
+            ->latest()
+            ->orderByDesc('id');
 
         if (Auth::check()) {
             $exclude = Auth::user()->excludedUserIds();
@@ -71,21 +72,18 @@ class RepostsPage extends Component
     public function getQuotesProperty()
     {
         $primary = $this->primaryPost();
+        $viewer = Auth::user();
 
         $query = Post::query()
             ->where('repost_of_id', $primary->id)
             ->whereNull('reply_to_id')
             ->where('body', '!=', '')
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies'])
-            ->latest();
+            ->withPostCardRelations($viewer, true)
+            ->latest()
+            ->orderByDesc('id');
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }

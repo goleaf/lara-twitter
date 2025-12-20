@@ -47,6 +47,10 @@ Route::view('help/direct-messages', 'help.direct-messages')->name('help.direct-m
 Route::view('help/mute', 'help.mute')->name('help.mute');
 Route::view('help/replies', 'help.replies')->name('help.replies');
 Route::view('help/blocking', 'help.blocking')->name('help.blocking');
+Route::view('terms', 'legal.terms')->name('terms');
+Route::view('privacy', 'legal.privacy')->name('privacy');
+Route::view('cookies', 'legal.cookies')->name('cookies');
+Route::view('about', 'legal.about')->name('about');
 
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');

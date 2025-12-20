@@ -29,6 +29,7 @@ class NewConversationPage extends Component
     public function getRecipientsProperty()
     {
         return User::query()
+            ->select(['id', 'name', 'username', 'avatar_path', 'is_verified'])
             ->whereIn('id', $this->recipientUserIds)
             ->orderBy('username')
             ->get();

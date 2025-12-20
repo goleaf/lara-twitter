@@ -7,6 +7,7 @@ use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\UserList;
+use App\Services\TrendingService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -36,8 +37,12 @@ class SearchPage extends Component
     #[Url]
     public string $to = '';
 
-    public function updated(): void
+    public function updated(string $name): void
     {
+        if (! in_array($name, ['q', 'type', 'sort', 'user', 'from', 'to'], true)) {
+            return;
+        }
+
         $this->resetPage();
     }
 
@@ -66,6 +71,17 @@ class SearchPage extends Component
         return in_array($this->sort, ['latest', 'top'], true) ? $this->sort : 'latest';
     }
 
+    private function hasSearchInput(): bool
+    {
+        if ($this->normalizedQuery() !== '') {
+            return true;
+        }
+
+        return trim((string) $this->user) !== ''
+            || trim((string) $this->from) !== ''
+            || trim((string) $this->to) !== '';
+    }
+
     private function normalizedUsernameFilter(): ?string
     {
         $value = trim($this->user);
@@ -89,6 +105,24 @@ class SearchPage extends Component
         }
 
         return [$from, $to];
+    }
+
+    private function resolveUserIds(array $usernames)
+    {
+        $usernames = collect($usernames)
+            ->filter(fn ($value) => is_string($value) && $value !== '')
+            ->map(fn ($value) => mb_strtolower($value))
+            ->unique()
+            ->values()
+            ->all();
+
+        if (count($usernames) === 0) {
+            return collect();
+        }
+
+        return User::query()
+            ->whereIn('username', $usernames)
+            ->pluck('id', 'username');
     }
 
     /**
@@ -302,20 +336,7 @@ class SearchPage extends Component
 
     public function getTrendingHashtagsProperty()
     {
-        $since = now()->subDay();
-
-        return Hashtag::query()
-            ->select(['hashtags.*'])
-            ->selectRaw('count(*) as uses_count')
-            ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
-            ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
-            ->where('posts.is_published', true)
-            ->whereNull('posts.reply_to_id')
-            ->where('posts.created_at', '>=', $since)
-            ->groupBy('hashtags.id')
-            ->orderByDesc('uses_count')
-            ->limit(10)
-            ->get();
+        return app(TrendingService::class)->trendingHashtags(Auth::user(), 10);
     }
 
     public function getUsersProperty()
@@ -326,7 +347,10 @@ class SearchPage extends Component
 
         $q = ltrim($this->normalizedQuery(), '@');
         if ($q === '') {
-            $query = User::query()->latest()->limit(10);
+            $query = User::query()
+                ->select(['id', 'name', 'username', 'avatar_path', 'is_verified'])
+                ->latest()
+                ->limit(10);
 
             if (Auth::check()) {
                 $exclude = Auth::user()->excludedUserIds();
@@ -341,6 +365,7 @@ class SearchPage extends Component
         $needle = '%'.mb_strtolower($q).'%';
 
         $query = User::query()
+            ->select(['id', 'name', 'username', 'avatar_path', 'is_verified'])
             ->where(function (Builder $query) use ($needle): void {
                 $query
                     ->whereRaw('lower(username) like ?', [$needle])
@@ -373,6 +398,7 @@ class SearchPage extends Component
         $tag = mb_strtolower($tag);
 
         return Hashtag::query()
+            ->select(['id', 'tag'])
             ->where('tag', 'like', '%'.$tag.'%')
             ->orderBy('tag')
             ->limit(20)
@@ -393,8 +419,9 @@ class SearchPage extends Component
         }
 
         $query = UserList::query()
+            ->select(['id', 'owner_id', 'name', 'description', 'created_at'])
             ->where('is_private', false)
-            ->with('owner')
+            ->with(['owner:id,username,name,avatar_path'])
             ->withCount(['members', 'subscribers']);
 
         if (Auth::check()) {
@@ -438,6 +465,10 @@ class SearchPage extends Component
             return null;
         }
 
+        if (! $this->hasSearchInput()) {
+            return null;
+        }
+
         $ops = $this->parseOperators($this->normalizedQuery());
 
         [$from, $to] = $this->parsedDates();
@@ -447,25 +478,28 @@ class SearchPage extends Component
         $username = $this->normalizedUsernameFilter() ?? $ops['from_user'];
         $effectiveSort = in_array($ops['sort'], ['latest', 'top'], true) ? $ops['sort'] : $this->normalizedSort();
 
+        $viewer = Auth::user();
+
         $query = Post::query()
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies']);
+            ->withPostCardRelations($viewer, true);
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }
         }
 
+        $userIdMap = $this->resolveUserIds(array_merge(
+            $username ? [$username] : [],
+            $ops['to_user'] ? [$ops['to_user']] : [],
+            $ops['mentions'],
+        ));
+
         if ($username) {
-            $userId = User::query()->where('username', $username)->value('id');
+            $userId = $userIdMap->get($username);
             if (! $userId) {
                 return $query->whereRaw('1 = 0')->paginate(15);
             }
@@ -505,16 +539,29 @@ class SearchPage extends Component
             });
         }
 
-        if ($ops['min_likes'] !== null) {
-            $query->whereRaw('(select count(*) from likes where likes.post_id = posts.id) >= ?', [$ops['min_likes']]);
+        if ($ops['min_likes'] !== null && $ops['min_likes'] > 0) {
+            $query->whereIn('posts.id', function ($sub) use ($ops) {
+                $sub->from('likes')
+                    ->select('likes.post_id')
+                    ->groupBy('likes.post_id')
+                    ->havingRaw('count(*) >= ?', [$ops['min_likes']]);
+            });
         }
 
-        if ($ops['min_reposts'] !== null) {
-            $query->whereRaw('(select count(*) from posts as rp where rp.repost_of_id = posts.id and rp.reply_to_id is null) >= ?', [$ops['min_reposts']]);
+        if ($ops['min_reposts'] !== null && $ops['min_reposts'] > 0) {
+            $query->whereIn('posts.id', function ($sub) use ($ops) {
+                $sub->from('posts as reposts')
+                    ->select('reposts.repost_of_id')
+                    ->whereNotNull('reposts.repost_of_id')
+                    ->whereNull('reposts.reply_to_id')
+                    ->where('reposts.is_published', true)
+                    ->groupBy('reposts.repost_of_id')
+                    ->havingRaw('count(*) >= ?', [$ops['min_reposts']]);
+            });
         }
 
         if ($ops['to_user']) {
-            $mentionedUserId = User::query()->where('username', $ops['to_user'])->value('id');
+            $mentionedUserId = $userIdMap->get($ops['to_user']);
             if ($mentionedUserId) {
                 $query->whereHas('mentions', fn ($mq) => $mq->where('mentioned_user_id', $mentionedUserId));
             } else {
@@ -523,7 +570,7 @@ class SearchPage extends Component
         }
 
         foreach ($ops['mentions'] as $mention) {
-            $mentionedUserId = User::query()->where('username', $mention)->value('id');
+            $mentionedUserId = $userIdMap->get($mention);
             if (! $mentionedUserId) {
                 return $query->whereRaw('1 = 0')->paginate(15);
             }
@@ -564,10 +611,11 @@ class SearchPage extends Component
             return $query
                 ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(15);
         }
 
-        return $query->latest()->paginate(15);
+        return $query->latest()->orderByDesc('id')->paginate(15);
     }
 
     public function render()

@@ -18,7 +18,7 @@
                 <div class="card bg-base-100 border border-base-200 shadow-sm">
                     <div class="card-body p-3 space-y-2">
                         @foreach ($this->results as $post)
-                            <a href="{{ route('posts.show', $post) }}" wire:navigate class="block rounded-lg p-2 hover:bg-base-200/60 transition">
+                            <a href="{{ route('posts.show', $post) }}" wire:navigate class="block rounded-lg p-2 hover:bg-base-200/60 transition" wire:key="global-search-post-{{ $post->id }}">
                                 <div class="flex items-center justify-between text-sm">
                                     <div class="font-semibold truncate">{{ $post->user->name ?? 'Unknown' }}</div>
                                     <div class="opacity-60 shrink-0">&#64;{{ $post->user->username ?? '' }}</div>

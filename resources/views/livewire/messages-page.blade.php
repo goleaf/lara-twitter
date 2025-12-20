@@ -1,5 +1,6 @@
 <div class="max-w-2xl lg:max-w-4xl mx-auto space-y-4">
-    <div class="card bg-base-100 border">
+    <div class="card bg-base-100 border hero-card messages-hero">
+        <div class="hero-edge" aria-hidden="true"></div>
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <div class="text-xl font-semibold">Messages</div>
@@ -16,12 +17,18 @@
             </div>
 
             <div class="mt-4">
-                <input
-                    wire:model.live="q"
-                    type="search"
-                    placeholder="Search messages…"
-                    class="input input-bordered input-sm w-full"
-                />
+                <label class="input input-bordered input-sm w-full flex items-center gap-2 bg-base-100/70">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                    </svg>
+                    <input
+                        wire:model.live.debounce.300ms="q"
+                        type="search"
+                        placeholder="Search messages…"
+                        aria-label="Search messages"
+                        class="grow"
+                    />
+                </label>
             </div>
         </div>
     </div>
@@ -33,14 +40,14 @@
             @php($meParticipant = $conversation->participants->firstWhere('user_id', auth()->id()))
             @php($isUnread = $last && $last->user_id !== auth()->id() && (! $meParticipant?->last_read_at || $meParticipant->last_read_at->lt($last->created_at)))
 
-            <div class="rounded-box border border-base-200 bg-base-100 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20 {{ $isUnread ? 'ring-1 ring-primary/20' : '' }}">
+            <div class="rounded-box border border-base-200 bg-base-100 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20 {{ $isUnread ? 'ring-1 ring-primary/20' : '' }}" wire:key="conversation-row-{{ $conversation->id }}">
                 <div class="flex items-start justify-between gap-4 px-4 py-3">
                     <a class="flex items-start gap-3 min-w-0 flex-1" href="{{ route('messages.show', $conversation) }}" wire:navigate>
                         <div class="shrink-0">
                             @if ($conversation->is_group)
                                 <div class="avatar-group -space-x-3">
                                     @forelse ($others->take(3) as $u)
-                                        <div class="avatar">
+                                        <div class="avatar" wire:key="conversation-avatar-{{ $conversation->id }}-{{ $u->id }}">
                                             <div class="w-9 rounded-full border border-base-200 bg-base-100">
                                                 @if ($u->avatar_url)
                                                     <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
@@ -100,7 +107,7 @@
                             </div>
 
                             <div class="text-sm opacity-70 truncate">
-                                {{ $last?->body ?? ($last?->attachments?->count() ? 'Attachment' : 'No messages yet') }}
+                                {{ $last?->body ?? (($last?->attachments_count ?? 0) ? 'Attachment' : 'No messages yet') }}
                             </div>
                         </div>
                     </a>

@@ -31,15 +31,30 @@ class TrendingService
         return now()->subHour();
     }
 
+    private function hasTables(array $tables): bool
+    {
+        try {
+            foreach ($tables as $table) {
+                if (! Schema::hasTable($table)) {
+                    return false;
+                }
+            }
+        } catch (\Throwable) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function trendingHashtags(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
+        if (! $this->hasTables(['hashtags', 'hashtag_post', 'posts', 'users'])) {
+            return collect();
+        }
+
         $key = $this->trendingCacheKey('hashtags', $viewer, $limit, $location);
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
-            if (! Schema::hasTable('hashtags') || ! Schema::hasTable('hashtag_post') || ! Schema::hasTable('posts')) {
-                return collect();
-            }
-
             $since = now()->subDay();
             $recentSince = $this->recentWindowStart();
 
@@ -51,6 +66,7 @@ class TrendingService
                 ->selectRaw('count(distinct case when posts.created_at >= ? then posts.user_id end) as recent_users_count', [$recentSince])
                 ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
                 ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
+                ->where('posts.is_published', true)
                 ->whereNull('posts.reply_to_id')
                 ->where('posts.is_reply_like', false)
                 ->where('posts.created_at', '>=', $since)
@@ -123,6 +139,10 @@ class TrendingService
 
     public function trendingTopics(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
+        if (! $this->hasTables(['posts', 'hashtags', 'hashtag_post', 'users'])) {
+            return collect();
+        }
+
         $key = $this->trendingCacheKey('topics', $viewer, $limit, $location);
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
@@ -170,14 +190,18 @@ class TrendingService
                     $this->applyMutedTermsToPostsQuery($query, $viewer);
                 }
 
-                $count = (int) (clone $query)->count();
+                $stats = (clone $query)
+                    ->selectRaw('count(*) as total_count')
+                    ->selectRaw('sum(case when posts.created_at >= ? then 1 else 0 end) as recent_count', [$recentSince])
+                    ->toBase()
+                    ->first();
+
+                $count = (int) ($stats->total_count ?? 0);
+                $recentCount = (int) ($stats->recent_count ?? 0);
+
                 if ($count === 0) {
                     continue;
                 }
-
-                $recentCount = (int) (clone $query)
-                    ->where('posts.created_at', '>=', $recentSince)
-                    ->count();
 
                 $baseline = max(0, $count - $recentCount);
                 $score = ($recentCount * $recentCount) / ($baseline + 1) + ($count * 0.01);
@@ -227,18 +251,17 @@ class TrendingService
 
     public function trendingConversations(?User $viewer, int $limit = 10, ?string $location = null): Collection
     {
+        if (! $this->hasTables(['posts', 'users'])) {
+            return collect();
+        }
+
         $key = $this->trendingCacheKey('conversations', $viewer, $limit, $location);
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
             $since = now()->subDay();
 
             $query = Post::query()
-                ->with([
-                    'user',
-                    'images',
-                    'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-                ])
-                ->withCount(['likes', 'reposts', 'replies'])
+                ->withPostCardRelations($viewer, true)
                 ->whereNull('reply_to_id')
                 ->where('is_reply_like', false)
                 ->where('posts.created_at', '>=', $since);
@@ -268,6 +291,10 @@ class TrendingService
 
     public function trendingKeywords(?User $viewer, int $limit = 15, ?string $location = null): Collection
     {
+        if (! $this->hasTables(['posts', 'users'])) {
+            return collect();
+        }
+
         $key = $this->trendingCacheKey('keywords', $viewer, $limit, $location);
 
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
@@ -301,12 +328,7 @@ class TrendingService
 
             $posts = $postsQuery->cursor();
 
-            $stopwords = array_fill_keys([
-                'the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'you', 'are', 'was', 'were', 'have', 'has',
-                'not', 'but', 'all', 'can', 'will', 'just', 'like', 'about', 'into', 'over', 'when', 'what', 'why', 'how',
-                'than', 'then', 'them', 'they', 'our', 'out', 'who', 'its', 'it', 'a', 'an', 'to', 'of', 'in', 'on', 'at',
-                'is', 'as', 'be', 'or', 'we', 'i', 'me', 'my',
-            ], true);
+            $stopwords = $this->stopwords();
 
             $counts = [];
             $recentCounts = [];
@@ -314,8 +336,15 @@ class TrendingService
             $recentUserCounts = [];
 
             foreach ($posts as $post) {
-                $body = preg_replace('/https?:\\/\\/\\S+/i', ' ', (string) $post->body) ?? (string) $post->body;
-                $body = preg_replace('/[#@][A-Za-z0-9_\\-]+/u', ' ', $body) ?? $body;
+                $body = (string) $post->body;
+
+                if (stripos($body, 'http://') !== false || stripos($body, 'https://') !== false) {
+                    $body = preg_replace('/https?:\\/\\/\\S+/i', ' ', $body) ?? $body;
+                }
+
+                if (str_contains($body, '#') || str_contains($body, '@')) {
+                    $body = preg_replace('/[#@][A-Za-z0-9_\\-]+/u', ' ', $body) ?? $body;
+                }
                 $isRecent = (bool) ($post->created_at && $post->created_at->greaterThanOrEqualTo($recentSince));
 
                 if (! preg_match_all('/\\b[\\pL\\pN]{4,}\\b/u', $body, $matches)) {
@@ -384,6 +413,66 @@ class TrendingService
 
             return $rows;
         });
+    }
+
+    private function stopwords(): array
+    {
+        static $stopwords = [
+            'the' => true,
+            'and' => true,
+            'for' => true,
+            'with' => true,
+            'this' => true,
+            'that' => true,
+            'from' => true,
+            'your' => true,
+            'you' => true,
+            'are' => true,
+            'was' => true,
+            'were' => true,
+            'have' => true,
+            'has' => true,
+            'not' => true,
+            'but' => true,
+            'all' => true,
+            'can' => true,
+            'will' => true,
+            'just' => true,
+            'like' => true,
+            'about' => true,
+            'into' => true,
+            'over' => true,
+            'when' => true,
+            'what' => true,
+            'why' => true,
+            'how' => true,
+            'than' => true,
+            'then' => true,
+            'them' => true,
+            'they' => true,
+            'our' => true,
+            'out' => true,
+            'who' => true,
+            'its' => true,
+            'it' => true,
+            'a' => true,
+            'an' => true,
+            'to' => true,
+            'of' => true,
+            'in' => true,
+            'on' => true,
+            'at' => true,
+            'is' => true,
+            'as' => true,
+            'be' => true,
+            'or' => true,
+            'we' => true,
+            'i' => true,
+            'me' => true,
+            'my' => true,
+        ];
+
+        return $stopwords;
     }
 
     private function normalizedInterests(?User $viewer): array

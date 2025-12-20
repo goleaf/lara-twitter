@@ -156,7 +156,7 @@ new class extends Component
 
     <div class="space-y-2">
         @forelse ($this->mutedTerms as $row)
-            <div class="flex items-start justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40">
+            <div class="flex items-start justify-between gap-3 border border-base-200 rounded-box p-3 bg-base-200/40" wire:key="muted-term-{{ $row->id }}">
                 <div class="min-w-0">
                     <div class="font-semibold truncate">{{ $row->term }}</div>
                     <div class="text-xs opacity-70">

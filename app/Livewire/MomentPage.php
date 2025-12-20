@@ -209,13 +209,11 @@ class MomentPage extends Component
 
     public function getItemsProperty()
     {
+        $viewer = Auth::user();
+
         return $this->moment
             ->items()
-            ->with(['post' => fn ($q) => $q->with([
-                'user',
-                'images',
-                'repostOf' => fn ($rq) => $rq->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']),
-            ])->withCount(['likes', 'reposts', 'replies'])])
+            ->with(['post' => fn ($q) => $q->withPostCardRelations($viewer, true)])
             ->get();
     }
 

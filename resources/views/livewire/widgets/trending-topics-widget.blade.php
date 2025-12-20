@@ -1,11 +1,19 @@
-<div class="card bg-base-100 border" wire:poll.visible.180s>
-    <div class="card-body">
-        <div class="flex items-center justify-between">
-            <div class="font-semibold">Trending</div>
+<div class="card bg-base-100 border widget-card" wire:poll.visible.180s>
+    <div class="card-body gap-4">
+        <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1">
+                <div class="widget-kicker">Trending now</div>
+                <div class="widget-title">Trending</div>
+            </div>
             <a class="link link-primary text-sm" href="{{ route('trending') }}" wire:navigate>View all</a>
         </div>
 
-        <div class="space-y-2 pt-3">
+        <div class="flex items-center justify-between text-[0.7rem] uppercase tracking-[0.18em] text-base-content/50">
+            <span>Hashtags</span>
+            <span class="badge badge-ghost badge-sm">Last 24h</span>
+        </div>
+
+        <div class="space-y-2 pt-2">
             @forelse ($this->trendingHashtags as $tag)
                 <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:key="trending-widget-hashtag-{{ $tag->id }}" wire:navigate>
                     <div class="flex items-center gap-3 min-w-0">
@@ -21,9 +29,14 @@
             @endforelse
         </div>
 
-        <div class="divider my-2"></div>
+        <div class="divider my-1"></div>
 
-        <div class="space-y-2">
+        <div class="flex items-center justify-between text-[0.7rem] uppercase tracking-[0.18em] text-base-content/50">
+            <span>Keywords</span>
+            <span class="badge badge-ghost badge-sm">Last 24h</span>
+        </div>
+
+        <div class="space-y-2 pt-2">
             @forelse ($this->trendingKeywords as $row)
                 <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:key="trending-widget-keyword-{{ $row['keyword'] }}" wire:navigate>
                     <div class="flex items-center gap-3 min-w-0">

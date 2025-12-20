@@ -42,13 +42,15 @@ class BookmarksPage extends Component
 
     public function getBookmarksProperty()
     {
+        $viewer = Auth::user();
+
         $query = Bookmark::query()
             ->where('bookmarks.user_id', Auth::id())
             ->leftJoin('posts', 'bookmarks.post_id', '=', 'posts.id')
             ->select('bookmarks.*')
             ->latest('bookmarks.created_at');
 
-        $exclude = Auth::user()->excludedUserIds();
+        $exclude = $viewer->excludedUserIds();
         if ($exclude->isNotEmpty()) {
             $query->where(function (Builder $q) use ($exclude): void {
                 $q->whereNull('posts.id')->orWhereNotIn('posts.user_id', $exclude);
@@ -64,15 +66,19 @@ class BookmarksPage extends Component
                         'body',
                         'reply_to_id',
                         'repost_of_id',
+                        'reply_policy',
                         'created_at',
                         'location',
                         'video_path',
                         'video_mime_type',
                         'is_reply_like',
                     ])
+                    ->withViewerContext($viewer)
                     ->with([
                         'user:id,name,username,avatar_path,is_verified',
                         'images:id,post_id,path,sort_order',
+                        'linkPreview',
+                        'poll.options' => fn ($q) => $q->withCount('votes'),
                         'replyTo:id,user_id',
                         'replyTo.user:id,username',
                         'repostOf' => fn ($q) => $q
@@ -81,15 +87,19 @@ class BookmarksPage extends Component
                                 'user_id',
                                 'body',
                                 'reply_to_id',
+                                'reply_policy',
                                 'created_at',
                                 'location',
                                 'video_path',
                                 'video_mime_type',
                                 'is_reply_like',
                             ])
+                            ->when($viewer, fn ($q) => $q->withViewerContext($viewer))
                             ->with([
                                 'user:id,name,username,avatar_path,is_verified',
                                 'images:id,post_id,path,sort_order',
+                                'linkPreview',
+                                'poll.options' => fn ($q) => $q->withCount('votes'),
                                 'replyTo:id,user_id',
                                 'replyTo.user:id,username',
                             ])

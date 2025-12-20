@@ -62,9 +62,9 @@
                         <select wire:model="reason" class="select select-bordered select-sm w-full" wire:loading.attr="disabled" wire:target="submit">
                             <option value="">Select a reason</option>
                             @foreach ($reasonOptions as $group => $options)
-                                <optgroup label="{{ $group }}">
+                                <optgroup label="{{ $group }}" wire:key="report-reason-group-{{ md5($group) }}">
                                     @foreach ($options as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
+                                        <option value="{{ $value }}" wire:key="report-reason-{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach

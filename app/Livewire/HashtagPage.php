@@ -50,19 +50,16 @@ class HashtagPage extends Component
 
     public function getPostsProperty()
     {
+        $viewer = Auth::user();
+
         $query = Post::query()
             ->whereHas('hashtags', fn ($q) => $q->where('tag', $this->tag))
             ->whereNull('reply_to_id')
             ->where('is_reply_like', false)
-            ->with([
-                'user',
-                'images',
-                'repostOf' => fn ($q) => $q->with(['user', 'images'])->withCount(['likes', 'reposts']),
-            ])
-            ->withCount(['likes', 'reposts', 'replies']);
+            ->withPostCardRelations($viewer, true);
 
-        if (Auth::check()) {
-            $exclude = Auth::user()->excludedUserIds();
+        if ($viewer) {
+            $exclude = $viewer->excludedUserIds();
             if ($exclude->isNotEmpty()) {
                 $query->whereNotIn('user_id', $exclude);
             }
@@ -72,10 +69,11 @@ class HashtagPage extends Component
             return $query
                 ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(15);
         }
 
-        return $query->latest()->paginate(15);
+        return $query->latest()->orderByDesc('id')->paginate(15);
     }
 
     public function render()
