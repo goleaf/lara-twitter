@@ -4,12 +4,10 @@ namespace App\Livewire\Notifications;
 
 use App\Services\NotificationVisibilityService;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class NotificationBadge extends Component
 {
-    #[Locked]
     public bool $inline = false;
 
     public function render()
