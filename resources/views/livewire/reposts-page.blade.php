@@ -45,18 +45,18 @@
     @else
         <div class="card bg-base-100 border">
             <div class="card-body">
-                <div class="space-y-3">
-                    @forelse ($rows as $retweet)
-                        @php($user = $retweet->user)
-                        @if (! $user)
+	                <div class="space-y-3">
+	                    @forelse ($rows as $retweet)
+	                        @php($user = $retweet->user)
+	                        @if (! $user)
                             @continue
                         @endif
 
-                        <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="avatar">
-                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                        @if ($user->avatar_url)
+	                        <x-list-row href="{{ route('profile.show', ['user' => $user->username]) }}" wire:navigate>
+	                            <div class="flex items-center gap-3 min-w-0">
+	                                <div class="avatar">
+	                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+	                                        @if ($user->avatar_url)
                                             <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -74,14 +74,14 @@
                                         @endif
                                     </div>
                                     <div class="text-xs opacity-60 truncate">&#64;{{ $user->username }}</div>
-                                </div>
-                            </div>
-                            <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
-                        </a>
-                    @empty
-                        <x-empty-state>
-                            No retweets yet.
-                        </x-empty-state>
+	                                </div>
+	                            </div>
+	                            <div class="text-sm opacity-60 shrink-0">{{ $retweet->created_at->diffForHumans() }}</div>
+	                        </x-list-row>
+	                    @empty
+	                        <x-empty-state>
+	                            No retweets yet.
+	                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
