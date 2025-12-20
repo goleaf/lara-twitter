@@ -154,7 +154,9 @@
     @else
         <div class="space-y-2">
             <a href="{{ route('login') }}" wire:navigate class="btn btn-primary btn-sm w-full">Log in</a>
-            <a href="{{ route('register') }}" wire:navigate class="btn btn-outline btn-sm w-full">Create account</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" wire:navigate class="btn btn-outline btn-sm w-full">Create account</a>
+            @endif
         </div>
     @endauth
 </nav>
