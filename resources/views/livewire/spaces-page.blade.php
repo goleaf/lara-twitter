@@ -75,13 +75,13 @@
                 <div class="font-semibold">Live now</div>
                 <span class="badge badge-outline badge-sm">{{ $liveSpaces->count() }}</span>
             </div>
-            <div class="space-y-2 pt-2">
-                @forelse ($liveSpaces as $space)
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="avatar shrink-0">
-                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                    @if ($space->host->avatar_url)
+	            <div class="space-y-2 pt-2">
+	                @forelse ($liveSpaces as $space)
+	                    <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
+	                        <div class="flex items-center gap-3 min-w-0">
+	                            <div class="avatar shrink-0">
+	                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+	                                    @if ($space->host->avatar_url)
                                         <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -101,13 +101,13 @@
                             <span class="badge badge-primary badge-sm">Live</span>
                             @if ($space->started_at)
                                 <div class="text-xs opacity-60">{{ $space->started_at->diffForHumans() }}</div>
-                            @endif
-                        </div>
-                    </a>
-                @empty
-                    <x-empty-state>
-                        No live spaces.
-                    </x-empty-state>
+	                            @endif
+	                        </div>
+	                    </x-list-row>
+	                @empty
+	                    <x-empty-state>
+	                        No live spaces.
+	                    </x-empty-state>
                 @endforelse
             </div>
         </div>
@@ -119,13 +119,13 @@
                 <div class="font-semibold">Upcoming</div>
                 <span class="badge badge-outline badge-sm">{{ $upcomingSpaces->count() }}</span>
             </div>
-            <div class="space-y-2 pt-2">
-                @forelse ($upcomingSpaces as $space)
-                    <a class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="{{ route('spaces.show', $space) }}" wire:navigate>
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="avatar shrink-0">
-                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                    @if ($space->host->avatar_url)
+	            <div class="space-y-2 pt-2">
+	                @forelse ($upcomingSpaces as $space)
+	                    <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
+	                        <div class="flex items-center gap-3 min-w-0">
+	                            <div class="avatar shrink-0">
+	                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+	                                    @if ($space->host->avatar_url)
                                         <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -146,14 +146,14 @@
                                 <span class="badge badge-outline badge-sm">Scheduled</span>
                                 <div class="text-xs opacity-60">{{ $space->scheduled_for->diffForHumans() }}</div>
                             @else
-                                <span class="badge badge-ghost badge-sm">Unscheduled</span>
-                            @endif
-                        </div>
-                    </a>
-                @empty
-                    <x-empty-state>
-                        No upcoming spaces.
-                    </x-empty-state>
+	                                <span class="badge badge-ghost badge-sm">Unscheduled</span>
+	                            @endif
+	                        </div>
+	                    </x-list-row>
+	                @empty
+	                    <x-empty-state>
+	                        No upcoming spaces.
+	                    </x-empty-state>
                 @endforelse
             </div>
         </div>
