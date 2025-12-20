@@ -29,6 +29,7 @@ class MessageResource extends Resource
     {
         return parent::getEloquentQuery()
             ->withTrashed()
+            ->with(['conversation', 'user'])
             ->withCount(['attachments', 'reactions', 'reports']);
     }
 

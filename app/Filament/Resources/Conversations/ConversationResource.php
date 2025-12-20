@@ -28,6 +28,7 @@ class ConversationResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
+            ->with(['createdBy'])
             ->withCount(['participants', 'messages']);
     }
 

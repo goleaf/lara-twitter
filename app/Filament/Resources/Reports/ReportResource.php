@@ -24,6 +24,12 @@ class ReportResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['reporter', 'resolvedBy']);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ReportForm::configure($schema);
