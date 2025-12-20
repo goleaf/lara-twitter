@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Codex CLI version: 0.73.0 (verified)
 set -euo pipefail
 
 usage() {
@@ -29,6 +30,7 @@ Environment:
 Notes:
   - This sends a truncated staged diff to Codex to generate the commit message.
   - Press Ctrl+C to stop when running in loop mode.
+  - Requires Codex CLI (codex-cli) version 0.73.0 or compatible.
 EOF
 }
 
