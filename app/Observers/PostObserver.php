@@ -7,6 +7,7 @@ use App\Models\Mention;
 use App\Models\Post;
 use App\Models\PostLinkPreview;
 use App\Models\User;
+use App\Events\NewPostCreated;
 use App\Notifications\FollowedUserPosted;
 use App\Notifications\PostMentioned;
 use App\Notifications\PostReposted;
@@ -149,6 +150,8 @@ class PostObserver
 
     public function created(Post $post): void
     {
+        broadcast(new NewPostCreated($post))->toOthers();
+
         if ($post->repost_of_id && ! $post->reply_to_id) {
             $original = $post->repostOf()->with('user')->first();
             if ($original && $original->user_id !== $post->user_id) {

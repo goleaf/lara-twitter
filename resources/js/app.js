@@ -1,4 +1,8 @@
 import './bootstrap';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
 
 function setupNavigateProgress() {
     const bar = document.getElementById('navigate-progress-bar');
@@ -123,3 +127,42 @@ document.addEventListener('livewire:navigated', scrollToHash);
 document.addEventListener('DOMContentLoaded', setupNavigateProgress);
 document.addEventListener('DOMContentLoaded', setupLivewireNavigateSearchForms);
 document.addEventListener('livewire:navigated', setupLivewireNavigateSearchForms);
+
+function setupEcho() {
+    const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
+    if (!pusherKey) {
+        return;
+    }
+
+    const cluster = import.meta.env.VITE_PUSHER_APP_CLUSTER;
+    const echo = new Echo({
+        broadcaster: 'pusher',
+        key: pusherKey,
+        cluster: cluster || undefined,
+        forceTLS: true,
+    });
+
+    window.Echo = echo;
+
+    const userId = window.AppConfig?.userId;
+    if (userId) {
+        echo.channel(`timeline.${userId}`).listen('.post.created', (event) => {
+            if (window.Livewire?.dispatch) {
+                window.Livewire.dispatch('new-post-available', { post: event.post });
+            }
+        });
+    }
+
+    echo.join('online')
+        .here((users) => {
+            window.dispatchEvent(new CustomEvent('presence-online', { detail: { users } }));
+        })
+        .joining((user) => {
+            window.dispatchEvent(new CustomEvent('presence-joining', { detail: { user } }));
+        })
+        .leaving((user) => {
+            window.dispatchEvent(new CustomEvent('presence-leaving', { detail: { user } }));
+        });
+}
+
+document.addEventListener('DOMContentLoaded', setupEcho);
