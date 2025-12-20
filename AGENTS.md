@@ -40,6 +40,8 @@
 - When caching personalized results, include viewer id + key inputs, and keep TTLs low (<= 2 minutes).
 - For dependency upgrades, update lockfiles and run `composer test` and `npm run build` to verify.
 - Memoize per-request derived sets (muted terms/excluded user ids) on the model to reduce duplicate queries.
+- Add composite indexes that match `where` + `order by` patterns for feed, reply, and analytics queries.
+- For mute filtering, prefer composite indexes covering `user_id`, the mute flag, and `expires_at`.
 
 ## Testing Guidelines
 
