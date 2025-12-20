@@ -18,13 +18,13 @@
 
     <div class="card bg-base-100 border">
         <div class="card-body">
-            <div class="space-y-2">
-                @forelse ($following as $followed)
-                    <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
-                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
-                            <div class="avatar">
-                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                    @if ($followed->avatar_url)
+	            <div class="space-y-2">
+	                @forelse ($following as $followed)
+	                    <x-list-row>
+	                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $followed->username]) }}" wire:navigate>
+	                            <div class="avatar">
+	                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+	                                    @if ($followed->avatar_url)
                                         <img src="{{ $followed->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -57,14 +57,14 @@
                                     >
                                         {{ $this->isFollowing($followed->id) ? 'Unfollow' : 'Follow' }}
                                     </button>
-                                @endif
-                            @endauth
-                        </div>
-                    </div>
-                @empty
-                    <x-empty-state>
-                        Not following anyone yet.
-                    </x-empty-state>
+	                                @endif
+	                            @endauth
+	                        </div>
+	                    </x-list-row>
+	                @empty
+	                    <x-empty-state>
+	                        Not following anyone yet.
+	                    </x-empty-state>
                 @endforelse
             </div>
         </div>
