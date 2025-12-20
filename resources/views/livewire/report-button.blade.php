@@ -11,28 +11,25 @@
     </button>
 
     @if ($showNotice && $submittedCaseNumber)
-        <div class="mt-2 alert alert-success py-2" role="status">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path fill-rule="evenodd" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm4.03 7.47a.75.75 0 0 1 0 1.06l-4.95 4.95a.75.75 0 0 1-1.06 0l-2.05-2.05a.75.75 0 1 1 1.06-1.06l1.52 1.52 4.42-4.42a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-            </svg>
-            <div class="min-w-0">
-                <div class="text-sm">
+        <x-callout type="success" class="mt-2" role="status">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
                     Report submitted (case <span class="font-mono">{{ $submittedCaseNumber }}</span>)
                 </div>
+                <div class="flex items-center gap-1">
+                    <a class="btn btn-ghost btn-xs" href="{{ route('reports.index') }}" wire:navigate>View</a>
+                    <button
+                        type="button"
+                        class="btn btn-ghost btn-xs"
+                        wire:click="clearNotice"
+                        wire:loading.attr="disabled"
+                        wire:target="clearNotice"
+                    >
+                        Dismiss
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-1">
-                <a class="btn btn-ghost btn-xs" href="{{ route('reports.index') }}" wire:navigate>View</a>
-                <button
-                    type="button"
-                    class="btn btn-ghost btn-xs"
-                    wire:click="clearNotice"
-                    wire:loading.attr="disabled"
-                    wire:target="clearNotice"
-                >
-                    Dismiss
-                </button>
-            </div>
-        </div>
+        </x-callout>
     @endif
 
     <dialog class="modal" @if($open) open @endif>

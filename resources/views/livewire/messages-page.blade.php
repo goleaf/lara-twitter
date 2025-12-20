@@ -120,12 +120,11 @@
                         </button>
                     </div>
                 </div>
-        @empty
-            <div class="card bg-base-100 border">
-                <div class="card-body">
-                    <div class="opacity-70">No conversations.</div>
-                </div>
             </div>
+        @empty
+            <x-empty-state>
+                No conversations.
+            </x-empty-state>
         @endforelse
     </div>
 </div>
