@@ -21,7 +21,15 @@ class User extends Authenticatable implements FilamentUser
 
     protected ?Collection $activeMutedTermsCache = null;
 
+    protected ?Collection $activeNotificationMutedTermsCache = null;
+
     protected ?Collection $excludedUserIdsCache = null;
+
+    protected ?Collection $mutedUserIdsCache = null;
+
+    protected ?Collection $blockedUserIdsCache = null;
+
+    protected ?Collection $blockedByUserIdsCache = null;
 
     /**
      * The attributes that are mass assignable.
@@ -402,6 +410,39 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(MutedTerm::class);
     }
 
+    public function mutedUserIds(): Collection
+    {
+        if ($this->mutedUserIdsCache) {
+            return $this->mutedUserIdsCache;
+        }
+
+        $this->mutedUserIdsCache = $this->mutesInitiated()->pluck('muted_id');
+
+        return $this->mutedUserIdsCache;
+    }
+
+    public function blockedUserIds(): Collection
+    {
+        if ($this->blockedUserIdsCache) {
+            return $this->blockedUserIdsCache;
+        }
+
+        $this->blockedUserIdsCache = $this->blocksInitiated()->pluck('blocked_id');
+
+        return $this->blockedUserIdsCache;
+    }
+
+    public function blockedByUserIds(): Collection
+    {
+        if ($this->blockedByUserIdsCache) {
+            return $this->blockedByUserIdsCache;
+        }
+
+        $this->blockedByUserIdsCache = $this->blocksReceived()->pluck('blocker_id');
+
+        return $this->blockedByUserIdsCache;
+    }
+
     public function activeMutedTerms(): Collection
     {
         if ($this->activeMutedTermsCache) {
@@ -418,6 +459,24 @@ class User extends Authenticatable implements FilamentUser
             ->get();
 
         return $this->activeMutedTermsCache;
+    }
+
+    public function activeNotificationMutedTerms(): Collection
+    {
+        if ($this->activeNotificationMutedTermsCache) {
+            return $this->activeNotificationMutedTermsCache;
+        }
+
+        $this->activeNotificationMutedTermsCache = $this->mutedTerms()
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->where('mute_notifications', true)
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        return $this->activeNotificationMutedTermsCache;
     }
 
     public function hasBlocked(User $other): bool
@@ -446,9 +505,9 @@ class User extends Authenticatable implements FilamentUser
             return $this->excludedUserIdsCache;
         }
 
-        $mutedIds = $this->mutesInitiated()->pluck('muted_id');
-        $blockedIds = $this->blocksInitiated()->pluck('blocked_id');
-        $blockedByIds = $this->blocksReceived()->pluck('blocker_id');
+        $mutedIds = $this->mutedUserIds();
+        $blockedIds = $this->blockedUserIds();
+        $blockedByIds = $this->blockedByUserIds();
 
         $this->excludedUserIdsCache = $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
 

@@ -316,11 +316,7 @@ class DiscoverService
             return;
         }
 
-        $mutedIds = $viewer->mutesInitiated()->pluck('muted_id');
-        $blockedIds = $viewer->blocksInitiated()->pluck('blocked_id');
-        $blockedByIds = $viewer->blocksReceived()->pluck('blocker_id');
-
-        $exclude = $mutedIds->merge($blockedIds)->merge($blockedByIds)->unique()->values();
+        $exclude = $viewer->excludedUserIds();
         if ($exclude->isNotEmpty()) {
             $query->whereNotIn('user_id', $exclude);
         }

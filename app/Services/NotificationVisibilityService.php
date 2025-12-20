@@ -29,21 +29,13 @@ class NotificationVisibilityService
             return $items;
         }
 
-        $blockedIds = $viewer->blocksInitiated()->pluck('blocked_id');
-        $blockedByIds = $viewer->blocksReceived()->pluck('blocker_id');
+        $blockedIds = $viewer->blockedUserIds();
+        $blockedByIds = $viewer->blockedByUserIds();
         $blockedSet = array_fill_keys($blockedIds->merge($blockedByIds)->unique()->values()->all(), true);
 
-        $mutedSet = array_fill_keys($viewer->mutesInitiated()->pluck('muted_id')->all(), true);
+        $mutedSet = array_fill_keys($viewer->mutedUserIds()->all(), true);
 
-        $terms = $viewer
-            ->mutedTerms()
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->where('mute_notifications', true)
-            ->latest()
-            ->limit(50)
-            ->get();
+        $terms = $viewer->activeNotificationMutedTerms();
 
         $followingSet = [];
         if ($terms->contains(fn ($t) => (bool) $t->only_non_followed)) {
@@ -97,4 +89,3 @@ class NotificationVisibilityService
             ->values();
     }
 }
-
