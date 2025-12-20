@@ -34,7 +34,19 @@
                     <x-layouts.topbar :title="$topbarTitle" />
                 </div>
 
-                <main class="min-h-screen px-4 py-4">
+                <main class="min-h-screen px-4 py-4 space-y-4">
+                    @if (isset($header) || $__env->hasSection('header'))
+                        <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
+                            <div class="card-body py-4">
+                                @isset($header)
+                                    {{ $header }}
+                                @else
+                                    @yield('header')
+                                @endisset
+                            </div>
+                        </div>
+                    @endif
+
                     @isset($slot)
                         {{ $slot }}
                     @else
@@ -91,7 +103,19 @@
                 </div>
             </div>
 
-            <main class="px-4 py-4">
+            <main class="px-4 py-4 space-y-4">
+                @if (isset($header) || $__env->hasSection('header'))
+                    <div class="card bg-base-100/90 supports-[backdrop-filter]:bg-base-100/70 backdrop-blur">
+                        <div class="card-body py-4">
+                            @isset($header)
+                                {{ $header }}
+                            @else
+                                @yield('header')
+                            @endisset
+                        </div>
+                    </div>
+                @endif
+
                 @isset($slot)
                     {{ $slot }}
                 @else
