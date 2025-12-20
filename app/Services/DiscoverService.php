@@ -50,7 +50,7 @@ class DiscoverService
                     ->get();
             }
 
-            $followingIds = $viewer->following()->pluck('users.id')->all();
+            $followingIds = $viewer->followingIds()->all();
             $blockedIds = $viewer->blocksInitiated()->pluck('blocked_id')->all();
             $blockedByIds = $viewer->blocksReceived()->pluck('blocker_id')->all();
             $excludeIds = array_values(array_unique(array_merge([$viewer->id], $followingIds)));
@@ -184,7 +184,7 @@ class DiscoverService
 
                 $query->where('user_id', '!=', $viewer->id);
 
-                $followingIds = $viewer->following()->pluck('users.id')->all();
+                $followingIds = $viewer->followingIds()->all();
                 $idsCsv = implode(',', array_map('intval', $followingIds));
                 if ($idsCsv !== '') {
                     $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
@@ -231,7 +231,7 @@ class DiscoverService
             if ($viewer) {
                 $query->where('user_id', '!=', $viewer->id);
 
-                $followingIds = $viewer->following()->pluck('users.id')->all();
+                $followingIds = $viewer->followingIds()->all();
                 $idsCsv = implode(',', array_map('intval', $followingIds));
                 if ($idsCsv !== '') {
                     $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end asc");
@@ -343,7 +343,7 @@ class DiscoverService
             return;
         }
 
-        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+        $followingIds = $viewer->followingIdsWithSelf()->all();
 
         foreach ($terms as $term) {
             $raw = trim((string) $term->term);

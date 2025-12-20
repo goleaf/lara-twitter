@@ -31,6 +31,8 @@ class User extends Authenticatable implements FilamentUser
 
     protected ?Collection $blockedByUserIdsCache = null;
 
+    protected ?Collection $followingIdsCache = null;
+
     public function flushCachedRelations(): void
     {
         $this->activeMutedTermsCache = null;
@@ -39,6 +41,7 @@ class User extends Authenticatable implements FilamentUser
         $this->mutedUserIdsCache = null;
         $this->blockedUserIdsCache = null;
         $this->blockedByUserIdsCache = null;
+        $this->followingIdsCache = null;
     }
 
     /**
@@ -209,6 +212,25 @@ class User extends Authenticatable implements FilamentUser
     public function followers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
+    }
+
+    public function followingIds(): Collection
+    {
+        if ($this->followingIdsCache) {
+            return $this->followingIdsCache;
+        }
+
+        $this->followingIdsCache = $this->following()->pluck('users.id');
+
+        return $this->followingIdsCache;
+    }
+
+    public function followingIdsWithSelf(): Collection
+    {
+        return $this->followingIds()
+            ->concat([$this->id])
+            ->unique()
+            ->values();
     }
 
     public function getAvatarUrlAttribute(): ?string
