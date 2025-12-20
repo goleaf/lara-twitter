@@ -166,7 +166,7 @@
                             @continue
                         @endif
 
-                        <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
+                        <x-list-row>
                             <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
                                 <div class="avatar">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -195,7 +195,7 @@
                                 <button type="button" class="btn btn-outline btn-xs" wire:click="decideSpeakerRequest({{ $req->id }}, 'approve')" wire:loading.attr="disabled" wire:target="decideSpeakerRequest">Approve</button>
                                 <button type="button" class="btn btn-outline btn-xs" wire:click="decideSpeakerRequest({{ $req->id }}, 'deny')" wire:loading.attr="disabled" wire:target="decideSpeakerRequest">Deny</button>
                             </div>
-                        </div>
+                        </x-list-row>
                     @empty
                         <x-empty-state class="px-3 py-2">
                             No pending requests.
@@ -216,7 +216,7 @@
                         @continue
                     @endif
 
-                    <div class="flex items-center justify-between gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus-within:ring-2 focus-within:ring-primary/20">
+                    <x-list-row>
                         <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
                             <div class="avatar">
                                 <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -261,7 +261,7 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </x-list-row>
                 @empty
                     <x-empty-state class="px-3 py-2">
                         No one joined yet.
