@@ -194,7 +194,7 @@
         @if ($primary->video_path)
             <div class="pt-2">
                 <video class="w-full rounded-box border border-base-200" controls preload="metadata">
-                    <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($primary->video_path) }}" type="{{ $primary->video_mime_type ?? 'video/mp4' }}" />
+                    <source src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'))->url($primary->video_path) }}" type="{{ $primary->video_mime_type ?? 'video/mp4' }}" />
                 </video>
             </div>
         @endif
@@ -325,7 +325,7 @@
                             @if ($post->repostOf->video_path)
                                 <div class="pt-2">
                                     <video class="w-full rounded-box border border-base-200" controls preload="metadata">
-                                        <source src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($post->repostOf->video_path) }}" type="{{ $post->repostOf->video_mime_type ?? 'video/mp4' }}" />
+                                        <source src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'))->url($post->repostOf->video_path) }}" type="{{ $post->repostOf->video_mime_type ?? 'video/mp4' }}" />
                                     </video>
                                 </div>
                             @endif
@@ -340,7 +340,7 @@
                                         @php($ratio = $isWide ? '16 / 9' : '1 / 1')
     
                                         <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200 {{ $spanClass }}" style="aspect-ratio: {{ $ratio }};">
-                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}" alt="" loading="lazy" decoding="async" />
+                                            <img class="h-full w-full object-cover" src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'))->url($image->path) }}" alt="" loading="lazy" decoding="async" />
                                         </div>
                                     @endforeach
                                 </div>
