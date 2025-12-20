@@ -62,9 +62,9 @@
                         </div>
                     </div>
                 @empty
-                    <div class="rounded-box border border-base-200 bg-base-200/40 px-4 py-3">
-                        <div class="text-sm opacity-70">Not following anyone yet.</div>
-                    </div>
+                    <x-empty-state>
+                        Not following anyone yet.
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>

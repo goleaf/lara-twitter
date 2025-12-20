@@ -86,9 +86,9 @@
                                         <td class="text-right tabular-nums">{{ $post->analytics_media_views }}</td>
                                     </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center py-8 opacity-70">No posts in this range.</td>
-                                    </tr>
+                                    <x-table-empty colspan="7">
+                                        No posts in this range.
+                                    </x-table-empty>
                                 @endforelse
                             </tbody>
                         </table>

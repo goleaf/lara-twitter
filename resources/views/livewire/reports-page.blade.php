@@ -107,9 +107,9 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center opacity-70 py-8">No reports yet.</td>
-                            </tr>
+                            <x-table-empty colspan="5">
+                                No reports yet.
+                            </x-table-empty>
                         @endforelse
                     </tbody>
                 </table>
