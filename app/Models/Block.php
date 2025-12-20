@@ -19,6 +19,23 @@ class Block extends Model
         'blocked_id',
     ];
 
+    protected static function booted(): void
+    {
+        $flush = static function (self $block): void {
+            if (! auth()->check()) {
+                return;
+            }
+
+            $userId = auth()->id();
+            if ($userId === $block->blocker_id || $userId === $block->blocked_id) {
+                auth()->user()->flushCachedRelations();
+            }
+        };
+
+        static::saved($flush);
+        static::deleted($flush);
+    }
+
     public function blocker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'blocker_id');
@@ -29,4 +46,3 @@ class Block extends Model
         return $this->belongsTo(User::class, 'blocked_id');
     }
 }
-

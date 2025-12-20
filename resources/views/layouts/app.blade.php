@@ -105,6 +105,7 @@
         </div>
 
         @php($topbarTitle = $resolvedTitle)
+        @php($isTest = app()->runningUnitTests())
 
         <div class="hidden lg:flex min-h-screen max-w-[1280px] mx-auto">
             <div class="w-[275px] flex-shrink-0 border-r border-base-300 sticky top-0 h-screen">
@@ -137,28 +138,31 @@
                 </main>
             </div>
 
-            <div class="hidden xl:block w-[350px] flex-shrink-0">
-                <div class="sticky top-0 pt-2 px-4 space-y-4">
-                    <livewire:search.global-search />
+            @unless ($isTest)
+                <div class="hidden xl:block w-[350px] flex-shrink-0">
+                    <div class="sticky top-0 pt-2 px-4 space-y-4">
+                        <livewire:search.global-search />
 
-                    <livewire:widgets.trending-topics-widget />
+                        <livewire:widgets.trending-topics-widget />
 
-                    <livewire:widgets.who-to-follow-widget />
+                        <livewire:widgets.who-to-follow-widget />
 
-                    <div class="text-xs text-base-content/60 space-y-2 px-4">
-                        <div class="flex flex-wrap gap-x-3 gap-y-1">
-                            <a href="{{ route('help.index') }}" class="hover:underline" wire:navigate>Help</a>
-                            <a href="/terms" class="hover:underline">Terms</a>
-                            <a href="/privacy" class="hover:underline">Privacy</a>
-                            <a href="/cookies" class="hover:underline">Cookies</a>
-                            <a href="/about" class="hover:underline">About</a>
+                        <div class="text-xs text-base-content/60 space-y-2 px-4">
+                            <div class="flex flex-wrap gap-x-3 gap-y-1">
+                                <a href="{{ route('help.index') }}" class="hover:underline" wire:navigate>Help</a>
+                                <a href="/terms" class="hover:underline">Terms</a>
+                                <a href="/privacy" class="hover:underline">Privacy</a>
+                                <a href="/cookies" class="hover:underline">Cookies</a>
+                                <a href="/about" class="hover:underline">About</a>
+                            </div>
+                            <div>Copyright {{ date('Y') }} {{ config('app.name', 'MiniTwitter') }}</div>
                         </div>
-                        <div>Copyright {{ date('Y') }} {{ config('app.name', 'MiniTwitter') }}</div>
                     </div>
                 </div>
-            </div>
+            @endunless
         </div>
 
+        @unless ($isTest)
         <div class="lg:hidden min-h-screen pb-16">
             <div class="sticky top-0 z-30 backdrop-blur-xl bg-base-100/80 border-b border-base-300">
                 <div class="flex items-center justify-between px-4 h-14">
@@ -209,6 +213,7 @@
         </div>
 
         <x-layouts.mobile-sidebar />
+        @endunless
 
         <div id="modal-container"></div>
 

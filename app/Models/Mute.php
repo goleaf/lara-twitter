@@ -19,6 +19,18 @@ class Mute extends Model
         'muted_id',
     ];
 
+    protected static function booted(): void
+    {
+        $flush = static function (self $mute): void {
+            if (auth()->check() && auth()->id() === $mute->muter_id) {
+                auth()->user()->flushCachedRelations();
+            }
+        };
+
+        static::saved($flush);
+        static::deleted($flush);
+    }
+
     public function muter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'muter_id');
@@ -29,4 +41,3 @@ class Mute extends Model
         return $this->belongsTo(User::class, 'muted_id');
     }
 }
-

@@ -31,6 +31,16 @@ class User extends Authenticatable implements FilamentUser
 
     protected ?Collection $blockedByUserIdsCache = null;
 
+    public function flushCachedRelations(): void
+    {
+        $this->activeMutedTermsCache = null;
+        $this->activeNotificationMutedTermsCache = null;
+        $this->excludedUserIdsCache = null;
+        $this->mutedUserIdsCache = null;
+        $this->blockedUserIdsCache = null;
+        $this->blockedByUserIdsCache = null;
+    }
+
     /**
      * The attributes that are mass assignable.
      *

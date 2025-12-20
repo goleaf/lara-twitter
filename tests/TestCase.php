@@ -11,10 +11,8 @@ abstract class TestCase extends BaseTestCase
 
     protected string $seeder = DatabaseSeeder::class;
 
-    protected function setUp(): void
+    protected function beforeRefreshingDatabase()
     {
-        parent::setUp();
-
         config([
             'seeding.model_count' => (int) env('SEED_MODEL_COUNT', 0),
             'seeding.relation_count' => (int) env('SEED_RELATION_COUNT', 0),

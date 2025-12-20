@@ -31,6 +31,18 @@ class MutedTerm extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        $flush = static function (self $term): void {
+            if (auth()->check() && auth()->id() === $term->user_id) {
+                auth()->user()->flushCachedRelations();
+            }
+        };
+
+        static::saved($flush);
+        static::deleted($flush);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -41,4 +53,3 @@ class MutedTerm extends Model
         return $this->expires_at === null || $this->expires_at->isFuture();
     }
 }
-

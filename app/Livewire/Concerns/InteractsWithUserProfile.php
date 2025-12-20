@@ -38,6 +38,8 @@ trait InteractsWithUserProfile
                 ->where('muted_id', $this->user->id)
                 ->delete();
 
+            Auth::user()->flushCachedRelations();
+
             return;
         }
 
@@ -45,6 +47,8 @@ trait InteractsWithUserProfile
             'muter_id' => Auth::id(),
             'muted_id' => $this->user->id,
         ]);
+
+        Auth::user()->flushCachedRelations();
     }
 
     public function toggleBlock(): void
@@ -78,6 +82,9 @@ trait InteractsWithUserProfile
             ->where('muter_id', Auth::id())
             ->where('muted_id', $this->user->id)
             ->delete();
+
+        Auth::user()->flushCachedRelations();
+        $this->user->flushCachedRelations();
 
         $this->user->loadCount(['followers', 'following']);
     }
