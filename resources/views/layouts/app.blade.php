@@ -356,17 +356,17 @@
                             @endauth
                         </ul>
 
-                            @auth
-                                <div class="mt-4 pt-4 border-t border-base-200">
-                                    <a
-                                        class="flex items-center gap-3 rounded-box border border-base-200 bg-base-100 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-                                        href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
-                                        wire:navigate
-                                    >
-                                        <div class="avatar shrink-0">
-                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                                @if (auth()->user()->avatar_url)
-                                                    <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
+	                            @auth
+	                                <div class="mt-4 pt-4 border-t border-base-200">
+	                                    <x-list-row
+	                                        href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
+	                                        wire:navigate
+	                                        class="justify-start"
+	                                    >
+	                                        <div class="avatar shrink-0">
+	                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+	                                                @if (auth()->user()->avatar_url)
+	                                                    <img src="{{ auth()->user()->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                                 @else
                                                     <div class="bg-base-200 grid place-items-center h-full w-full text-sm font-semibold">
                                                         {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
@@ -374,11 +374,11 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="min-w-0">
-                                            <div class="font-semibold truncate">{{ auth()->user()->name }}</div>
-                                            <div class="text-sm opacity-70 truncate">&#64;{{ auth()->user()->username }}</div>
-                                        </div>
-                                    </a>
+	                                        <div class="min-w-0">
+	                                            <div class="font-semibold truncate">{{ auth()->user()->name }}</div>
+	                                            <div class="text-sm opacity-70 truncate">&#64;{{ auth()->user()->username }}</div>
+	                                        </div>
+	                                    </x-list-row>
 
                                 <form method="POST" action="{{ url('/logout') }}" class="mt-2">
                                     @csrf
