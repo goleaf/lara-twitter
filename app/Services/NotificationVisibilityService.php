@@ -14,7 +14,7 @@ class NotificationVisibilityService
             ->unreadNotifications()
             ->latest()
             ->limit($limit)
-            ->get();
+            ->get(['id', 'type', 'data', 'read_at', 'created_at']);
 
         return $this->filter($viewer, $items)->count();
     }

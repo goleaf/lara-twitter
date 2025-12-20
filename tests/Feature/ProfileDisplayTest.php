@@ -13,7 +13,7 @@ class ProfileDisplayTest extends TestCase
 
     public function test_profile_page_displays_profile_fields(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $user = User::factory()->create([
             'username' => 'alice',

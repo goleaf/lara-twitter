@@ -16,7 +16,7 @@ class PostVideoRenderingTest extends TestCase
 
     public function test_post_card_renders_video_when_post_has_video(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $user = User::factory()->create(['username' => 'alice']);
 

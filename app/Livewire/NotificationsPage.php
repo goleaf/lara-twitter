@@ -100,7 +100,7 @@ class NotificationsPage extends Component
             ->notifications()
             ->latest()
             ->limit(200)
-            ->get();
+            ->get(['id', 'type', 'data', 'read_at', 'created_at']);
 
         $items = app(NotificationVisibilityService::class)->filter(Auth::user(), $items);
 
@@ -157,6 +157,7 @@ class NotificationsPage extends Component
 
         $actorUsers = User::query()
             ->whereIn('id', $actorIds ?: [-1])
+            ->select(['id', 'name', 'username', 'avatar_path', 'is_verified'])
             ->get()
             ->keyBy('id');
 

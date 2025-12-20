@@ -46,7 +46,7 @@ class DirectMessagesTest extends TestCase
 
     public function test_user_can_send_message_with_attachments(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $alice = User::factory()->create(['username' => 'alice']);
         $bob = User::factory()->create(['username' => 'bob']);

@@ -16,7 +16,7 @@ class PostComposerTest extends TestCase
 
     public function test_authenticated_user_can_create_post_with_images_and_extract_tags(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $alice = User::factory()->create(['username' => 'alice']);
         $bob = User::factory()->create(['username' => 'bob']);

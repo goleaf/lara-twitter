@@ -16,7 +16,7 @@ class DeletePostTest extends TestCase
 
     public function test_author_can_delete_their_post_and_images_are_removed(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $author = User::factory()->create();
         $post = Post::query()->create([

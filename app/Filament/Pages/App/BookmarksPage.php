@@ -143,10 +143,20 @@ class BookmarksPage extends Page implements HasTable
 
         return $query->with([
             'post' => fn ($q) => $q
-                ->select(['id', 'user_id', 'body', 'reply_to_id'])
+                ->select(['id', 'user_id', 'body', 'reply_to_id', 'repost_of_id', 'created_at'])
                 ->with([
+                    'user:id,name,username,avatar_path',
+                    'images:id,post_id,path,sort_order',
                     'replyTo' => fn ($reply) => $reply->select(['id', 'user_id']),
                     'replyTo.user:id,username',
+                    'repostOf' => fn ($repost) => $repost
+                        ->select(['id', 'user_id', 'body', 'reply_to_id', 'created_at'])
+                        ->with([
+                            'user:id,name,username,avatar_path',
+                            'images:id,post_id,path,sort_order',
+                            'replyTo' => fn ($reply) => $reply->select(['id', 'user_id']),
+                            'replyTo.user:id,username',
+                        ]),
                 ]),
         ]);
     }

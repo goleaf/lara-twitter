@@ -24,6 +24,8 @@ class PostCard extends Component
 
     public bool $liked = false;
 
+    public bool $reposted = false;
+
     public bool $isQuoting = false;
 
     public bool $isReplying = false;
@@ -57,6 +59,13 @@ class PostCard extends Component
             $this->liked = $this->primaryPost()
                 ->likes()
                 ->where('user_id', Auth::id())
+                ->exists();
+
+            $this->reposted = Post::query()
+                ->where('user_id', Auth::id())
+                ->where('repost_of_id', $this->primaryId)
+                ->whereNull('reply_to_id')
+                ->where('body', '')
                 ->exists();
         }
     }
@@ -148,12 +157,14 @@ class PostCard extends Component
 
         if ($existing) {
             $existing->delete();
+            $this->reposted = false;
         } else {
             Post::query()->create([
                 'user_id' => Auth::id(),
                 'repost_of_id' => $post->id,
                 'body' => '',
             ]);
+            $this->reposted = true;
         }
 
         $post->loadCount('reposts');
@@ -367,18 +378,7 @@ class PostCard extends Component
 
     public function hasRetweeted(): bool
     {
-        if (! Auth::check()) {
-            return false;
-        }
-
-        $post = $this->primaryPost();
-
-        return Post::query()
-            ->where('user_id', Auth::id())
-            ->where('repost_of_id', $post->id)
-            ->whereNull('reply_to_id')
-            ->where('body', '')
-            ->exists();
+        return Auth::check() && $this->reposted;
     }
 
     public function repostedByLabel(): ?string

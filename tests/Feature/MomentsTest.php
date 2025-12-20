@@ -57,7 +57,7 @@ class MomentsTest extends TestCase
 
     public function test_moment_can_have_cover_image(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $owner = User::factory()->create(['username' => 'owner', 'is_verified' => true]);
 

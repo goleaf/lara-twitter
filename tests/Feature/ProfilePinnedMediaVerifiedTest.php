@@ -45,7 +45,7 @@ class ProfilePinnedMediaVerifiedTest extends TestCase
 
     public function test_media_tab_shows_posts_with_images_or_video(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $user = User::factory()->create(['username' => 'alice']);
 

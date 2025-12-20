@@ -55,7 +55,7 @@ class ExplorePage extends Component
             return false;
         }
 
-        return Auth::user()->following()->where('followed_id', $userId)->exists();
+        return in_array($userId, $this->followingIds, true);
     }
 
     public function getTrendingHashtagsProperty()
@@ -71,6 +71,26 @@ class ExplorePage extends Component
     public function getRecommendedUsersProperty()
     {
         return app(DiscoverService::class)->recommendedUsers(Auth::user(), 8);
+    }
+
+    public function getFollowingIdsProperty(): array
+    {
+        if (! Auth::check()) {
+            return [];
+        }
+
+        $recommendedIds = $this->recommendedUsers->pluck('id')->all();
+
+        if (! count($recommendedIds)) {
+            return [];
+        }
+
+        return Auth::user()
+            ->following()
+            ->whereIn('users.id', $recommendedIds)
+            ->pluck('users.id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
     }
 
     public function getForYouPostsProperty()

@@ -19,7 +19,7 @@ class ReplyComposerTest extends TestCase
 
     public function test_authenticated_user_can_reply_with_images(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
         Notification::fake();
 
         $author = User::factory()->create(['username' => 'alice']);

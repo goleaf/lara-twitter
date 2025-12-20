@@ -109,4 +109,8 @@
         );
         box-shadow: 0 0 18px rgba(14, 165, 233, 0.35);
     }
+
+    .btn-announce {
+        @apply btn btn-sm w-full border-none bg-gradient-to-r from-primary to-accent text-primary-content shadow-md hover:shadow-lg;
+    }
 }

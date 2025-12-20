@@ -17,7 +17,7 @@ class DirectMessageUnsendTest extends TestCase
 
     public function test_user_can_unsend_recent_message(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $alice = User::factory()->create(['username' => 'alice']);
         $bob = User::factory()->create(['username' => 'bob']);

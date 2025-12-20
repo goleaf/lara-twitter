@@ -101,7 +101,7 @@
     <div wire:poll.30s="checkForNewPosts">
         @if ($hasNewPosts)
             <button
-                class="btn btn-primary btn-sm w-full"
+                class="btn-announce"
                 wire:click="refreshTimeline"
                 wire:loading.attr="disabled"
                 wire:target="refreshTimeline"

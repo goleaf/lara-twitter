@@ -24,23 +24,37 @@ class ImageService
                 $filename = pathinfo($file->hashName(), PATHINFO_FILENAME).'.jpg';
                 $path = $directory.'/'.$filename;
 
-                Storage::disk($disk)->put($path, (string) $encoded);
-
-                return $path;
+                if (Storage::disk($disk)->put($path, (string) $encoded)) {
+                    return $path;
+                }
             } catch (\Throwable) {
                 // Fall back to storing the original upload.
             }
         }
 
         $path = $directory.'/'.$file->hashName();
-        $contents = file_get_contents($file->getPathname());
+
+        if (method_exists($file, 'readStream')) {
+            $stream = $file->readStream();
+
+            if (is_resource($stream)) {
+                Storage::disk($disk)->put($path, $stream);
+                fclose($stream);
+
+                return $path;
+            }
+        }
+
+        $contents = @file_get_contents($file->getPathname());
 
         if ($contents === false) {
             return $file->storePublicly($directory, ['disk' => $disk]);
         }
 
-        Storage::disk($disk)->put($path, $contents);
+        if (Storage::disk($disk)->put($path, $contents)) {
+            return $path;
+        }
 
-        return $path;
+        return $file->storePublicly($directory, ['disk' => $disk]);
     }
 }

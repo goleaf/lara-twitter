@@ -51,7 +51,7 @@ class ProfileTest extends TestCase
 
     public function test_avatar_can_be_uploaded(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $user = User::factory()->create();
 
@@ -73,7 +73,7 @@ class ProfileTest extends TestCase
 
     public function test_header_location_and_website_can_be_updated(): void
     {
-        Storage::fake('public');
+        Storage::persistentFake('public');
 
         $user = User::factory()->create();
         $this->actingAs($user);

@@ -7,7 +7,7 @@
 
         <div class="space-y-2 pt-3">
             @forelse ($this->trendingHashtags as $tag)
-                <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:key="trending-widget-hashtag-{{ $tag->id }}" wire:navigate>
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="text-xs font-semibold text-base-content/40 w-6 text-right tabular-nums">{{ $loop->iteration }}</div>
                         <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
@@ -25,7 +25,7 @@
 
         <div class="space-y-2">
             @forelse ($this->trendingKeywords as $row)
-                <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:key="trending-widget-keyword-{{ $row['keyword'] }}" wire:navigate>
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="text-xs font-semibold text-base-content/40 w-6 text-right tabular-nums">{{ $loop->iteration }}</div>
                         <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
