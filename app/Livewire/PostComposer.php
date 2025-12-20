@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Models\Post;
 use App\Models\PostPoll;
+use App\Services\ImageService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -54,6 +55,9 @@ class PostComposer extends Component
     {
         abort_unless(Auth::check(), 403);
 
+        $disk = $this->mediaDisk();
+        $imageService = app(ImageService::class);
+
         $this->location = trim($this->location);
 
         if (is_string($this->scheduled_for) && trim($this->scheduled_for) === '') {
@@ -84,7 +88,7 @@ class PostComposer extends Component
         ]);
 
         foreach ($validated['images'] as $index => $image) {
-            $path = $image->storePublicly("posts/{$post->id}", ['disk' => 'public']);
+            $path = $imageService->optimizeAndUpload($image, "posts/{$post->id}", $disk);
 
             $post->images()->create([
                 'path' => $path,
@@ -93,7 +97,7 @@ class PostComposer extends Component
         }
 
         if (! empty($validated['video'])) {
-            $path = $validated['video']->storePublicly("posts/{$post->id}", ['disk' => 'public']);
+            $path = $validated['video']->storePublicly("posts/{$post->id}", ['disk' => $disk]);
 
             $post->update([
                 'video_path' => $path,
@@ -132,6 +136,11 @@ class PostComposer extends Component
         $options = array_values(array_filter($options, static fn (string $v): bool => $v !== ''));
 
         return array_slice($options, 0, 4);
+    }
+
+    private function mediaDisk(): string
+    {
+        return config('filesystems.media_disk', 'public');
     }
 
     public function render()

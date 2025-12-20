@@ -255,13 +255,14 @@ class PostObserver
     public function deleting(Post $post): void
     {
         $post->loadMissing('images');
+        $disk = config('filesystems.media_disk', 'public');
 
         foreach ($post->images as $image) {
-            Storage::disk('public')->delete($image->path);
+            Storage::disk($disk)->delete($image->path);
         }
 
         if ($post->video_path) {
-            Storage::disk('public')->delete($post->video_path);
+            Storage::disk($disk)->delete($post->video_path);
         }
 
         // Prevent orphaned retweets becoming empty posts if the original is deleted.

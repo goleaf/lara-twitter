@@ -352,9 +352,11 @@ class PostCard extends Component
 
     public function imageUrls(): array
     {
+        $disk = config('filesystems.media_disk', 'public');
+
         return $this->primaryPost()
             ->images
-            ->map(fn ($image) => Storage::disk('public')->url($image->path))
+            ->map(fn ($image) => Storage::disk($disk)->url($image->path))
             ->all();
     }
 

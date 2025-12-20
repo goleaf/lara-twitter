@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Models\Post;
 use App\Models\PostPoll;
+use App\Services\ImageService;
 use App\Services\PostTextParser;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -71,6 +72,9 @@ class ReplyComposer extends Component
 
         abort_if(! $this->post->canBeRepliedBy(Auth::user()), 403);
 
+        $disk = $this->mediaDisk();
+        $imageService = app(ImageService::class);
+
         $validated = $this->validate(StorePostRequest::rulesFor(Auth::user()));
 
         $reply = Post::query()->create([
@@ -81,7 +85,7 @@ class ReplyComposer extends Component
         ]);
 
         foreach ($validated['images'] as $index => $image) {
-            $path = $image->storePublicly("posts/{$reply->id}", ['disk' => 'public']);
+            $path = $imageService->optimizeAndUpload($image, "posts/{$reply->id}", $disk);
 
             $reply->images()->create([
                 'path' => $path,
@@ -90,7 +94,7 @@ class ReplyComposer extends Component
         }
 
         if (! empty($validated['video'])) {
-            $path = $validated['video']->storePublicly("posts/{$reply->id}", ['disk' => 'public']);
+            $path = $validated['video']->storePublicly("posts/{$reply->id}", ['disk' => $disk]);
 
             $reply->update([
                 'video_path' => $path,
@@ -149,6 +153,11 @@ class ReplyComposer extends Component
         $options = array_values(array_filter($options, static fn (string $v): bool => $v !== ''));
 
         return array_slice($options, 0, 4);
+    }
+
+    private function mediaDisk(): string
+    {
+        return config('filesystems.media_disk', 'public');
     }
 
     public function render()
