@@ -10,6 +10,7 @@ use App\Services\FollowService;
 use App\Services\TrendingService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -28,6 +29,22 @@ class TimelinePage extends Component
     protected $listeners = [
         'post-created' => '$refresh',
     ];
+
+    #[On('load-more')]
+    public function loadMore(): void
+    {
+        if (! $this->posts->hasMorePages()) {
+            return;
+        }
+
+        $this->nextPage();
+    }
+
+    #[On('new-post-available')]
+    public function handleNewPostAvailable(): void
+    {
+        $this->hasNewPosts = true;
+    }
 
     public function mount(): void
     {

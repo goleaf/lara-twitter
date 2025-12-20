@@ -11,6 +11,7 @@ class ExplorePage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-compass';
     protected static ?string $slug = 'explore';
     protected static ?string $title = 'Explore';
+    protected static ?int $navigationSort = 10;
 
     protected static string $view = 'filament-panels::pages.page';
 
@@ -22,4 +23,3 @@ class ExplorePage extends Page
         ]);
     }
 }
-

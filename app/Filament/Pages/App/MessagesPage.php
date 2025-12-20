@@ -11,6 +11,7 @@ class MessagesPage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
     protected static ?string $slug = 'messages';
     protected static ?string $title = 'Messages';
+    protected static ?int $navigationSort = 40;
 
     protected static string $view = 'filament-panels::pages.page';
 
@@ -24,4 +25,3 @@ class MessagesPage extends Page
         ]);
     }
 }
-

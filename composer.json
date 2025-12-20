@@ -7,11 +7,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "algolia/algoliasearch-client-php": "^3.4",
         "filament/filament": "^4.3",
+        "laravel/scout": "^11.9",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6.4",
-        "livewire/volt": "^1.7.0"
+        "livewire/volt": "^1.7.0",
+        "meilisearch/meilisearch-php": "^0.31.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

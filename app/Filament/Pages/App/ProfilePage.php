@@ -11,6 +11,7 @@ class ProfilePage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-user';
     protected static ?string $slug = 'profile';
     protected static ?string $title = 'Profile';
+    protected static ?int $navigationSort = 60;
 
     protected static string $view = 'filament-panels::pages.page';
 
@@ -22,4 +23,3 @@ class ProfilePage extends Page
         ]);
     }
 }
-

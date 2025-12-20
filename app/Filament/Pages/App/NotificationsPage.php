@@ -11,6 +11,7 @@ class NotificationsPage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-bell';
     protected static ?string $slug = 'notifications';
     protected static ?string $title = 'Notifications';
+    protected static ?int $navigationSort = 30;
 
     protected static string $view = 'filament-panels::pages.page';
 
@@ -24,4 +25,3 @@ class NotificationsPage extends Page
         ]);
     }
 }
-

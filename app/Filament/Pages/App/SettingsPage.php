@@ -11,6 +11,7 @@ class SettingsPage extends Page
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?string $slug = 'settings';
     protected static ?string $title = 'Settings';
+    protected static ?int $navigationSort = 70;
 
     protected static string $view = 'filament-panels::pages.page';
 
@@ -24,4 +25,3 @@ class SettingsPage extends Page
         ]);
     }
 }
-

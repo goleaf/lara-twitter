@@ -95,7 +95,7 @@
             </div>
 
             <div class="pt-2">
-                {{ $this->posts->links() }}
+                <livewire:shared.infinite-scroll :hasMore="$this->posts->hasMorePages()" />
             </div>
         </div>
 
