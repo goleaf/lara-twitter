@@ -21,9 +21,17 @@ export default {
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0F766E',
-                    600: '#0D6B63',
+                    DEFAULT: '#0EA5E9',
+                    600: '#0284C7',
                 },
+                primary: '#0EA5E9',
+                secondary: '#0F172A',
+                accent: '#F97316',
+                neutral: '#475569',
+                'base-100': '#FDFBF7',
+                'base-200': '#F6F1E8',
+                'base-300': '#E7DED3',
+                'base-content': '#0F172A',
             },
             keyframes: {
                 float: {
