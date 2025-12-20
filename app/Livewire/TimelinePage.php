@@ -130,7 +130,7 @@ class TimelinePage extends Component
             return;
         }
 
-        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+        $followingIds = $viewer->followingIdsWithSelf()->all();
 
         foreach ($terms as $term) {
             $raw = trim((string) $term->term);
@@ -174,8 +174,8 @@ class TimelinePage extends Component
 
         if ($this->normalizedFeed() === 'following') {
             $query->when(Auth::check(), function (Builder $query): void {
-                $followingIds = Auth::user()->following()->pluck('users.id');
-                $query->whereIn('user_id', $followingIds->push(Auth::id()));
+                $followingIds = Auth::user()->followingIdsWithSelf();
+                $query->whereIn('user_id', $followingIds);
             });
 
             return $query->latest()->paginate(15);
@@ -186,7 +186,7 @@ class TimelinePage extends Component
         $query->where('created_at', '>=', now()->subDays(7));
 
         if (Auth::check()) {
-            $followingIds = Auth::user()->following()->pluck('users.id')->push(Auth::id())->all();
+            $followingIds = Auth::user()->followingIdsWithSelf()->all();
             $idsCsv = implode(',', array_map('intval', $followingIds));
 
             if ($idsCsv !== '') {
@@ -207,7 +207,7 @@ class TimelinePage extends Component
         }
 
         $viewer = Auth::user();
-        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id);
+        $followingIds = $viewer->followingIdsWithSelf();
         $exclude = $viewer->excludedUserIds();
 
         return Space::query()
@@ -250,7 +250,7 @@ class TimelinePage extends Component
         }
 
         $viewer = Auth::user();
-        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id);
+        $followingIds = $viewer->followingIdsWithSelf();
         $exclude = $viewer->excludedUserIds();
 
         return Space::query()

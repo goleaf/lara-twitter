@@ -38,14 +38,13 @@ class TrendingService
             $recentSince = $this->recentWindowStart();
 
             $query = Hashtag::query()
-                ->select(['hashtags.*'])
+                ->select(['hashtags.id', 'hashtags.tag'])
                 ->selectRaw('count(*) as uses_count')
                 ->selectRaw('count(distinct posts.user_id) as users_count')
                 ->selectRaw('sum(case when posts.created_at >= ? then 1 else 0 end) as recent_uses_count', [$recentSince])
                 ->selectRaw('count(distinct case when posts.created_at >= ? then posts.user_id end) as recent_users_count', [$recentSince])
                 ->join('hashtag_post', 'hashtag_post.hashtag_id', '=', 'hashtags.id')
                 ->join('posts', 'posts.id', '=', 'hashtag_post.post_id')
-                ->join('users', 'users.id', '=', 'posts.user_id')
                 ->whereNull('posts.reply_to_id')
                 ->where('posts.is_reply_like', false)
                 ->where('posts.created_at', '>=', $since)
@@ -54,7 +53,9 @@ class TrendingService
             $location = is_string($location) ? trim($location) : null;
             if ($location) {
                 $needle = '%'.mb_strtolower($location).'%';
-                $query->whereRaw('lower(users.location) like ?', [$needle]);
+                $query
+                    ->join('users', 'users.id', '=', 'posts.user_id')
+                    ->whereRaw('lower(users.location) like ?', [$needle]);
             }
 
             if ($viewer) {
@@ -399,7 +400,7 @@ class TrendingService
             return;
         }
 
-        $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+        $followingIds = $viewer->followingIdsWithSelf()->all();
 
         foreach ($terms as $term) {
             $raw = trim((string) $term->term);

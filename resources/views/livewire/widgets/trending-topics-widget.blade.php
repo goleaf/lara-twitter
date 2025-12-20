@@ -8,8 +8,11 @@
         <div class="space-y-2 pt-3">
             @forelse ($this->trendingHashtags as $tag)
                 <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
-                    <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
-                    <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="text-xs font-semibold text-base-content/40 w-6 text-right tabular-nums">{{ $loop->iteration }}</div>
+                        <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
+                    </div>
+                    <div class="text-xs opacity-60 tabular-nums">{{ $tag->uses_count }}</div>
                 </x-list-row>
             @empty
                 <x-empty-state>
@@ -23,8 +26,11 @@
         <div class="space-y-2">
             @forelse ($this->trendingKeywords as $row)
                 <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
-                    <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
-                    <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="text-xs font-semibold text-base-content/40 w-6 text-right tabular-nums">{{ $loop->iteration }}</div>
+                        <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
+                    </div>
+                    <div class="text-xs opacity-60 tabular-nums">{{ $row['count'] }}</div>
                 </x-list-row>
             @empty
                 <x-empty-state>

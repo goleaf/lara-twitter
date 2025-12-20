@@ -292,7 +292,7 @@ class HomePage extends Page implements HasTable
             ->latest();
 
         if (Auth::check()) {
-            $followingIds = Auth::user()->following()->pluck('users.id')->push(Auth::id());
+            $followingIds = Auth::user()->followingIdsWithSelf();
             $query->whereIn('user_id', $followingIds);
         }
 

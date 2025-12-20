@@ -39,7 +39,7 @@ class NotificationVisibilityService
 
         $followingSet = [];
         if ($terms->contains(fn ($t) => (bool) $t->only_non_followed)) {
-            $followingIds = $viewer->following()->pluck('users.id')->push($viewer->id)->all();
+            $followingIds = $viewer->followingIdsWithSelf()->all();
             $followingSet = array_fill_keys($followingIds, true);
         }
 

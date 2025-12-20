@@ -15,6 +15,7 @@ class FollowService
 
         $changes = $follower->following()->toggle($followed->id);
         $isFollowing = count($changes['attached'] ?? []) > 0;
+        $follower->flushCachedRelations();
 
         if ($isFollowing && $followed->wantsNotification('follows') && $followed->allowsNotificationFrom($follower, 'follows')) {
             $followed->notify(new UserFollowed(follower: $follower));
