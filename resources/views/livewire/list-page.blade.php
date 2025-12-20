@@ -86,13 +86,13 @@
                         </form>
                         <x-input-error class="mt-2" :messages="$errors->get('member_username')" />
 
-	                        <div class="space-y-2">
-	                            @foreach ($this->members as $member)
-	                                <x-list-row>
-	                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
-	                                        <div class="avatar shrink-0">
-	                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                                @if ($member->avatar_url)
+                            <div class="space-y-2">
+                                @foreach ($this->members as $member)
+                                    <x-list-row>
+                                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $member]) }}" wire:navigate>
+                                            <div class="avatar shrink-0">
+                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                    @if ($member->avatar_url)
                                                     <img src="{{ $member->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                                 @else
                                                     <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -119,12 +119,12 @@
                                         wire:click="removeMember({{ $member->id }})"
                                         wire:loading.attr="disabled"
                                         wire:target="removeMember({{ $member->id }})"
-	                                    >
-	                                        Remove
-	                                    </button>
-	                                </x-list-row>
-	                            @endforeach
-	                        </div>
+                                        >
+                                            Remove
+                                        </button>
+                                    </x-list-row>
+                                @endforeach
+                            </div>
                     </div>
                 @endif
             @endauth

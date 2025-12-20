@@ -76,14 +76,14 @@
                     <div class="font-semibold">Your Moments</div>
                     <span class="badge badge-outline badge-sm">{{ $this->moments->count() }}</span>
                 </div>
-	            <div class="space-y-2 pt-2">
-	                @forelse ($this->moments as $moment)
-	                    @php($cover = $moment->coverUrl())
-	                    <x-list-row href="{{ route('moments.show', $moment) }}" wire:navigate class="items-start">
-	                        <div class="flex items-start gap-3 min-w-0">
-	                            <div class="shrink-0">
-	                                <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
-	                                    @if ($cover)
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->moments as $moment)
+                        @php($cover = $moment->coverUrl())
+                        <x-list-row href="{{ route('moments.show', $moment) }}" wire:navigate class="items-start">
+                            <div class="flex items-start gap-3 min-w-0">
+                                <div class="shrink-0">
+                                    <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
+                                        @if ($cover)
                                             <img class="w-full h-full object-cover" src="{{ $cover }}" alt="{{ $moment->title }} cover image" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
@@ -103,14 +103,14 @@
                                         <div class="text-sm opacity-70 truncate">{{ $moment->description }}</div>
                                     @endif
                                 </div>
-	                        </div>
+                            </div>
 
-	                        <div class="text-sm opacity-60 shrink-0">View</div>
-	                    </x-list-row>
-	                @empty
-	                    <x-empty-state>
-	                        No moments yet.
-	                    </x-empty-state>
+                            <div class="text-sm opacity-60 shrink-0">View</div>
+                        </x-list-row>
+                    @empty
+                        <x-empty-state>
+                            No moments yet.
+                        </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -123,14 +123,14 @@
                 <div class="font-semibold">Public Moments</div>
                 <span class="badge badge-outline badge-sm">{{ $this->publicMoments->count() }}</span>
             </div>
-	            <div class="space-y-2 pt-2">
-	                @forelse ($this->publicMoments as $moment)
-	                    @php($cover = $moment->coverUrl())
-	                    <x-list-row href="{{ route('moments.show', $moment) }}" wire:navigate class="items-start">
-	                        <div class="flex items-start gap-3 min-w-0">
-	                            <div class="shrink-0">
-	                                <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
-	                                    @if ($cover)
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->publicMoments as $moment)
+                        @php($cover = $moment->coverUrl())
+                        <x-list-row href="{{ route('moments.show', $moment) }}" wire:navigate class="items-start">
+                            <div class="flex items-start gap-3 min-w-0">
+                                <div class="shrink-0">
+                                    <div class="w-14 h-14 rounded-box border border-base-200 bg-base-200 overflow-hidden">
+                                        @if ($cover)
                                         <img class="w-full h-full object-cover" src="{{ $cover }}" alt="{{ $moment->title }} cover image" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">M</div>
@@ -157,14 +157,14 @@
                                     </div>
                                 </div>
                             </div>
-	                        </div>
+                            </div>
 
-	                        <div class="text-sm opacity-60 shrink-0">View</div>
-	                    </x-list-row>
-	                @empty
-	                    <x-empty-state>
-	                        No public moments yet.
-	                    </x-empty-state>
+                            <div class="text-sm opacity-60 shrink-0">View</div>
+                        </x-list-row>
+                    @empty
+                        <x-empty-state>
+                            No public moments yet.
+                        </x-empty-state>
                 @endforelse
             </div>
         </div>

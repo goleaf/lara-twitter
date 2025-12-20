@@ -18,13 +18,13 @@
                 <span class="badge badge-outline badge-sm">{{ $this->lists->total() }}</span>
             </div>
 
-	            <div class="space-y-2 pt-2">
-	                @forelse ($this->lists as $list)
-	                    <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
-	                        <div class="flex items-center gap-3 min-w-0">
-	                            <div class="avatar shrink-0">
-	                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                    @if ($list->owner->avatar_url)
+                <div class="space-y-2 pt-2">
+                    @forelse ($this->lists as $list)
+                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="avatar shrink-0">
+                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                        @if ($list->owner->avatar_url)
                                         <img src="{{ $list->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -45,14 +45,14 @@
                                     <div class="text-sm opacity-70 truncate">{{ $list->description }}</div>
                                 @endif
                             </div>
-	                        </div>
-	
-	                        <div class="text-sm opacity-60 shrink-0">View</div>
-	                    </x-list-row>
-	                @empty
-	                    <x-empty-state>
-	                        No public lists yet.
-	                    </x-empty-state>
+                            </div>
+    
+                            <div class="text-sm opacity-60 shrink-0">View</div>
+                        </x-list-row>
+                    @empty
+                        <x-empty-state>
+                            No public lists yet.
+                        </x-empty-state>
                 @endforelse
             </div>
         </div>

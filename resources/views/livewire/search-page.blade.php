@@ -95,16 +95,16 @@
     @endif
 
     @if (in_array($type, ['all', 'users'], true))
-	            <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Users</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->users as $u)
-	                        <x-list-row href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-	                            <div class="flex items-center gap-3 min-w-0">
-	                                <div class="avatar">
-	                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                        @if ($u->avatar_url)
+                <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Users</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->users as $u)
+                            <x-list-row href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="avatar">
+                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                            @if ($u->avatar_url)
                                             <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -123,14 +123,14 @@
                                     </div>
                                     <div class="text-xs opacity-60 truncate">&#64;{{ $u->username }}</div>
                                 </div>
-	                            </div>
-	
-	                            <div class="text-sm opacity-60 shrink-0">View</div>
-	                        </x-list-row>
-	                    @empty
-	                        <x-empty-state>
-	                            No users found.
-	                        </x-empty-state>
+                                </div>
+    
+                                <div class="text-sm opacity-60 shrink-0">View</div>
+                            </x-list-row>
+                        @empty
+                            <x-empty-state>
+                                No users found.
+                            </x-empty-state>
                     @endforelse
                 </div>
             </div>
@@ -157,16 +157,16 @@
     @endif
 
     @if (in_array($type, ['all', 'lists'], true) && (trim($q) !== '' || $type === 'lists'))
-	            <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Lists</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->lists as $list)
-	                        <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
-	                            <div class="flex items-center gap-3 min-w-0">
-	                                <div class="avatar shrink-0">
-	                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                        @if ($list->owner->avatar_url)
+                <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Lists</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->lists as $list)
+                            <x-list-row href="{{ route('lists.show', $list) }}" wire:navigate>
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="avatar shrink-0">
+                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                            @if ($list->owner->avatar_url)
                                             <img src="{{ $list->owner->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                         @else
                                             <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -186,14 +186,14 @@
                                     @if ($list->description)
                                         <div class="text-sm opacity-70 truncate">{{ $list->description }}</div>
                                     @endif
-	                                </div>
-	                            </div>
-	                            <div class="text-sm opacity-60 shrink-0">View</div>
-	                        </x-list-row>
-	                    @empty
-	                        <x-empty-state>
-	                            No lists found.
-	                        </x-empty-state>
+                                    </div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0">View</div>
+                            </x-list-row>
+                        @empty
+                            <x-empty-state>
+                                No lists found.
+                            </x-empty-state>
                     @endforelse
                 </div>
             </div>

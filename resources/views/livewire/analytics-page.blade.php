@@ -137,23 +137,23 @@
             </div>
         </div>
 
-	            <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Followers also follow</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->alsoFollowedAccounts as $row)
-	                        <x-list-row href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
-	                            <div class="min-w-0">
-	                                <div class="font-medium truncate">{{ $row->name }}</div>
-	                                <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
-	                            </div>
-	                            <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
-	                        </x-list-row>
-	                    @empty
-	                        <x-empty-state class="px-3 py-2">
-	                            Not enough data yet.
-	                        </x-empty-state>
-	                    @endforelse
+                <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Followers also follow</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->alsoFollowedAccounts as $row)
+                            <x-list-row href="{{ route('profile.show', ['user' => $row->username]) }}" wire:navigate>
+                                <div class="min-w-0">
+                                    <div class="font-medium truncate">{{ $row->name }}</div>
+                                    <div class="text-xs opacity-60 truncate">&#64;{{ $row->username }}</div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0 tabular-nums">{{ $row->followers }}</div>
+                            </x-list-row>
+                        @empty
+                            <x-empty-state class="px-3 py-2">
+                                Not enough data yet.
+                            </x-empty-state>
+                        @endforelse
                 </div>
             </div>
         </div>
@@ -288,30 +288,30 @@
             </div>
         </div>
 
-	            <div class="card bg-base-100 border">
-	            <div class="card-body">
-	                <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
-	                <div class="space-y-2 pt-2">
-	                    @forelse ($this->topPosts as $post)
-	                        <x-list-row href="{{ route('posts.show', $post) }}" wire:navigate class="items-start">
-	                            <div class="min-w-0">
-	                                <div class="font-medium truncate">{{ $post->body }}</div>
-	                                <div class="text-xs opacity-60 tabular-nums">
-	                                    {{ $post->analytics_impressions }} impressions ·
+                <div class="card bg-base-100 border">
+                <div class="card-body">
+                    <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
+                    <div class="space-y-2 pt-2">
+                        @forelse ($this->topPosts as $post)
+                            <x-list-row href="{{ route('posts.show', $post) }}" wire:navigate class="items-start">
+                                <div class="min-w-0">
+                                    <div class="font-medium truncate">{{ $post->body }}</div>
+                                    <div class="text-xs opacity-60 tabular-nums">
+                                        {{ $post->analytics_impressions }} impressions ·
                                     {{ $post->analytics_engagements }} engagements ·
                                     {{ number_format($post->analytics_engagement_rate * 100, 1) }}% ·
                                     {{ $post->analytics_link_clicks }} links ·
                                     {{ $post->analytics_profile_clicks }} profile ·
                                     {{ $post->analytics_media_views }} media
-	                                </div>
-	                            </div>
-	                            <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
-	                        </x-list-row>
-	                    @empty
-	                        <x-empty-state class="px-3 py-2">
-	                            No impressions yet.
-	                        </x-empty-state>
-	                    @endforelse
+                                    </div>
+                                </div>
+                                <div class="text-sm opacity-60 shrink-0 whitespace-nowrap">{{ $post->created_at->diffForHumans() }}</div>
+                            </x-list-row>
+                        @empty
+                            <x-empty-state class="px-3 py-2">
+                                No impressions yet.
+                            </x-empty-state>
+                        @endforelse
                 </div>
             </div>
         </div>

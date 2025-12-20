@@ -145,24 +145,24 @@
 
                 <div class="card bg-base-100 border">
                     <div class="card-body">
-	                        <div class="font-semibold">Trending keywords (24h)</div>
-	                        <div class="space-y-2 pt-2">
-	                            @forelse ($this->trendingKeywords as $row)
-	                                <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
-	                                    <div class="min-w-0">
-	                                        <div class="font-medium truncate">{{ $row['keyword'] }}</div>
-	                                    </div>
-	                                    <div class="text-right shrink-0 tabular-nums">
-	                                        <div class="text-sm opacity-60">{{ $row['count'] }}</div>
-	                                        @if ((int) ($row['recent_count'] ?? 0) > 0)
-	                                            <div class="text-xs opacity-60">{{ (int) $row['recent_count'] }} last hour</div>
-	                                        @endif
-	                                    </div>
-	                                </x-list-row>
-	                            @empty
-	                                <x-empty-state>
-	                                    No keywords yet.
-	                                </x-empty-state>
+                            <div class="font-semibold">Trending keywords (24h)</div>
+                            <div class="space-y-2 pt-2">
+                                @forelse ($this->trendingKeywords as $row)
+                                    <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                                        <div class="min-w-0">
+                                            <div class="font-medium truncate">{{ $row['keyword'] }}</div>
+                                        </div>
+                                        <div class="text-right shrink-0 tabular-nums">
+                                            <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                                            @if ((int) ($row['recent_count'] ?? 0) > 0)
+                                                <div class="text-xs opacity-60">{{ (int) $row['recent_count'] }} last hour</div>
+                                            @endif
+                                        </div>
+                                    </x-list-row>
+                                @empty
+                                    <x-empty-state>
+                                        No keywords yet.
+                                    </x-empty-state>
                             @endforelse
                         </div>
                     </div>
@@ -234,16 +234,16 @@
         </div>
 
         <div class="space-y-4">
-	                <div class="card bg-base-100 border">
-	                <div class="card-body">
-	                    <div class="font-semibold">Discover people</div>
-	                    <div class="space-y-2 pt-2">
-	                        @forelse ($this->recommendedUsers as $u)
-	                            <x-list-row>
-	                                <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-	                                    <div class="avatar shrink-0">
-	                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                            @if ($u->avatar_url)
+                    <div class="card bg-base-100 border">
+                    <div class="card-body">
+                        <div class="font-semibold">Discover people</div>
+                        <div class="space-y-2 pt-2">
+                            @forelse ($this->recommendedUsers as $u)
+                                <x-list-row>
+                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                                        <div class="avatar shrink-0">
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($u->avatar_url)
                                                 <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                             @else
                                                 <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -271,9 +271,9 @@
                                             <div class="text-xs opacity-60 truncate">
                                                 {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
                                             </div>
-	                                        @endif
-	                                    </div>
-	                                </a>
+                                            @endif
+                                        </div>
+                                    </a>
 
                                 @auth
                                     <button
@@ -285,12 +285,12 @@
                                     >
                                         {{ $this->isFollowing($u->id) ? 'Following' : 'Follow' }}
                                     </button>
-	                                @endauth
-	                            </x-list-row>
-	                        @empty
-	                            <x-empty-state>
-	                                No recommendations yet.
-	                            </x-empty-state>
+                                    @endauth
+                                </x-list-row>
+                            @empty
+                                <x-empty-state>
+                                    No recommendations yet.
+                                </x-empty-state>
                         @endforelse
                     </div>
                 </div>

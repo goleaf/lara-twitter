@@ -139,31 +139,31 @@
                         <a class="link link-primary text-sm" href="{{ route('trending') }}" wire:navigate>View all</a>
                     </div>
 
-	                    <div class="space-y-2 pt-3">
-	                        @forelse ($this->trendingHashtags as $tag)
-	                            <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
-	                                <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
-	                                <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
-	                            </x-list-row>
-	                        @empty
-	                            <x-empty-state>
-	                                No hashtags yet.
-	                            </x-empty-state>
+                        <div class="space-y-2 pt-3">
+                            @forelse ($this->trendingHashtags as $tag)
+                                <x-list-row href="{{ route('hashtags.show', ['tag' => $tag->tag]) }}" wire:navigate>
+                                    <div class="font-medium min-w-0 truncate">#{{ $tag->tag }}</div>
+                                    <div class="text-sm opacity-60">{{ $tag->uses_count }}</div>
+                                </x-list-row>
+                            @empty
+                                <x-empty-state>
+                                    No hashtags yet.
+                                </x-empty-state>
                         @endforelse
                     </div>
 
                     <div class="divider my-2"></div>
 
-	                    <div class="space-y-2">
-	                        @forelse ($this->trendingKeywords as $row)
-	                            <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
-	                                <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
-	                                <div class="text-sm opacity-60">{{ $row['count'] }}</div>
-	                            </x-list-row>
-	                        @empty
-	                            <x-empty-state>
-	                                No keywords yet.
-	                            </x-empty-state>
+                        <div class="space-y-2">
+                            @forelse ($this->trendingKeywords as $row)
+                                <x-list-row href="{{ route('search', ['q' => $row['keyword'], 'type' => 'posts']) }}" wire:navigate>
+                                    <div class="font-medium min-w-0 truncate">{{ $row['keyword'] }}</div>
+                                    <div class="text-sm opacity-60">{{ $row['count'] }}</div>
+                                </x-list-row>
+                            @empty
+                                <x-empty-state>
+                                    No keywords yet.
+                                </x-empty-state>
                         @endforelse
                     </div>
                 </div>
@@ -178,13 +178,13 @@
                                 <a class="link link-primary text-sm" href="{{ route('spaces.index') }}" wire:navigate>View all</a>
                             </div>
 
-	                            <div class="space-y-1 pt-3">
-	                                @foreach ($this->upcomingSpaces->take(4) as $space)
-	                                    <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
-	                                        <div class="flex items-center gap-3 min-w-0">
-	                                            <div class="avatar shrink-0">
-	                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                                    @if ($space->host->avatar_url)
+                                <div class="space-y-1 pt-3">
+                                    @foreach ($this->upcomingSpaces->take(4) as $space)
+                                        <x-list-row href="{{ route('spaces.show', $space) }}" wire:navigate>
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <div class="avatar shrink-0">
+                                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                        @if ($space->host->avatar_url)
                                                         <img src="{{ $space->host->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                                     @else
                                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -205,12 +205,12 @@
                                                 <span class="badge badge-outline badge-sm">Scheduled</span>
                                                 <div class="text-xs opacity-60">{{ $space->scheduled_for->diffForHumans() }}</div>
                                             @else
-	                                                <span class="badge badge-ghost badge-sm">Unscheduled</span>
-	                                            @endif
-	                                        </div>
-	                                    </x-list-row>
-	                                @endforeach
-	                            </div>
+                                                    <span class="badge badge-ghost badge-sm">Unscheduled</span>
+                                                @endif
+                                            </div>
+                                        </x-list-row>
+                                    @endforeach
+                                </div>
                         </div>
                     </div>
                 @endif
@@ -224,15 +224,15 @@
                             </div>
 
                             <div class="space-y-1 pt-3">
-	                                @foreach ($this->recommendedUsers as $u)
-	                                    @php($mutualCount = (int) ($u->getAttribute('mutual_count') ?? 0))
-	                                    @php($interestPostsCount = (int) ($u->getAttribute('interest_posts_count') ?? 0))
-	
-	                                    <x-list-row>
-	                                        <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-	                                            <div class="avatar shrink-0">
-	                                                <div class="w-9 rounded-full border border-base-200 bg-base-100">
-	                                                    @if ($u->avatar_url)
+                                    @foreach ($this->recommendedUsers as $u)
+                                        @php($mutualCount = (int) ($u->getAttribute('mutual_count') ?? 0))
+                                        @php($interestPostsCount = (int) ($u->getAttribute('interest_posts_count') ?? 0))
+    
+                                        <x-list-row>
+                                            <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
+                                                <div class="avatar shrink-0">
+                                                    <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                        @if ($u->avatar_url)
                                                         <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
                                                     @else
                                                         <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
@@ -269,12 +269,12 @@
                                             wire:click="toggleFollow({{ $u->id }})"
                                             wire:loading.attr="disabled"
                                             wire:target="toggleFollow({{ $u->id }})"
-	                                        >
-	                                            Follow
-	                                        </button>
-	                                    </x-list-row>
-	                                @endforeach
-	                            </div>
+                                            >
+                                                Follow
+                                            </button>
+                                        </x-list-row>
+                                    @endforeach
+                                </div>
                         </div>
                     </div>
                 @endif
