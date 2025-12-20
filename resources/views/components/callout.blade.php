@@ -19,6 +19,10 @@
         'error' => 'text-error',
         default => 'text-info',
     };
+
+    $bodyClasses = $type === 'error'
+        ? 'text-sm opacity-100'
+        : ($title ? 'text-sm opacity-80' : 'text-sm opacity-90');
 @endphp
 
 <div {{ $attributes->merge(['class' => "rounded-box border px-4 py-3 {$colorClasses}"]) }}>
@@ -51,7 +55,7 @@
             @if ($title)
                 <div class="font-semibold">{{ $title }}</div>
             @endif
-            <div class="{{ $title ? 'text-sm opacity-80' : 'text-sm opacity-90' }}">
+            <div class="{{ $bodyClasses }}">
                 {{ $slot }}
             </div>
         </div>
