@@ -29,6 +29,7 @@
                             alt="{{ $user->name }}"
                             class="h-10 w-10 rounded-full object-cover"
                             loading="lazy"
+                            decoding="async"
                         />
                     @else
                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-base-200 text-sm font-semibold text-base-content/70">
@@ -85,6 +86,7 @@
                                     alt="Post image"
                                     class="h-32 w-full rounded-xl object-cover"
                                     loading="lazy"
+                                    decoding="async"
                                 />
                             @endforeach
                         </div>

@@ -84,34 +84,16 @@
                     <div class="flex flex-col sm:flex-row sm:items-end gap-3">
                         <div class="flex flex-wrap items-center gap-3 flex-1">
                             <input
-                                wire:model="images"
+                                wire:model="media"
                                 type="file"
                                 multiple
-                                accept="image/*"
+                                accept="image/*,video/mp4,video/webm,video/*"
                                 class="file-input file-input-bordered file-input-sm w-full max-w-xs"
                                 wire:loading.attr="disabled"
-                                wire:target="images"
+                                wire:target="media"
                             />
-
-                            <input
-                                wire:model="video"
-                                type="file"
-                                accept="video/mp4,video/webm,video/*"
-                                class="file-input file-input-bordered file-input-sm w-full max-w-xs"
-                                wire:loading.attr="disabled"
-                                wire:target="video"
-                            />
-
-                            @if ($video)
-                                <button
-                                    type="button"
-                                    class="btn btn-ghost btn-xs"
-                                    wire:click="removeVideo"
-                                    wire:loading.attr="disabled"
-                                    wire:target="removeVideo"
-                                >
-                                    Remove video
-                                </button>
+                            @if (count($media))
+                                <span class="text-xs opacity-70">{{ count($media) }} selected</span>
                             @endif
                         </div>
 
@@ -120,19 +102,59 @@
                             class="btn btn-primary btn-sm"
                             wire:click="save"
                             wire:loading.attr="disabled"
-                            wire:target="save,images,video,removeVideo"
+                            wire:target="save,media,removeMedia"
                             @disabled(trim($body) === '' || $bodyLength > $maxBodyLength)
                         >
                             Post
                         </button>
                     </div>
 
+                    @php($mediaCount = count($media))
+                    @php($hasVideo = collect($media)->contains(fn ($file) => str_starts_with((string) ($file->getMimeType() ?? ''), 'video/')))
+                    @php($hasImage = collect($media)->contains(fn ($file) => str_starts_with((string) ($file->getMimeType() ?? ''), 'image/')))
+                    @php($mediaIsVideo = $hasVideo && ! $hasImage)
+                    @if ($mediaCount)
+                        @php($gridClass = $mediaIsVideo || $mediaCount === 1 ? 'grid-cols-1' : 'grid-cols-2')
+
+                        <div class="grid {{ $gridClass }} gap-2">
+                            @foreach ($media as $index => $file)
+                                @php($mime = (string) ($file->getMimeType() ?? ''))
+                                @php($isVideo = str_starts_with($mime, 'video/'))
+                                @php($ratio = $mediaIsVideo || $mediaCount === 1 ? '16 / 9' : '1 / 1')
+
+                                <div class="relative overflow-hidden rounded-box border border-base-200 bg-base-200" style="aspect-ratio: {{ $ratio }};" wire:key="post-media-{{ $file->getFilename() }}">
+                                    @if (method_exists($file, 'isPreviewable') && $file->isPreviewable())
+                                        @if ($isVideo)
+                                            <video class="h-full w-full" controls preload="metadata">
+                                                <source src="{{ $file->temporaryUrl() }}" type="{{ $mime }}" />
+                                            </video>
+                                        @else
+                                            <img class="h-full w-full object-cover" src="{{ $file->temporaryUrl() }}" alt="" loading="lazy" decoding="async" />
+                                        @endif
+                                    @else
+                                        <div class="h-full w-full flex items-center justify-center text-xs opacity-70">
+                                            {{ $file->getClientOriginalName() }}
+                                        </div>
+                                    @endif
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-xs absolute top-2 right-2 bg-base-100/90"
+                                        wire:click="removeMedia({{ $index }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="removeMedia({{ $index }})"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <div class="text-xs opacity-70">Up to 4 images or 1 video.</div>
                 </div>
 
-                <x-input-error :messages="$errors->get('images')" />
-                <x-input-error :messages="$errors->get('images.*')" />
-                <x-input-error :messages="$errors->get('video')" />
+                <x-input-error class="mt-2" :messages="$errors->get('media')" />
 
                 <details class="collapse collapse-arrow bg-base-200/50 border border-base-200" @if ($pollOpen) open @endif>
                     <summary class="collapse-title font-semibold">Poll (optional)</summary>

@@ -24,7 +24,7 @@ class PostComposerTest extends TestCase
         Livewire::actingAs($alice)
             ->test(PostComposer::class)
             ->set('body', 'Hey @bob check #Laravel')
-            ->set('images', [
+            ->set('media', [
                 UploadedFile::fake()->image('one.jpg'),
                 UploadedFile::fake()->image('two.jpg'),
             ])
@@ -45,6 +45,28 @@ class PostComposerTest extends TestCase
         Storage::disk('public')->assertExists($post->images[1]->path);
     }
 
+    public function test_authenticated_user_can_create_post_with_video(): void
+    {
+        Storage::persistentFake('public');
+
+        $alice = User::factory()->create(['username' => 'alice']);
+
+        Livewire::actingAs($alice)
+            ->test(PostComposer::class)
+            ->set('body', 'Video post')
+            ->set('media', [
+                UploadedFile::fake()->create('clip.mp4', 100, 'video/mp4'),
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $post = $alice->posts()->firstOrFail();
+
+        $this->assertNotNull($post->video_path);
+        $this->assertSame('video/mp4', $post->video_mime_type);
+        Storage::disk('public')->assertExists($post->video_path);
+    }
+
     public function test_post_requires_body_and_limits_images(): void
     {
         $alice = User::factory()->create(['username' => 'alice']);
@@ -58,7 +80,7 @@ class PostComposerTest extends TestCase
         Livewire::actingAs($alice)
             ->test(PostComposer::class)
             ->set('body', 'Valid')
-            ->set('images', [
+            ->set('media', [
                 UploadedFile::fake()->image('1.jpg'),
                 UploadedFile::fake()->image('2.jpg'),
                 UploadedFile::fake()->image('3.jpg'),
@@ -66,7 +88,7 @@ class PostComposerTest extends TestCase
                 UploadedFile::fake()->image('5.jpg'),
             ])
             ->call('save')
-            ->assertHasErrors(['images' => 'max']);
+            ->assertHasErrors(['media']);
     }
 
     public function test_guest_cannot_create_post(): void

@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\PostPoll;
 use App\Services\ImageService;
 use App\Services\PostTextParser;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -23,9 +24,7 @@ class ReplyComposer extends Component
     public int $maxLength = 280;
 
     /** @var array<int, mixed> */
-    public array $images = [];
-
-    public mixed $video = null;
+    public array $media = [];
 
     /** @var array<int, string> */
     public array $poll_options = [];
@@ -47,23 +46,21 @@ class ReplyComposer extends Component
         $this->body = $this->prefilledBody();
     }
 
-    public function updatedImages(): void
+    public function updatedMedia(): void
     {
-        if (! empty($this->images)) {
-            $this->video = null;
-        }
+        $this->resetValidation('media');
+        $this->media = array_values(array_filter($this->media));
     }
 
-    public function updatedVideo(): void
+    public function removeMedia(int $index): void
     {
-        if ($this->video) {
-            $this->images = [];
+        if (! isset($this->media[$index])) {
+            return;
         }
-    }
 
-    public function removeVideo(): void
-    {
-        $this->video = null;
+        unset($this->media[$index]);
+        $this->media = array_values($this->media);
+        $this->resetValidation('media');
     }
 
     public function save(): void
@@ -84,7 +81,9 @@ class ReplyComposer extends Component
             'reply_policy' => Post::REPLY_EVERYONE,
         ]);
 
-        foreach ($validated['images'] as $index => $image) {
+        [$images, $video] = $this->splitMedia($validated['media'] ?? []);
+
+        foreach ($images as $index => $image) {
             $path = $imageService->optimizeAndUpload($image, "posts/{$reply->id}", $disk);
 
             $reply->images()->create([
@@ -93,12 +92,12 @@ class ReplyComposer extends Component
             ]);
         }
 
-        if (! empty($validated['video'])) {
-            $path = $validated['video']->storePublicly("posts/{$reply->id}", ['disk' => $disk]);
+        if ($video) {
+            $path = $video->storePublicly("posts/{$reply->id}", ['disk' => $disk]);
 
             $reply->update([
                 'video_path' => $path,
-                'video_mime_type' => $validated['video']->getMimeType() ?? 'video/mp4',
+                'video_mime_type' => $video->getMimeType() ?? 'video/mp4',
             ]);
         }
 
@@ -117,7 +116,7 @@ class ReplyComposer extends Component
             }
         }
 
-        $this->reset(['images', 'video', 'poll_options', 'poll_duration']);
+        $this->reset(['media', 'poll_options', 'poll_duration']);
         $this->body = $this->prefilledBody();
         $this->dispatch('reply-created');
         $this->dispatch('reply-created.'.$this->post->id);
@@ -158,6 +157,38 @@ class ReplyComposer extends Component
     private function mediaDisk(): string
     {
         return config('filesystems.media_disk', 'public');
+    }
+
+    /**
+     * @param  array<int, mixed>  $media
+     * @return array{0: array<int, UploadedFile>, 1: ?UploadedFile}
+     */
+    private function splitMedia(array $media): array
+    {
+        $media = array_values(array_filter($media));
+        if ($media === []) {
+            return [[], null];
+        }
+
+        $videos = array_values(array_filter($media, fn ($file) => $this->isVideoFile($file)));
+        if ($videos !== []) {
+            return [[], $videos[0]];
+        }
+
+        $images = array_values(array_filter($media, fn ($file) => $file instanceof UploadedFile));
+
+        return [$images, null];
+    }
+
+    private function isVideoFile(mixed $file): bool
+    {
+        if (! $file instanceof UploadedFile) {
+            return false;
+        }
+
+        $mime = (string) ($file->getMimeType() ?? '');
+
+        return str_starts_with($mime, 'video/');
     }
 
     public function render()

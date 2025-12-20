@@ -139,12 +139,43 @@ function setupLivewireNavigateSearchForms() {
     });
 }
 
+function setupLivewireUploadState() {
+    if (window.livewireUploadStateReady) {
+        return;
+    }
+
+    window.livewireUploadStateReady = true;
+
+    const root = document.documentElement;
+    let uploadCount = 0;
+
+    const update = () => {
+        root.classList.toggle('livewire-uploading', uploadCount > 0);
+    };
+
+    const increment = () => {
+        uploadCount += 1;
+        update();
+    };
+
+    const decrement = () => {
+        uploadCount = Math.max(0, uploadCount - 1);
+        update();
+    };
+
+    document.addEventListener('livewire-upload-start', increment);
+    document.addEventListener('livewire-upload-finish', decrement);
+    document.addEventListener('livewire-upload-error', decrement);
+    document.addEventListener('livewire-upload-cancel', decrement);
+}
+
 document.addEventListener('DOMContentLoaded', scrollToHash);
 window.addEventListener('hashchange', scrollToHash);
 document.addEventListener('livewire:navigated', scrollToHash);
 document.addEventListener('DOMContentLoaded', setupNavigateProgress);
 document.addEventListener('DOMContentLoaded', setupLivewireNavigateSearchForms);
 document.addEventListener('livewire:navigated', setupLivewireNavigateSearchForms);
+document.addEventListener('DOMContentLoaded', setupLivewireUploadState);
 
 function setupEcho() {
     const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;

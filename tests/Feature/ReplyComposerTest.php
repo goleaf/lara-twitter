@@ -33,7 +33,7 @@ class ReplyComposerTest extends TestCase
         Livewire::actingAs($replier)
             ->test(ReplyComposer::class, ['post' => $post])
             ->set('body', 'Replying to @alice #Nice')
-            ->set('images', [UploadedFile::fake()->image('reply.jpg')])
+            ->set('media', [UploadedFile::fake()->image('reply.jpg')])
             ->call('save')
             ->assertHasNoErrors();
 
@@ -55,6 +55,33 @@ class ReplyComposerTest extends TestCase
                 && $notification->originalPost->is($post)
                 && $notification->replier->is($replier),
         );
+    }
+
+    public function test_authenticated_user_can_reply_with_video(): void
+    {
+        Storage::persistentFake('public');
+        Notification::fake();
+
+        $author = User::factory()->create(['username' => 'alice']);
+        $replier = User::factory()->create(['username' => 'bob']);
+
+        $post = Post::query()->create([
+            'user_id' => $author->id,
+            'body' => 'Original',
+        ]);
+
+        Livewire::actingAs($replier)
+            ->test(ReplyComposer::class, ['post' => $post])
+            ->set('body', 'Video reply')
+            ->set('media', [UploadedFile::fake()->create('reply.mp4', 120, 'video/mp4')])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $reply = Post::query()->where('reply_to_id', $post->id)->firstOrFail();
+
+        $this->assertNotNull($reply->video_path);
+        $this->assertSame('video/mp4', $reply->video_mime_type);
+        Storage::disk('public')->assertExists($reply->video_path);
     }
 
     public function test_reply_does_not_notify_when_replying_to_self(): void

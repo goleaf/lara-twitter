@@ -78,6 +78,12 @@
                             </svg>
                             <span>Bookmarks</span>
                         </a>
+                        <a class="timeline-pill" href="{{ route('profile') }}#timeline" wire:navigate>
+                            <svg aria-hidden="true" class="h-4 w-4 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 6h9m-9 12h9M4.5 6h1.5m-1.5 12h1.5M6 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 12h7.5m-7.5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                            </svg>
+                            <span>Settings</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -244,6 +250,7 @@
         <div wire:poll.visible.30s="checkForNewPosts" aria-live="polite">
             @if ($hasNewPosts)
                 <button
+                    type="button"
                     class="btn-announce group flex items-center justify-center gap-2"
                     wire:click="refreshTimeline"
                     wire:loading.attr="disabled"

@@ -1,4 +1,10 @@
-<div class="card bg-base-100 border widget-card" wire:poll.visible.180s>
+<div class="card bg-base-100 border widget-card">
+    <span
+        class="absolute top-0 left-0 w-1 h-1 opacity-0"
+        aria-hidden="true"
+        wire:poll.visible.180s
+        data-livewire-poll-pausable
+    ></span>
     <div class="card-body gap-4">
         <div class="flex items-start justify-between gap-3">
             <div class="space-y-1">

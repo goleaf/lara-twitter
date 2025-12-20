@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +32,10 @@
         html {
             scroll-behavior: auto;
         }
+    }
+
+    html.livewire-uploading [data-livewire-poll-pausable] {
+        display: none;
     }
 }
 
@@ -433,15 +435,27 @@
         background-image:
             radial-gradient(960px 320px at 8% -18%, rgba(var(--hero-sky), 0.18), transparent 60%),
             radial-gradient(760px 280px at 92% -12%, rgba(var(--hero-sun), 0.14), transparent 65%),
+            repeating-linear-gradient(
+                135deg,
+                rgba(var(--hero-ink), 0.035),
+                rgba(var(--hero-ink), 0.035) 1px,
+                transparent 1px,
+                transparent 14px
+            ),
             linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(253, 251, 247, 1));
     }
 
     .timeline-pill {
         @apply inline-flex items-center gap-2 rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] text-base-content/70 shadow-sm transition;
+        box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.5);
+        transform: translateY(0);
+        will-change: transform;
     }
 
     .timeline-pill:hover {
         @apply border-base-300 bg-base-100 text-base-content;
+        transform: translateY(-1px);
+        box-shadow: 0 18px 34px -26px rgba(15, 23, 42, 0.55);
     }
 
     .timeline-pill:focus-visible {
@@ -755,6 +769,14 @@
     }
 
     .space-pill:hover {
+        transform: none;
+    }
+
+    .timeline-pill {
+        transition: none;
+    }
+
+    .timeline-pill:hover {
         transform: none;
     }
 

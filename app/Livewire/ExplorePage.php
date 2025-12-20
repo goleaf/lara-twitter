@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\DiscoverService;
 use App\Services\FollowService;
 use App\Services\TrendingService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Url;
@@ -18,6 +19,11 @@ class ExplorePage extends Component
     public string $tab = 'trending';
 
     public string $q = '';
+
+    private ?Collection $trendingHashtagsCache = null;
+    private ?Collection $trendingKeywordsCache = null;
+    private ?Collection $recommendedUsersCache = null;
+    private ?array $followingIdsCache = null;
 
     public function mount(): void
     {
@@ -61,37 +67,50 @@ class ExplorePage extends Component
 
     public function getTrendingHashtagsProperty()
     {
-        return app(TrendingService::class)->trendingHashtags(Auth::user(), 10);
+        return $this->trendingHashtagsCache ??= app(TrendingService::class)
+            ->trendingHashtags(Auth::user(), 10);
     }
 
     public function getTrendingKeywordsProperty()
     {
-        return app(TrendingService::class)->trendingKeywords(Auth::user(), 10);
+        return $this->trendingKeywordsCache ??= app(TrendingService::class)
+            ->trendingKeywords(Auth::user(), 10);
     }
 
     public function getRecommendedUsersProperty()
     {
-        return app(DiscoverService::class)->recommendedUsers(Auth::user(), 8);
+        return $this->recommendedUsersCache ??= app(DiscoverService::class)
+            ->recommendedUsers(Auth::user(), 8);
     }
 
     public function getFollowingIdsProperty(): array
     {
+        if ($this->followingIdsCache !== null) {
+            return $this->followingIdsCache;
+        }
+
         if (! Auth::check()) {
-            return [];
+            $this->followingIdsCache = [];
+
+            return $this->followingIdsCache;
         }
 
         $recommendedIds = $this->recommendedUsers->pluck('id')->all();
 
         if (! count($recommendedIds)) {
-            return [];
+            $this->followingIdsCache = [];
+
+            return $this->followingIdsCache;
         }
 
-        return Auth::user()
+        $this->followingIdsCache = Auth::user()
             ->following()
             ->whereIn('users.id', $recommendedIds)
             ->pluck('users.id')
             ->map(fn ($id) => (int) $id)
             ->all();
+
+        return $this->followingIdsCache;
     }
 
     public function getForYouPostsProperty()

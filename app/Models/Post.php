@@ -144,6 +144,18 @@ class Post extends Model
         ])->withCount($counts);
     }
 
+    public function scopeOrderByFollowBias(Builder $query, User $viewer, string $alias = 'follow_bias'): Builder
+    {
+        $viewerId = $viewer->id;
+
+        return $query
+            ->leftJoin("follows as $alias", function ($join) use ($viewerId, $alias): void {
+                $join->on("$alias.followed_id", '=', 'posts.user_id')
+                    ->where("$alias.follower_id", '=', $viewerId);
+            })
+            ->orderByRaw("case when $alias.follower_id is null then 0 else 1 end desc");
+    }
+
     public function canBeRepliedBy(?User $user): bool
     {
         if (! $user) {

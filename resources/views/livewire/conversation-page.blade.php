@@ -1,9 +1,16 @@
 @php($me = auth()->user())
 @php($myParticipant = $this->myParticipant)
 
-<div class="max-w-2xl lg:max-w-3xl mx-auto space-y-4" wire:poll.5s="markRead">
+<div class="max-w-2xl lg:max-w-3xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
-        <div class="card-body">
+        <div class="card-body relative">
+            <span
+                class="absolute top-0 left-0 w-1 h-1 opacity-0"
+                aria-hidden="true"
+                wire:poll.visible.5s="markRead"
+                wire:loading.class="hidden"
+                wire:target="attachments"
+            ></span>
             @php($others = $conversation->participants->pluck('user')->filter(fn ($u) => $u && $u->id !== $me->id)->values())
             @php($other = $others->first())
             @php($avatarUsers = $others->take(3))

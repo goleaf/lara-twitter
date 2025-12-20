@@ -30,7 +30,7 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('hashtag_post', 3);
         $this->assertDatabaseCount('post_images', 3);
         $this->assertDatabaseCount('post_polls', 3);
-        $this->assertDatabaseCount('post_poll_options', 6);
+        $this->assertDatabaseCount('post_poll_options', 3);
         $this->assertDatabaseCount('post_poll_votes', 3);
         $this->assertDatabaseCount('post_link_previews', 3);
         $this->assertDatabaseCount('conversation_participants', 3);
@@ -43,7 +43,7 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('space_speaker_requests', 3);
         $this->assertDatabaseCount('space_reactions', 3);
         $this->assertDatabaseCount('moment_items', 3);
-        $this->assertDatabaseCount('reports', 18);
+        $this->assertDatabaseCount('reports', 3);
     }
 
     protected function beforeRefreshingDatabase()

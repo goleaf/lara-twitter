@@ -73,6 +73,31 @@ class MomentsTest extends TestCase
         Storage::disk('public')->assertExists($moment->cover_image_path);
     }
 
+    public function test_owner_can_update_moment_cover_image(): void
+    {
+        Storage::persistentFake('public');
+
+        $owner = User::factory()->create(['username' => 'owner', 'is_verified' => true]);
+
+        $moment = Moment::query()->create([
+            'owner_id' => $owner->id,
+            'title' => 'Moment',
+            'description' => null,
+            'is_public' => true,
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(\App\Livewire\MomentPage::class, ['moment' => $moment])
+            ->set('cover_image', UploadedFile::fake()->image('new-cover.jpg', 1200, 630))
+            ->call('updateMoment')
+            ->assertHasNoErrors();
+
+        $moment->refresh();
+
+        $this->assertNotNull($moment->cover_image_path);
+        Storage::disk('public')->assertExists($moment->cover_image_path);
+    }
+
     public function test_unverified_user_cannot_create_moment(): void
     {
         $user = User::factory()->create(['username' => 'user', 'is_verified' => false]);

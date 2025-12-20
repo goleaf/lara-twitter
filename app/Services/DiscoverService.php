@@ -178,7 +178,7 @@ class DiscoverService
             $query = Post::query()
                 ->whereNull('reply_to_id')
                 ->where('is_reply_like', false)
-                ->where('created_at', '>=', now()->subDays(7))
+                ->where('posts.created_at', '>=', now()->subDays(7))
                 ->withPostCardRelations($viewer, true);
 
             $this->applyViewerExclusions($query, $viewer);
@@ -195,18 +195,13 @@ class DiscoverService
                     );
                 }
 
-                $query->where('user_id', '!=', $viewer->id);
-
-                $followingIds = $viewer->followingIds()->all();
-                $idsCsv = implode(',', array_map('intval', $followingIds));
-                if ($idsCsv !== '') {
-                    $query->orderByRaw("case when user_id in ($idsCsv) then 0 else 1 end asc");
-                }
+                $query->where('posts.user_id', '!=', $viewer->id);
+                $query->orderByFollowBias($viewer);
             }
 
             return $query
                 ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
-                ->orderByDesc('created_at')
+                ->orderByDesc('posts.created_at')
                 ->limit($limit)
                 ->get();
         });

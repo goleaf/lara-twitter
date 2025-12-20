@@ -152,7 +152,7 @@ class TimelinePage extends Component
             return $query;
         }
 
-        return $query->where('created_at', '>=', now()->subDays(7));
+        return $query->where('posts.created_at', '>=', now()->subDays(7));
     }
 
     private function applyMutedTermsToPostsQuery(Builder $query, \App\Models\User $viewer): void
@@ -211,24 +211,19 @@ class TimelinePage extends Component
         $feed = $this->normalizedFeed();
 
         if ($feed === 'following') {
-            return $query->latest()->orderByDesc('id')->simplePaginate(15);
+            return $query->latest('posts.created_at')->orderByDesc('posts.id')->simplePaginate(15);
         }
 
         // "For You": include broader content, ranked by engagement + recency,
         // with a small bias towards followed accounts when signed in.
         if (Auth::check()) {
-            $followingIds = Auth::user()->followingIdsWithSelf()->all();
-            $idsCsv = implode(',', array_map('intval', $followingIds));
-
-            if ($idsCsv !== '') {
-                $query->orderByRaw("case when user_id in ($idsCsv) then 1 else 0 end desc");
-            }
+            $query->orderByFollowBias(Auth::user());
         }
 
         return $query
             ->orderByRaw('(likes_count * 2 + reposts_count * 3 + replies_count) desc')
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
+            ->orderByDesc('posts.created_at')
+            ->orderByDesc('posts.id')
             ->simplePaginate(15);
     }
 

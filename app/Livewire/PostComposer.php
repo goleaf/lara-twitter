@@ -6,6 +6,7 @@ use App\Http\Requests\Posts\StorePostRequest;
 use App\Models\Post;
 use App\Models\PostPoll;
 use App\Services\ImageService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -23,32 +24,28 @@ class PostComposer extends Component
     public ?string $scheduled_for = null;
 
     /** @var array<int, mixed> */
-    public array $images = [];
-
-    public mixed $video = null;
+    public array $media = [];
 
     /** @var array<int, string> */
     public array $poll_options = [];
 
     public ?int $poll_duration = null;
 
-    public function updatedImages(): void
+    public function updatedMedia(): void
     {
-        if (! empty($this->images)) {
-            $this->video = null;
-        }
+        $this->resetValidation('media');
+        $this->media = array_values(array_filter($this->media));
     }
 
-    public function updatedVideo(): void
+    public function removeMedia(int $index): void
     {
-        if ($this->video) {
-            $this->images = [];
+        if (! isset($this->media[$index])) {
+            return;
         }
-    }
 
-    public function removeVideo(): void
-    {
-        $this->video = null;
+        unset($this->media[$index]);
+        $this->media = array_values($this->media);
+        $this->resetValidation('media');
     }
 
     public function save(): void
@@ -87,7 +84,9 @@ class PostComposer extends Component
             'scheduled_for' => $isScheduled ? $scheduledFor : null,
         ]);
 
-        foreach ($validated['images'] as $index => $image) {
+        [$images, $video] = $this->splitMedia($validated['media'] ?? []);
+
+        foreach ($images as $index => $image) {
             $path = $imageService->optimizeAndUpload($image, "posts/{$post->id}", $disk);
 
             $post->images()->create([
@@ -96,12 +95,12 @@ class PostComposer extends Component
             ]);
         }
 
-        if (! empty($validated['video'])) {
-            $path = $validated['video']->storePublicly("posts/{$post->id}", ['disk' => $disk]);
+        if ($video) {
+            $path = $video->storePublicly("posts/{$post->id}", ['disk' => $disk]);
 
             $post->update([
                 'video_path' => $path,
-                'video_mime_type' => $validated['video']->getMimeType() ?? 'video/mp4',
+                'video_mime_type' => $video->getMimeType() ?? 'video/mp4',
             ]);
         }
 
@@ -122,7 +121,7 @@ class PostComposer extends Component
             }
         }
 
-        $this->reset(['body', 'location', 'scheduled_for', 'images', 'video', 'reply_policy', 'poll_options', 'poll_duration']);
+        $this->reset(['body', 'location', 'scheduled_for', 'media', 'reply_policy', 'poll_options', 'poll_duration']);
         $this->dispatch('post-created');
     }
 
@@ -141,6 +140,38 @@ class PostComposer extends Component
     private function mediaDisk(): string
     {
         return config('filesystems.media_disk', 'public');
+    }
+
+    /**
+     * @param  array<int, mixed>  $media
+     * @return array{0: array<int, UploadedFile>, 1: ?UploadedFile}
+     */
+    private function splitMedia(array $media): array
+    {
+        $media = array_values(array_filter($media));
+        if ($media === []) {
+            return [[], null];
+        }
+
+        $videos = array_values(array_filter($media, fn ($file) => $this->isVideoFile($file)));
+        if ($videos !== []) {
+            return [[], $videos[0]];
+        }
+
+        $images = array_values(array_filter($media, fn ($file) => $file instanceof UploadedFile));
+
+        return [$images, null];
+    }
+
+    private function isVideoFile(mixed $file): bool
+    {
+        if (! $file instanceof UploadedFile) {
+            return false;
+        }
+
+        $mime = (string) ($file->getMimeType() ?? '');
+
+        return str_starts_with($mime, 'video/');
     }
 
     public function render()

@@ -12,20 +12,31 @@ Usage:
 
 Options:
   --interval SECONDS      Sleep between runs (default: 30)
-  --sandbox MODE          Sandbox mode (default: danger-full-access)
-  --post-run PATH         Run script after each Codex run
+  --sandbox MODE          Override SANDBOX_MODE for Codex (default: danger-full-access)
+  --post-run PATH         Run a script after each Codex run
   --once                  Run once then exit
   --max-runs N            Stop after N runs (default: 0 = infinite)
-  -h, --help              Show help
+  -h, --help              Show help and exit
+
+Behavior:
+  - Runs from the script directory to keep relative paths stable.
+  - Invokes Codex with --ask-for-approval never.
+  - If a post-run script is not executable, it is run via bash.
 
 Environment:
   CODEX_BIN               Codex binary (default: codex)
   MODEL_NAME              Model name (default: gpt-5.2-codex)
   REASONING_EFFORT        Reasoning effort (default: xhigh)
-  PROMPT_TEXT             Prompt override (default: built-in prompt)
+  PROMPT_TEXT             Prompt override (default: built-in string in this script)
   SANDBOX_MODE            Codex sandbox (default: danger-full-access)
   TEXT_VERBOSITY          Text verbosity (default: medium)
   POST_RUN_SCRIPT         Script to run after each Codex run (optional)
+
+Examples:
+  ./codex-loop.sh --once
+  PROMPT_TEXT="Fix failing tests" ./codex-loop.sh --interval 60
+  CODEX_BIN=./bin/codex ./codex-loop.sh --max-runs 5
+  ./codex-loop.sh --post-run ./scripts/after-codex.sh
 EOF
 }
 
