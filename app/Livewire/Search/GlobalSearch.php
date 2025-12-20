@@ -26,12 +26,9 @@ class GlobalSearch extends Component
             return null;
         }
 
-        return Post::query()
-            ->where('body', 'like', "%{$query}%")
-            ->with(['user', 'images'])
-            ->withCount(['likes', 'reposts', 'replies'])
-            ->latest()
-            ->paginate($this->perPage);
+        return Post::search($query)
+            ->query(fn ($builder) => $builder->with(['user', 'images'])->withCount(['likes', 'reposts', 'replies']))
+            ->paginate($this->perPage, 'globalSearchPage');
     }
 
     public function render()
