@@ -64,13 +64,13 @@
                             <x-input-error class="mt-2" :messages="$errors->get('cover_image')" />
                         </div>
 
-                        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                        <x-choice-card>
                             <div class="min-w-0">
                                 <div class="font-medium">Public</div>
                                 <div class="text-sm opacity-70">Show this Moment in the public directory.</div>
                             </div>
-                            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_public" />
-                        </label>
+                            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_public" wire:loading.attr="disabled" wire:target="updateMoment" />
+                        </x-choice-card>
 
                         <div class="flex justify-end">
                             <button type="submit" class="btn btn-outline btn-sm" wire:loading.attr="disabled" wire:target="updateMoment">Save</button>

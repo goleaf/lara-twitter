@@ -54,10 +54,10 @@ new #[Layout('layouts.app')] class extends Component
                     <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
                 </div>
 
-                <label for="remember" class="flex items-center gap-3 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input wire:model="form.remember" id="remember" type="checkbox" class="checkbox checkbox-sm" name="remember">
+                <x-choice-card layout="inline">
+                    <input wire:model="form.remember" id="remember" type="checkbox" class="checkbox checkbox-sm" name="remember" wire:loading.attr="disabled" wire:target="login">
                     <span class="text-sm opacity-70">{{ __('Remember me') }}</span>
-                </label>
+                </x-choice-card>
 
                 <div class="flex items-center justify-between">
                     @if (Route::has('password.request'))
