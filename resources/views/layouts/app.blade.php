@@ -108,6 +108,5 @@
 
         @filamentScripts
         @livewireScripts
-        <x-filament-actions::modals />
     </body>
 </html>
