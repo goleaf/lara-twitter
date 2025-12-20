@@ -484,7 +484,9 @@
         </div>
 
         @if ($replyError)
-            <div class="pt-2 text-error text-sm">{{ $replyError }}</div>
+            <x-callout type="error" class="mt-3" role="alert">
+                {{ $replyError }}
+            </x-callout>
         @endif
 
         @if ($isReplying || $showThread)
@@ -505,7 +507,9 @@
                             <livewire:post-card :post="$reply" :key="'thread-reply-'.$post->id.'-'.$reply->id" />
                         @endforeach
                     @else
-                        <div class="text-sm opacity-60">No replies yet.</div>
+                        <x-empty-state class="px-3 py-2">
+                            No replies yet.
+                        </x-empty-state>
                     @endif
 
                     <div class="flex items-center justify-between gap-2">
