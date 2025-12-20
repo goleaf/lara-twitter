@@ -37,13 +37,13 @@ new class extends Component
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-4">
-        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+        <x-choice-card>
             <div class="min-w-0">
                 <div class="font-medium">{{ __('Enable analytics') }}</div>
                 <div class="text-sm opacity-70">{{ __('Track views and clicks as unique daily events (not total impressions).') }}</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="analytics_enabled" />
-        </label>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="analytics_enabled" wire:loading.attr="disabled" wire:target="save" />
+        </x-choice-card>
 
         <div class="flex items-center gap-3 pt-2">
             <x-primary-button wire:loading.attr="disabled" wire:target="save">{{ __('Save') }}</x-primary-button>

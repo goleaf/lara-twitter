@@ -44,22 +44,22 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('dm_policy')" />
         </div>
 
-        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+        <x-choice-card>
             <div class="min-w-0">
                 <div class="font-medium">Allow message requests</div>
                 <div class="text-sm opacity-70">If disabled, users who don't meet your policy cannot start a new DM.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_allow_requests" />
-        </label>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_allow_requests" wire:loading.attr="disabled" wire:target="save" />
+        </x-choice-card>
         <x-input-error class="mt-2" :messages="$errors->get('dm_allow_requests')" />
 
-        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+        <x-choice-card>
             <div class="min-w-0">
                 <div class="font-medium">Read receipts</div>
                 <div class="text-sm opacity-70">If disabled, others won’t see when you’ve read their messages.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_read_receipts" />
-        </label>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="dm_read_receipts" wire:loading.attr="disabled" wire:target="save" />
+        </x-choice-card>
         <x-input-error class="mt-2" :messages="$errors->get('dm_read_receipts')" />
 
         <div class="flex items-center gap-3 pt-2">

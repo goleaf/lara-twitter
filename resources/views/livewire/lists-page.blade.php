@@ -14,13 +14,13 @@
                         <x-input-error class="mt-2" :messages="$errors->get('name')" />
                     </div>
 
-                    <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                    <x-choice-card>
                         <div class="min-w-0">
                             <div class="font-medium">Private list</div>
                             <div class="text-sm opacity-70">Hidden from search and profiles.</div>
                         </div>
-                        <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_private" />
-                    </label>
+                        <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="is_private" wire:loading.attr="disabled" wire:target="create" />
+                    </x-choice-card>
                 </div>
 
                 <div>

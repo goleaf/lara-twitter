@@ -38,22 +38,22 @@ new class extends Component
     </header>
 
     <form wire:submit="save" class="mt-6 space-y-4">
-        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+        <x-choice-card>
             <div class="min-w-0">
                 <div class="font-medium">Show replies</div>
                 <div class="text-sm opacity-70">Include replies from accounts you follow.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="show_replies" />
-        </label>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="show_replies" wire:loading.attr="disabled" wire:target="save" />
+        </x-choice-card>
         <x-input-error class="mt-2" :messages="$errors->get('show_replies')" />
 
-        <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+        <x-choice-card>
             <div class="min-w-0">
                 <div class="font-medium">Show retweets</div>
                 <div class="text-sm opacity-70">Include retweets from accounts you follow.</div>
             </div>
-            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="show_retweets" />
-        </label>
+            <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="show_retweets" wire:loading.attr="disabled" wire:target="save" />
+        </x-choice-card>
         <x-input-error class="mt-2" :messages="$errors->get('show_retweets')" />
 
         <div class="flex items-center gap-3 pt-2">

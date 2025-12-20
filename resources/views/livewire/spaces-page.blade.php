@@ -48,10 +48,10 @@
                         <x-input-error class="mt-2" :messages="$errors->get('scheduled_for')" />
                     </div>
 
-                    <label class="flex items-start justify-between gap-4 rounded-box border border-base-200 bg-base-200/40 px-4 py-3 cursor-pointer">
+                    <x-choice-card>
                         <span class="text-sm font-medium">Enable recording metadata (30 days after end)</span>
-                        <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="recording_enabled" />
-                    </label>
+                        <input type="checkbox" class="toggle toggle-sm mt-1" wire:model="recording_enabled" wire:loading.attr="disabled" wire:target="create" />
+                    </x-choice-card>
 
                     <div class="flex justify-end">
                         <button
