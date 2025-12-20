@@ -6,85 +6,10 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         @php
-            $appName = config('app.name', 'MiniTwitter');
-            $resolvedTitle = $pageTitle ?? $title ?? null;
+            use App\Support\PageTitle;
 
-            if (! $resolvedTitle) {
-                $resolvedTitle = match (true) {
-                    request()->routeIs('timeline') => 'Home',
-                    request()->routeIs('explore') => 'Explore',
-                    request()->routeIs('search') => 'Search',
-                    request()->routeIs('trending') => 'Trending',
-
-                    request()->routeIs('hashtags.show') => (function (): string {
-                        $tag = (string) request()->route('tag', '');
-                        $tag = ltrim($tag, '#');
-
-                        return $tag !== '' ? "#{$tag}" : 'Hashtag';
-                    })(),
-
-                    request()->routeIs('notifications') => 'Notifications',
-                    request()->routeIs('messages.*') => 'Messages',
-                    request()->routeIs('bookmarks') => 'Bookmarks',
-
-                    request()->routeIs('lists.show') => (function (): string {
-                        $list = request()->route('list');
-
-                        return $list instanceof \App\Models\UserList
-                            ? $list->name
-                            : 'List';
-                    })(),
-                    request()->routeIs('lists.*') => 'Lists',
-
-                    request()->routeIs('mentions') => 'Mentions',
-                    request()->routeIs('reports.*') => 'Reports',
-                    request()->routeIs('analytics') => 'Analytics',
-                    request()->routeIs('profile') => 'Settings',
-
-                    request()->routeIs('help.*') => 'Help',
-
-                    request()->routeIs('profile.*') => (function (): string {
-                        $user = request()->route('user');
-
-                        return $user instanceof \App\Models\User
-                            ? $user->name
-                            : 'Profile';
-                    })(),
-
-                    request()->routeIs('spaces.show') => (function (): string {
-                        $space = request()->route('space');
-
-                        return $space instanceof \App\Models\Space
-                            ? $space->title
-                            : 'Space';
-                    })(),
-                    request()->routeIs('spaces.*') => 'Spaces',
-
-                    request()->routeIs('moments.show') => (function (): string {
-                        $moment = request()->route('moment');
-
-                        return $moment instanceof \App\Models\Moment
-                            ? $moment->title
-                            : 'Moment';
-                    })(),
-                    request()->routeIs('moments.*') => 'Moments',
-
-                    request()->routeIs('posts.*') => 'Post',
-
-                    request()->routeIs('login') => 'Log in',
-                    request()->routeIs('register') => 'Create account',
-                    request()->routeIs('password.request') => 'Forgot password',
-                    request()->routeIs('password.reset') => 'Reset password',
-                    request()->routeIs('verification.notice') => 'Verify email',
-                    request()->routeIs('password.confirm') => 'Confirm password',
-
-                    default => $appName,
-                };
-            }
-
-            $documentTitle = $resolvedTitle === $appName
-                ? $appName
-                : "{$resolvedTitle} · {$appName}";
+            $resolvedTitle = PageTitle::resolve($pageTitle ?? $title ?? null);
+            $documentTitle = PageTitle::documentTitle($resolvedTitle);
         @endphp
 
         <title>{{ $documentTitle }}</title>
@@ -99,7 +24,7 @@
         @filamentStyles
         @livewireStyles
     </head>
-    <body class="antialiased bg-base-100 text-base-content">
+    <body class="antialiased bg-base-100 text-base-content bg-ambient">
         <div class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5">
             <div id="navigate-progress-bar" class="h-full w-0 bg-primary opacity-0 transition-[width,opacity] duration-300"></div>
         </div>

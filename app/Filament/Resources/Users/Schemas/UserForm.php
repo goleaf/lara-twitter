@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 class UserForm
@@ -23,7 +24,8 @@ class UserForm
                 TextInput::make('username')
                     ->required()
                     ->alphaDash()
-                    ->lowercase()
+                    ->formatStateUsing(static fn (?string $state): ?string => filled($state) ? Str::lower($state) : null)
+                    ->dehydrateStateUsing(static fn (?string $state): ?string => filled($state) ? Str::lower($state) : null)
                     ->unique(ignoreRecord: true),
                 TextInput::make('email')
                     ->label('Email address')

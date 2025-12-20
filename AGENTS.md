@@ -154,6 +154,7 @@
 - Revert or roll back if p95 or error rates regress.
 - Run migrations in maintenance-safe windows; keep a rollback plan and backups for large changes.
 - Use `--step` migrations when you need granular rollbacks.
+- Use `php artisan migrate --force` in deploy pipelines after backups are verified.
 - Use feature flags for risky changes; roll out gradually after validation.
 - Clear stale caches when needed (`config:clear`, `route:clear`, `view:clear`).
 - Use `config:cache`/`route:cache`/`view:cache` only when routes avoid closures and config is stable.

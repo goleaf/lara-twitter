@@ -15,12 +15,13 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
+                display: ['Fraunces', ...defaultTheme.fontFamily.serif],
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#1DA1F2',
-                    600: '#1A91DA',
+                    DEFAULT: '#0EA5E9',
+                    600: '#0284C7',
                 },
             },
             keyframes: {
@@ -58,8 +59,8 @@ export default {
             },
             boxShadow: {
                 'inner-lg': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.1)',
-                glow: '0 0 20px rgba(29, 161, 242, 0.5)',
-                'glow-sm': '0 0 10px rgba(29, 161, 242, 0.3)',
+                glow: '0 0 20px rgba(14, 165, 233, 0.5)',
+                'glow-sm': '0 0 10px rgba(14, 165, 233, 0.3)',
             },
             gridTemplateColumns: {
                 feed: 'minmax(0, 1fr) 350px',
@@ -103,21 +104,21 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#1DA1F2',
+                    primary: '#0EA5E9',
                     'primary-content': '#FFFFFF',
 
-                    secondary: '#14171A',
+                    secondary: '#0F172A',
                     'secondary-content': '#FFFFFF',
 
-                    accent: '#FF6B6B',
-                    'accent-content': '#1F1414',
+                    accent: '#F97316',
+                    'accent-content': '#1F2937',
 
-                    neutral: '#657786',
+                    neutral: '#475569',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FFFFFF',
-                    'base-200': '#F7F9F9',
-                    'base-300': '#E1E8ED',
+                    'base-100': '#FDFBF7',
+                    'base-200': '#F6F1E8',
+                    'base-300': '#E7DED3',
                     'base-content': '#0F172A',
 
                     info: '#38BDF8',
