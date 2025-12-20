@@ -2,6 +2,7 @@
 
 use App\Http\Requests\Profile\UpdateProfileInformationRequest;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Volt\Component;
@@ -49,15 +50,16 @@ new class extends Component
         }
 
         $validated = $this->validate(UpdateProfileInformationRequest::rulesFor($user));
+        $imageService = app(ImageService::class);
 
         if (! empty($validated['avatar'])) {
-            $path = $validated['avatar']->storePublicly("avatars/{$user->id}", ['disk' => 'public']);
+            $path = $imageService->optimizeAndUpload($validated['avatar'], "avatars/{$user->id}", 'public');
             $validated['avatar_path'] = $path;
             unset($validated['avatar']);
         }
 
         if (! empty($validated['header'])) {
-            $path = $validated['header']->storePublicly("headers/{$user->id}", ['disk' => 'public']);
+            $path = $imageService->optimizeAndUpload($validated['header'], "headers/{$user->id}", 'public');
             $validated['header_path'] = $path;
             unset($validated['header']);
         }

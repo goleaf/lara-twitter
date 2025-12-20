@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\SqlHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -343,7 +344,10 @@ class DiscoverService
             return;
         }
 
-        $followingIds = $viewer->followingIdsWithSelf()->all();
+        $needsFollowingIds = $terms->contains(fn ($term) => (bool) $term->only_non_followed);
+        $followingIds = $needsFollowingIds ? $viewer->followingIdsWithSelf()->all() : [];
+        $wholeWordPostSql = SqlHelper::lowerWithPadding('posts.body');
+        $wholeWordOriginalSql = SqlHelper::lowerWithPadding('original.body');
 
         foreach ($terms as $term) {
             $raw = trim((string) $term->term);
@@ -357,8 +361,8 @@ class DiscoverService
             }
 
             if ($term->whole_word && preg_match('/^[a-z0-9_]+$/i', $needle)) {
-                $postMatchSql = "(' ' || lower(posts.body) || ' ') like ?";
-                $originalMatchSql = "(' ' || lower(original.body) || ' ') like ?";
+                $postMatchSql = $wholeWordPostSql.' like ?';
+                $originalMatchSql = $wholeWordOriginalSql.' like ?';
                 $matchArg = '% '.$needle.' %';
             } else {
                 $postMatchSql = 'lower(posts.body) like ?';

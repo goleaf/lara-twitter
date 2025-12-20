@@ -15,17 +15,25 @@ class TrendingPage extends Component
     #[Url]
     public string $loc = '';
 
+    public bool $locIsExplicit = false;
+
     public function mount(): void
     {
         $this->tab = in_array($this->tab, ['hashtags', 'keywords', 'topics', 'conversations'], true) ? $this->tab : 'hashtags';
+        $this->locIsExplicit = request()->has('loc');
         $this->loc = $this->normalizedLocation();
+    }
+
+    public function updatedLoc(): void
+    {
+        $this->locIsExplicit = true;
     }
 
     private function normalizedLocation(): string
     {
         $value = trim($this->loc);
 
-        if ($value === '' && Auth::check()) {
+        if ($value === '' && ! $this->locIsExplicit && Auth::check()) {
             $value = trim((string) (Auth::user()->location ?? ''));
         }
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnalyticsExportController;
 use App\Http\Controllers\LinkRedirectController;
 use App\Livewire\AnalyticsPage;
+use App\Livewire\BookmarksPage;
 use App\Livewire\ConversationPage;
 use App\Livewire\NewConversationPage;
 use App\Livewire\ExplorePage;
@@ -15,6 +16,7 @@ use App\Livewire\MentionsPage;
 use App\Livewire\MessagesPage;
 use App\Livewire\MomentPage;
 use App\Livewire\MomentsPage;
+use App\Livewire\NotificationsPage;
 use App\Livewire\PostLikesPage;
 use App\Livewire\PostPage;
 use App\Livewire\ProfileLikesPage;
@@ -77,8 +79,8 @@ Route::view('profile', 'profile')->middleware(['auth'])->name('profile');
 Route::middleware('auth')->group(function () {
     Route::get('analytics/export', AnalyticsExportController::class)->name('analytics.export');
     Route::get('analytics', AnalyticsPage::class)->name('analytics');
-    Route::get('notifications', \App\Filament\Pages\App\NotificationsPage::class)->name('notifications');
-    Route::get('bookmarks', \App\Filament\Pages\App\BookmarksPage::class)->name('bookmarks');
+    Route::get('notifications', NotificationsPage::class)->name('notifications');
+    Route::get('bookmarks', BookmarksPage::class)->name('bookmarks');
     Route::get('reports', ReportsPage::class)->name('reports.index');
     Route::get('messages', MessagesPage::class)->name('messages.index');
     Route::get('messages/new', NewConversationPage::class)->name('messages.compose');

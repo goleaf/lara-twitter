@@ -63,6 +63,7 @@
                                 class="shrink-0 flex items-center gap-3 rounded-full bg-base-100 border border-base-200 px-3 py-2 hover:bg-base-200/50 hover:border-base-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 max-w-[20rem]"
                                 href="{{ route('spaces.show', $space) }}"
                                 wire:navigate
+                                wire:key="live-space-{{ $space->id }}"
                             >
                                 <div class="avatar shrink-0">
                                     <div class="w-9 rounded-full border border-base-200 bg-base-100">
@@ -111,7 +112,7 @@
     </div>
 
     <div class="space-y-3">
-        @foreach ($this->posts as $post)
+        @forelse ($this->posts as $post)
             @if ($post->reply_to_id && $post->replyTo)
                 <div class="opacity-70 text-sm">
                     Replying to
@@ -121,7 +122,28 @@
                 </div>
             @endif
             <livewire:post-card :post="$post" :key="$post->id" />
-        @endforeach
+        @empty
+            <div class="card bg-base-100 border">
+                <div class="card-body items-center text-center gap-3">
+                    <div class="text-lg font-semibold">Your timeline is quiet</div>
+                    <p class="text-sm opacity-70 max-w-sm">
+                        Follow a few people, explore topics, or share your first post to kick things off.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        @auth
+                            <a class="btn btn-primary btn-sm" href="{{ route('explore') }}" wire:navigate>Explore</a>
+                            <a class="btn btn-outline btn-sm" href="#composer">Write a post</a>
+                        @endauth
+                        @guest
+                            <a class="btn btn-primary btn-sm" href="{{ route('login') }}" wire:navigate>Log in</a>
+                            @if (Route::has('register'))
+                                <a class="btn btn-outline btn-sm" href="{{ route('register') }}" wire:navigate>Create account</a>
+                            @endif
+                        @endguest
+                    </div>
+                </div>
+            </div>
+        @endforelse
     </div>
 
     <div class="pt-2">

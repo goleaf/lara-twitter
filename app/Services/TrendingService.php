@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Hashtag;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\SqlHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -267,6 +268,7 @@ class TrendingService
         return Cache::remember($key, $this->cacheTtl(), function () use ($viewer, $limit, $location) {
             $since = now()->subDay();
             $recentSince = $this->recentWindowStart();
+            $columns = ['posts.id', 'posts.body', 'posts.created_at', 'posts.user_id'];
 
             $postsQuery = Post::query()
                 ->whereNull('reply_to_id')
@@ -274,7 +276,7 @@ class TrendingService
                 ->where('posts.created_at', '>=', $since)
                 ->latest('posts.created_at')
                 ->limit(800)
-                ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
+                ->select($columns);
 
             $location = is_string($location) ? trim($location) : null;
             if ($location) {
@@ -282,7 +284,7 @@ class TrendingService
                 $postsQuery
                     ->join('users', 'users.id', '=', 'posts.user_id')
                     ->whereRaw('lower(users.location) like ?', [$needle])
-                    ->select(['posts.body', 'posts.created_at', 'posts.user_id']);
+                    ->select($columns);
             }
 
             if ($viewer) {
@@ -292,7 +294,7 @@ class TrendingService
                 }
             }
 
-            $posts = $postsQuery->get();
+            $posts = $postsQuery->cursor();
 
             $stopwords = array_fill_keys([
                 'the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'you', 'are', 'was', 'were', 'have', 'has',
@@ -400,7 +402,9 @@ class TrendingService
             return;
         }
 
-        $followingIds = $viewer->followingIdsWithSelf()->all();
+        $needsFollowingIds = $terms->contains(fn ($term) => (bool) $term->only_non_followed);
+        $followingIds = $needsFollowingIds ? $viewer->followingIdsWithSelf()->all() : [];
+        $wholeWordSql = SqlHelper::lowerWithPadding('posts.body');
 
         foreach ($terms as $term) {
             $raw = trim((string) $term->term);
@@ -417,7 +421,7 @@ class TrendingService
             $matchArg = null;
 
             if ($term->whole_word && preg_match('/^[a-z0-9_]+$/i', $needle)) {
-                $matchSql = "(' ' || lower(posts.body) || ' ') like ?";
+                $matchSql = $wholeWordSql.' like ?';
                 $matchArg = '% '.$needle.' %';
             } else {
                 $matchSql = 'lower(posts.body) like ?';
@@ -426,10 +430,10 @@ class TrendingService
 
             if ($term->only_non_followed && count($followingIds)) {
                 $query->where(function ($q) use ($followingIds, $matchSql, $matchArg): void {
-                    $q->whereIn('posts.user_id', $followingIds)->orWhereRaw($matchSql.' = 0', [$matchArg]);
+                    $q->whereIn('posts.user_id', $followingIds)->orWhereRaw('NOT ('.$matchSql.')', [$matchArg]);
                 });
             } else {
-                $query->whereRaw($matchSql.' = 0', [$matchArg]);
+                $query->whereRaw('NOT ('.$matchSql.')', [$matchArg]);
             }
         }
     }
