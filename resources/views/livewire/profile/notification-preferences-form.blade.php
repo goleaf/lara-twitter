@@ -95,65 +95,65 @@ new class extends Component
         <div class="space-y-2">
             <div class="font-semibold">{{ __('Activity') }}</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="likes" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="likes" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Likes') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="reposts" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="reposts" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Retweets / Quotes') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="replies" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="replies" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Replies') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mentions" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="mentions" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Mentions') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="follows" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="follows" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('New followers') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="dms" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="dms" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Direct messages') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="lists" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="lists" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Lists (added to a public list)') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="followed_posts" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="followed_posts" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Posts from people you follow') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer sm:col-span-2">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="high_engagement" />
+                <x-choice-card layout="inline" class="sm:col-span-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="high_engagement" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Significant engagement ("getting more attention than usual")') }}</span>
-                </label>
+                </x-choice-card>
             </div>
         </div>
 
         <div class="space-y-2">
             <div class="font-semibold">{{ __('Email') }}</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="email_enabled" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="email_enabled" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Email alerts') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quiet_hours_enabled" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quiet_hours_enabled" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Quiet hours (pause email alerts)') }}</span>
-                </label>
+                </x-choice-card>
             </div>
 
             @if ($quiet_hours_enabled)
@@ -162,7 +162,7 @@ new class extends Component
                         <label class="label">
                             <span class="label-text">From</span>
                         </label>
-                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_start" />
+                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_start" wire:loading.attr="disabled" wire:target="save" />
                         <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_start')" />
                     </div>
 
@@ -170,7 +170,7 @@ new class extends Component
                         <label class="label">
                             <span class="label-text">To</span>
                         </label>
-                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_end" />
+                        <input type="time" class="input input-bordered input-sm w-full" wire:model="quiet_hours_end" wire:loading.attr="disabled" wire:target="save" />
                         <x-input-error class="mt-2" :messages="$errors->get('quiet_hours_end')" />
                     </div>
                 </div>
@@ -180,20 +180,20 @@ new class extends Component
         <div class="space-y-2">
             <div class="font-semibold">{{ __('Filters') }}</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer sm:col-span-2">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quality_filter" />
+                <x-choice-card layout="inline" class="sm:col-span-2">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="quality_filter" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Quality filter (requires avatar + verified email)') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_following" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_following" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Only notify from accounts you follow') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
-                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_verified" />
+                <x-choice-card layout="inline">
+                    <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_verified" wire:loading.attr="disabled" wire:target="save" />
                     <span class="text-sm">{{ __('Only notify from verified accounts') }}</span>
-                </label>
+                </x-choice-card>
             </div>
         </div>
 

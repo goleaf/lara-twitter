@@ -121,25 +121,25 @@ new class extends Component
         <div class="space-y-2">
             <div class="font-semibold text-sm">{{ __('Options') }}</div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                <x-choice-card layout="inline">
                     <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_timeline" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Mute in timeline') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                <x-choice-card layout="inline">
                     <input type="checkbox" class="checkbox checkbox-sm" wire:model="mute_notifications" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Mute in notifications') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                <x-choice-card layout="inline">
                     <input type="checkbox" class="checkbox checkbox-sm" wire:model="whole_word" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Whole word (best effort)') }}</span>
-                </label>
+                </x-choice-card>
 
-                <label class="flex items-center gap-2 rounded-box border border-base-200 bg-base-200/40 px-4 py-2 cursor-pointer">
+                <x-choice-card layout="inline">
                     <input type="checkbox" class="checkbox checkbox-sm" wire:model="only_non_followed" wire:loading.attr="disabled" wire:target="add" />
                     <span class="text-sm">{{ __('Only apply to people you do not follow') }}</span>
-                </label>
+                </x-choice-card>
             </div>
         </div>
 
