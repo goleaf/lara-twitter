@@ -15,6 +15,8 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'media_disk' => env('MEDIA_DISK', 'public'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -58,6 +60,13 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
+        ],
+
+        'cloudflare' => [
+            'driver' => 'cloudflare',
+            'key' => env('CLOUDFLARE_API_KEY'),
+            'email' => env('CLOUDFLARE_EMAIL'),
+            'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
         ],
 
     ],

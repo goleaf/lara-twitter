@@ -10,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -23,6 +22,7 @@ use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -171,7 +171,7 @@ class HomePage extends Page implements HasTable
         }
 
         if (is_string($scheduledFor)) {
-            $scheduledFor = now()->parse($scheduledFor);
+            $scheduledFor = Carbon::parse($scheduledFor, config('app.timezone'));
         }
 
         $isScheduled = $scheduledFor instanceof \Illuminate\Support\Carbon && $scheduledFor->isFuture();
