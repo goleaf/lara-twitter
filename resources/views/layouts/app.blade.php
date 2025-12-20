@@ -5,7 +5,89 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ $title ?? config('app.name', 'MiniTwitter') }}</title>
+        @php
+            $appName = config('app.name', 'MiniTwitter');
+            $resolvedTitle = $pageTitle ?? $title ?? null;
+
+            if (! $resolvedTitle) {
+                $resolvedTitle = match (true) {
+                    request()->routeIs('timeline') => 'Home',
+                    request()->routeIs('explore') => 'Explore',
+                    request()->routeIs('search') => 'Search',
+                    request()->routeIs('trending') => 'Trending',
+
+                    request()->routeIs('hashtags.show') => (function (): string {
+                        $tag = (string) request()->route('tag', '');
+                        $tag = ltrim($tag, '#');
+
+                        return $tag !== '' ? "#{$tag}" : 'Hashtag';
+                    })(),
+
+                    request()->routeIs('notifications') => 'Notifications',
+                    request()->routeIs('messages.*') => 'Messages',
+                    request()->routeIs('bookmarks') => 'Bookmarks',
+
+                    request()->routeIs('lists.show') => (function (): string {
+                        $list = request()->route('list');
+
+                        return $list instanceof \App\Models\UserList
+                            ? $list->name
+                            : 'List';
+                    })(),
+                    request()->routeIs('lists.*') => 'Lists',
+
+                    request()->routeIs('mentions') => 'Mentions',
+                    request()->routeIs('reports.*') => 'Reports',
+                    request()->routeIs('analytics') => 'Analytics',
+                    request()->routeIs('profile') => 'Settings',
+
+                    request()->routeIs('help.*') => 'Help',
+
+                    request()->routeIs('profile.*') => (function (): string {
+                        $user = request()->route('user');
+
+                        return $user instanceof \App\Models\User
+                            ? $user->name
+                            : 'Profile';
+                    })(),
+
+                    request()->routeIs('spaces.show') => (function (): string {
+                        $space = request()->route('space');
+
+                        return $space instanceof \App\Models\Space
+                            ? $space->title
+                            : 'Space';
+                    })(),
+                    request()->routeIs('spaces.*') => 'Spaces',
+
+                    request()->routeIs('moments.show') => (function (): string {
+                        $moment = request()->route('moment');
+
+                        return $moment instanceof \App\Models\Moment
+                            ? $moment->title
+                            : 'Moment';
+                    })(),
+                    request()->routeIs('moments.*') => 'Moments',
+
+                    request()->routeIs('posts.*') => 'Post',
+
+                    request()->routeIs('login') => 'Log in',
+                    request()->routeIs('register') => 'Create account',
+                    request()->routeIs('password.request') => 'Forgot password',
+                    request()->routeIs('password.reset') => 'Reset password',
+                    request()->routeIs('verification.notice') => 'Verify email',
+                    request()->routeIs('password.confirm') => 'Confirm password',
+
+                    default => $appName,
+                };
+            }
+
+            $documentTitle = $resolvedTitle === $appName
+                ? $appName
+                : "{$resolvedTitle} · {$appName}";
+        @endphp
+
+        <title>{{ $documentTitle }}</title>
 
         <script>
             window.AppConfig = @json([
@@ -22,7 +104,7 @@
             <div id="navigate-progress-bar" class="h-full w-0 bg-primary opacity-0 transition-[width,opacity] duration-300"></div>
         </div>
 
-        @php($topbarTitle = $pageTitle ?? $title ?? config('app.name', 'MiniTwitter'))
+        @php($topbarTitle = $resolvedTitle)
 
         <div class="hidden lg:flex min-h-screen max-w-[1280px] mx-auto">
             <div class="w-[275px] flex-shrink-0 border-r border-base-300 sticky top-0 h-screen">
