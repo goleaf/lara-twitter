@@ -28,7 +28,7 @@ class UserResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
-            ->withCount(['posts', 'followers', 'following']);
+            ->withCount(['posts', 'followers', 'following', 'reports', 'reportsMade']);
     }
 
     public static function form(Schema $schema): Schema

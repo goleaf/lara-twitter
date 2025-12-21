@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Moments\Tables;
 
+use App\Models\Moment;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -43,6 +45,11 @@ class MomentsTable
                     ->label('Public'),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (Moment $record): string => route('moments.show', $record))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

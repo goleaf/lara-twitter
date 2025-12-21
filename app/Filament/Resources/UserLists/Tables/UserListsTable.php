@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\UserLists\Tables;
 
+use App\Models\UserList;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -43,8 +46,16 @@ class UserListsTable
             ->filters([
                 TernaryFilter::make('is_private')
                     ->label('Private'),
+                Filter::make('reported')
+                    ->label('Has reports')
+                    ->query(fn ($query) => $query->whereHas('reports')),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (UserList $record): string => route('lists.show', $record))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

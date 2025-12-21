@@ -20,28 +20,42 @@ class ReportForm
                         TextInput::make('case_number')
                             ->label('Case')
                             ->disabled()
-                            ->dehydrated(false),
+                            ->dehydrated(false)
+                            ->visible(fn (string $operation): bool => $operation !== 'create'),
                         Select::make('reporter_id')
                             ->label('Reporter')
                             ->relationship('reporter', 'username')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('reportable_type')
+                            ->searchable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->disabled(fn (string $operation): bool => $operation !== 'create')
+                            ->dehydrated(fn (string $operation): bool => $operation === 'create'),
+                        Select::make('reportable_type')
                             ->label('Target type')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->formatStateUsing(fn (?string $state): ?string => $state ? class_basename($state) : null),
+                            ->options([
+                                'App\\Models\\Post' => 'Post',
+                                'App\\Models\\Hashtag' => 'Hashtag',
+                                'App\\Models\\Space' => 'Space',
+                                'App\\Models\\Message' => 'Message',
+                                'App\\Models\\User' => 'User',
+                                'App\\Models\\UserList' => 'List',
+                            ])
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->disabled(fn (string $operation): bool => $operation !== 'create')
+                            ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                         TextInput::make('reportable_id')
                             ->label('Target ID')
-                            ->disabled()
-                            ->dehydrated(false),
-                        TextInput::make('reason')
-                            ->formatStateUsing(fn (?string $state): ?string => $state ? Report::reasonLabel($state) : null)
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->numeric()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->disabled(fn (string $operation): bool => $operation !== 'create')
+                            ->dehydrated(fn (string $operation): bool => $operation === 'create'),
+                        Select::make('reason')
+                            ->options(Report::reasonOptions())
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->disabled(fn (string $operation): bool => $operation !== 'create')
+                            ->dehydrated(fn (string $operation): bool => $operation === 'create'),
                         Textarea::make('details')
-                            ->disabled()
-                            ->dehydrated(false)
+                            ->disabled(fn (string $operation): bool => $operation !== 'create')
+                            ->dehydrated(fn (string $operation): bool => $operation === 'create')
                             ->rows(4),
                     ])
                     ->columns(2),
@@ -49,6 +63,7 @@ class ReportForm
                     ->schema([
                         Select::make('status')
                             ->options(array_combine(Report::statuses(), Report::statuses()))
+                            ->default(Report::STATUS_OPEN)
                             ->required(),
                         Textarea::make('admin_notes')
                             ->rows(4)

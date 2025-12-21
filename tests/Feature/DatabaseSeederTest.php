@@ -33,7 +33,7 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('post_poll_options', 3);
         $this->assertDatabaseCount('post_poll_votes', 3);
         $this->assertDatabaseCount('post_link_previews', 3);
-        $this->assertDatabaseCount('conversation_participants', 3);
+        $this->assertDatabaseCount('conversation_participants', 7);
         $this->assertDatabaseCount('message_attachments', 3);
         $this->assertDatabaseCount('message_reactions', 3);
         $this->assertDatabaseCount('user_list_user', 3);

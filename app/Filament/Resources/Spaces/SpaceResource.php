@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Spaces;
 
+use App\Filament\Resources\Spaces\Pages\CreateSpace;
 use App\Filament\Resources\Spaces\Pages\EditSpace;
 use App\Filament\Resources\Spaces\Pages\ListSpaces;
 use App\Filament\Resources\Spaces\Schemas\SpaceForm;
@@ -38,6 +39,7 @@ class SpaceResource extends Resource
     {
         return [
             'index' => ListSpaces::route('/'),
+            'create' => CreateSpace::route('/create'),
             'edit' => EditSpace::route('/{record}/edit'),
         ];
     }

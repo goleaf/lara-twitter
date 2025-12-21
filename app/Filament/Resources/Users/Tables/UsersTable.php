@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -45,17 +47,22 @@ class UsersTable
                     ->label('Following')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_admin')
-                    ->boolean()
-                    ->label('Admin'),
-                IconColumn::make('is_verified')
-                    ->boolean()
+                TextColumn::make('reports_count')
+                    ->label('Reports')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('reports_made_count')
+                    ->label('Reports filed')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                ToggleColumn::make('is_admin')
+                    ->label('Admin')
+                    ->disabled(fn (User $record): bool => $record->id === auth()->id()),
+                ToggleColumn::make('is_verified')
                     ->label('Verified'),
-                IconColumn::make('is_premium')
-                    ->boolean()
+                ToggleColumn::make('is_premium')
                     ->label('Premium'),
-                IconColumn::make('analytics_enabled')
-                    ->boolean()
+                ToggleColumn::make('analytics_enabled')
                     ->label('Analytics')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email_verified_at')
@@ -84,8 +91,16 @@ class UsersTable
                 Filter::make('email_verified')
                     ->label('Email verified')
                     ->query(fn ($query) => $query->whereNotNull('email_verified_at')),
+                Filter::make('reported')
+                    ->label('Has reports')
+                    ->query(fn ($query) => $query->whereHas('reports')),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (User $record): string => route('profile.show', ['user' => $record->username]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

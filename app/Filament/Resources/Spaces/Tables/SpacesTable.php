@@ -46,6 +46,11 @@ class SpacesTable
                     ->counts('participants')
                     ->label('Participants')
                     ->sortable(),
+                TextColumn::make('reports_count')
+                    ->counts('reports')
+                    ->label('Reports')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->since()
                     ->sortable()
@@ -61,6 +66,9 @@ class SpacesTable
                 Filter::make('ended')
                     ->label('Ended')
                     ->query(fn ($query) => $query->whereNotNull('ended_at')),
+                Filter::make('reported')
+                    ->label('Has reports')
+                    ->query(fn ($query) => $query->whereHas('reports')),
                 TernaryFilter::make('recording_enabled')
                     ->label('Recording'),
             ])

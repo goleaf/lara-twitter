@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Reports;
 
+use App\Filament\Resources\Reports\Pages\CreateReport;
 use App\Filament\Resources\Reports\Pages\EditReport;
 use App\Filament\Resources\Reports\Pages\ListReports;
 use App\Filament\Resources\Reports\Schemas\ReportForm;
@@ -27,7 +28,7 @@ class ReportResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
-            ->with(['reporter', 'resolvedBy']);
+            ->with(['reporter', 'resolvedBy', 'reportable']);
     }
 
     public static function form(Schema $schema): Schema
@@ -44,6 +45,7 @@ class ReportResource extends Resource
     {
         return [
             'index' => ListReports::route('/'),
+            'create' => CreateReport::route('/create'),
             'edit' => EditReport::route('/{record}/edit'),
         ];
     }

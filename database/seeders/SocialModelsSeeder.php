@@ -87,7 +87,7 @@ class SocialModelsSeeder extends Seeder
         $this->seedMessageReactions($relationCount, $messageIds, $userIds, $now);
         $this->seedUserListMemberships($relationCount, $userListIds, $userIds, $now, [$emptyListId, $subscriberOnlyListId]);
         $this->seedSubscriberOnlyListSubscriptions($subscriberOnlyListId, $userIds, $now, $relationCount);
-        $this->seedUserListSubscriptions($relationCount, $userListIds, $userIds, $now, [$emptyListId]);
+        $this->seedUserListSubscriptions($relationCount, $userListIds, $userIds, $now, [$emptyListId, $subscriberOnlyListId]);
         $this->seedMutedTerms($relationCount, $userIds);
         $this->seedSpaceParticipants($relationCount, $spaces, $userIds, $now);
         $this->seedSpaceSpeakerRequests($relationCount, $spaceIds, $userIds, $now);
@@ -114,21 +114,65 @@ class SocialModelsSeeder extends Seeder
             return collect([$admin]);
         }
 
-        $users = User::factory()
-            ->count($remaining)
-            ->state(fn () => [
-                'email_verified_at' => fake()->boolean(85) ? now() : null,
-                'is_verified' => fake()->boolean(20),
-                'is_premium' => fake()->boolean(15),
-                'dm_policy' => fake()->randomElement(User::dmPolicies()),
-                'dm_allow_requests' => fake()->boolean(80),
-                'dm_read_receipts' => fake()->boolean(75),
-                'avatar_path' => fake()->optional(0.35)->passthrough('seed-avatars/'.fake()->uuid().'.jpg'),
-                'header_path' => fake()->optional(0.25)->passthrough('seed-headers/'.fake()->uuid().'.jpg'),
-                'location' => fake()->optional(0.35)->city(),
-                'website' => fake()->optional(0.35)->url(),
-            ])
-            ->create();
+        $baseState = fn () => [
+            'email_verified_at' => fake()->boolean(85) ? now() : null,
+            'is_verified' => fake()->boolean(20),
+            'is_premium' => fake()->boolean(15),
+            'dm_policy' => fake()->randomElement(User::dmPolicies()),
+            'dm_allow_requests' => fake()->boolean(80),
+            'dm_read_receipts' => fake()->boolean(75),
+            'avatar_path' => fake()->optional(0.35)->passthrough('seed-avatars/'.fake()->uuid().'.jpg'),
+            'header_path' => fake()->optional(0.25)->passthrough('seed-headers/'.fake()->uuid().'.jpg'),
+            'location' => fake()->optional(0.35)->city(),
+            'website' => fake()->optional(0.35)->url(),
+        ];
+
+        $profileCount = min($remaining, max(1, intdiv($remaining, 4)));
+        $remainingAfterProfile = $remaining - $profileCount;
+        $premiumCount = min($remainingAfterProfile, max(1, intdiv($remaining, 6)));
+        $remainingAfterPremium = $remainingAfterProfile - $premiumCount;
+        $verifiedCount = min($remainingAfterPremium, max(1, intdiv($remaining, 6)));
+        $baseCount = $remainingAfterPremium - $verifiedCount;
+
+        $users = collect();
+        if ($profileCount > 0) {
+            $users = $users->merge(
+                User::factory()
+                    ->count($profileCount)
+                    ->state($baseState)
+                    ->withProfile()
+                    ->create()
+            );
+        }
+
+        if ($premiumCount > 0) {
+            $users = $users->merge(
+                User::factory()
+                    ->count($premiumCount)
+                    ->state($baseState)
+                    ->premium()
+                    ->create()
+            );
+        }
+
+        if ($verifiedCount > 0) {
+            $users = $users->merge(
+                User::factory()
+                    ->count($verifiedCount)
+                    ->state($baseState)
+                    ->verified()
+                    ->create()
+            );
+        }
+
+        if ($baseCount > 0) {
+            $users = $users->merge(
+                User::factory()
+                    ->count($baseCount)
+                    ->state($baseState)
+                    ->create()
+            );
+        }
 
         $this->ensureUserCoverage($users);
 
@@ -361,8 +405,8 @@ class SocialModelsSeeder extends Seeder
         $unpublishedCount = min($maxUnpublished - $scheduledCount, max(0, intdiv($postCount, 12)));
 
         $scheduledIds = $this->randomSample($postIds, $scheduledCount);
-        if ($scheduledIds !== []) {
-            Post::query()->withoutGlobalScope('published')->whereIn('id', $scheduledIds)->update([
+        foreach ($scheduledIds as $postId) {
+            Post::query()->withoutGlobalScope('published')->whereKey($postId)->update([
                 'is_published' => false,
                 'scheduled_for' => now()->addHours(fake()->numberBetween(1, 72)),
             ]);
@@ -605,7 +649,47 @@ class SocialModelsSeeder extends Seeder
 
     private function seedFollows(int $relationCount, array $userIds, $now): void
     {
-        $pairs = $this->uniquePairs($userIds, $userIds, $relationCount, true);
+        if ($relationCount <= 0 || count($userIds) < 2) {
+            return;
+        }
+
+        $pairs = [];
+        $used = [];
+
+        $denseSize = min(5, count($userIds));
+        $denseIds = $this->randomSample($userIds, $denseSize);
+        $remaining = array_values(array_diff($userIds, $denseIds));
+        $sparseSize = min(6, count($remaining));
+        $sparseIds = $sparseSize > 0 ? $this->randomSample($remaining, $sparseSize) : [];
+
+        if (count($denseIds) >= 2) {
+            $this->addPair($pairs, $used, $denseIds[0], $denseIds[1]);
+            if (count($pairs) < $relationCount) {
+                $this->addPair($pairs, $used, $denseIds[1], $denseIds[0]);
+            }
+        }
+
+        for ($i = 0; $i < count($sparseIds) - 1 && count($pairs) < $relationCount; $i++) {
+            $this->addPair($pairs, $used, $sparseIds[$i], $sparseIds[$i + 1]);
+        }
+
+        $densePairs = $this->allPairs($denseIds);
+        shuffle($densePairs);
+        foreach ($densePairs as $pair) {
+            if (count($pairs) >= $relationCount) {
+                break;
+            }
+            $this->addPair($pairs, $used, $pair[0], $pair[1]);
+        }
+
+        $remainingCount = $relationCount - count($pairs);
+        if ($remainingCount > 0) {
+            $pairs = array_merge(
+                $pairs,
+                $this->uniquePairs($userIds, $userIds, $remainingCount, true, $used)
+            );
+        }
+
         $rows = array_map(fn (array $pair) => [
             'follower_id' => $pair[0],
             'followed_id' => $pair[1],
@@ -615,9 +699,31 @@ class SocialModelsSeeder extends Seeder
         $this->insertRows('follows', $rows);
     }
 
-    private function seedBlocks(int $relationCount, array $userIds, $now): void
+    private function seedBlocks(int $relationCount, array $userIds, $now): array
     {
-        $pairs = $this->uniquePairs($userIds, $userIds, $relationCount, true);
+        if ($relationCount <= 0 || count($userIds) < 2) {
+            return [];
+        }
+
+        $pairs = [];
+        $used = [];
+
+        $pairSeed = $this->randomSample($userIds, min(2, count($userIds)));
+        if (count($pairSeed) === 2) {
+            $this->addPair($pairs, $used, $pairSeed[0], $pairSeed[1]);
+            if (count($pairs) < $relationCount) {
+                $this->addPair($pairs, $used, $pairSeed[1], $pairSeed[0]);
+            }
+        }
+
+        $remaining = $relationCount - count($pairs);
+        if ($remaining > 0) {
+            $pairs = array_merge(
+                $pairs,
+                $this->uniquePairs($userIds, $userIds, $remaining, true, $used)
+            );
+        }
+
         $rows = array_map(fn (array $pair) => [
             'blocker_id' => $pair[0],
             'blocked_id' => $pair[1],
@@ -625,11 +731,40 @@ class SocialModelsSeeder extends Seeder
             'updated_at' => $now,
         ], $pairs);
         $this->insertRows('blocks', $rows);
+
+        return $pairs;
     }
 
-    private function seedMutes(int $relationCount, array $userIds, $now): void
+    private function seedMutes(int $relationCount, array $userIds, $now, array $blockPairs = []): void
     {
-        $pairs = $this->uniquePairs($userIds, $userIds, $relationCount, true);
+        if ($relationCount <= 0 || count($userIds) < 2) {
+            return;
+        }
+
+        $pairs = [];
+        $used = [];
+
+        $overlapCount = min(count($blockPairs), max(1, intdiv($relationCount, 4)));
+        foreach ($this->randomSamplePairs($blockPairs, $overlapCount) as $pair) {
+            $this->addPair($pairs, $used, $pair[0], $pair[1]);
+        }
+
+        $pairSeed = $this->randomSample($userIds, min(2, count($userIds)));
+        if (count($pairSeed) === 2 && count($pairs) < $relationCount) {
+            $this->addPair($pairs, $used, $pairSeed[0], $pairSeed[1]);
+            if (count($pairs) < $relationCount) {
+                $this->addPair($pairs, $used, $pairSeed[1], $pairSeed[0]);
+            }
+        }
+
+        $remaining = $relationCount - count($pairs);
+        if ($remaining > 0) {
+            $pairs = array_merge(
+                $pairs,
+                $this->uniquePairs($userIds, $userIds, $remaining, true, $used)
+            );
+        }
+
         $rows = array_map(fn (array $pair) => [
             'muter_id' => $pair[0],
             'muted_id' => $pair[1],
@@ -691,10 +826,34 @@ class SocialModelsSeeder extends Seeder
             return;
         }
 
-        PostImage::factory()
-            ->count($relationCount)
-            ->state(fn () => ['post_id' => $postIds[array_rand($postIds)]])
-            ->create();
+        $targets = $this->randomSample($postIds, min($relationCount, count($postIds)));
+        $sortOrders = [];
+        $remaining = $relationCount;
+
+        foreach ($targets as $postId) {
+            if ($remaining <= 0) {
+                break;
+            }
+
+            $sortOrder = $sortOrders[$postId] ?? 0;
+            PostImage::factory()->state([
+                'post_id' => $postId,
+                'sort_order' => $sortOrder,
+            ])->create();
+            $sortOrders[$postId] = $sortOrder + 1;
+            $remaining--;
+        }
+
+        while ($remaining > 0) {
+            $postId = $postIds[array_rand($postIds)];
+            $sortOrder = $sortOrders[$postId] ?? 0;
+            PostImage::factory()->state([
+                'post_id' => $postId,
+                'sort_order' => $sortOrder,
+            ])->create();
+            $sortOrders[$postId] = $sortOrder + 1;
+            $remaining--;
+        }
     }
 
     private function seedPostPolls(int $relationCount, array $postIds): array
@@ -860,7 +1019,7 @@ class SocialModelsSeeder extends Seeder
                 }
 
                 $used[$key] = true;
-                $isRequest = ! $ensureRequest ? true : fake()->boolean(10);
+                $isRequest = $userId === $creatorId ? false : (! $ensureRequest ? true : fake()->boolean(10));
                 $isPinned = ! $ensurePinned ? true : fake()->boolean(15);
                 $lastReadAt = ! $ensureReadAt
                     ? (clone $now)->subMinutes(fake()->numberBetween(1, 240))
@@ -904,10 +1063,34 @@ class SocialModelsSeeder extends Seeder
             return;
         }
 
-        MessageAttachment::factory()
-            ->count($relationCount)
-            ->state(fn () => ['message_id' => $messageIds[array_rand($messageIds)]])
-            ->create();
+        $targets = $this->randomSample($messageIds, min($relationCount, count($messageIds)));
+        $sortOrders = [];
+        $remaining = $relationCount;
+
+        foreach ($targets as $messageId) {
+            if ($remaining <= 0) {
+                break;
+            }
+
+            $sortOrder = $sortOrders[$messageId] ?? 0;
+            MessageAttachment::factory()->state([
+                'message_id' => $messageId,
+                'sort_order' => $sortOrder,
+            ])->create();
+            $sortOrders[$messageId] = $sortOrder + 1;
+            $remaining--;
+        }
+
+        while ($remaining > 0) {
+            $messageId = $messageIds[array_rand($messageIds)];
+            $sortOrder = $sortOrders[$messageId] ?? 0;
+            MessageAttachment::factory()->state([
+                'message_id' => $messageId,
+                'sort_order' => $sortOrder,
+            ])->create();
+            $sortOrders[$messageId] = $sortOrder + 1;
+            $remaining--;
+        }
     }
 
     private function seedMessageReactions(int $relationCount, array $messageIds, array $userIds, $now): void
@@ -917,20 +1100,67 @@ class SocialModelsSeeder extends Seeder
         }
 
         $emojis = ['👍', '❤️', '😂', '🔥', '👏', '😮', '😢', '🎉'];
-        $triples = $this->uniqueTriples($messageIds, $userIds, $emojis, $relationCount);
-        $rows = array_map(fn (array $triple) => [
-            'message_id' => $triple[0],
-            'user_id' => $triple[1],
-            'emoji' => $triple[2],
-            'created_at' => $now,
-            'updated_at' => $now,
-        ], $triples);
+
+        $rows = [];
+        $used = [];
+        $targets = $this->randomSample($messageIds, min($relationCount, count($messageIds)));
+        foreach ($targets as $messageId) {
+            $userId = $userIds[array_rand($userIds)];
+            $emoji = $emojis[array_rand($emojis)];
+            $key = $messageId.'-'.$userId.'-'.$emoji;
+            if (isset($used[$key])) {
+                continue;
+            }
+
+            $used[$key] = true;
+            $rows[] = [
+                'message_id' => $messageId,
+                'user_id' => $userId,
+                'emoji' => $emoji,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        $attempts = 0;
+        $attemptLimit = $relationCount * 20;
+        while (count($rows) < $relationCount && $attempts < $attemptLimit) {
+            $messageId = $messageIds[array_rand($messageIds)];
+            $userId = $userIds[array_rand($userIds)];
+            $emoji = $emojis[array_rand($emojis)];
+            $key = $messageId.'-'.$userId.'-'.$emoji;
+            if (isset($used[$key])) {
+                $attempts++;
+                continue;
+            }
+
+            $used[$key] = true;
+            $rows[] = [
+                'message_id' => $messageId,
+                'user_id' => $userId,
+                'emoji' => $emoji,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+            $attempts++;
+        }
 
         $this->insertRows('message_reactions', $rows);
     }
 
-    private function seedUserListMemberships(int $relationCount, array $userListIds, array $userIds, $now): void
+    private function seedUserListMemberships(
+        int $relationCount,
+        array $userListIds,
+        array $userIds,
+        $now,
+        array $excludeListIds = []
+    ): void
     {
+        $userListIds = array_values(array_diff($userListIds, $excludeListIds));
+        if ($relationCount <= 0 || $userListIds === [] || $userIds === []) {
+            return;
+        }
+
         $pairs = $this->uniquePairs($userListIds, $userIds, $relationCount);
         $rows = array_map(fn (array $pair) => [
             'user_list_id' => $pair[0],
@@ -941,8 +1171,19 @@ class SocialModelsSeeder extends Seeder
         $this->insertRows('user_list_user', $rows);
     }
 
-    private function seedUserListSubscriptions(int $relationCount, array $userListIds, array $userIds, $now): void
+    private function seedUserListSubscriptions(
+        int $relationCount,
+        array $userListIds,
+        array $userIds,
+        $now,
+        array $excludeListIds = []
+    ): void
     {
+        $userListIds = array_values(array_diff($userListIds, $excludeListIds));
+        if ($relationCount <= 0 || $userListIds === [] || $userIds === []) {
+            return;
+        }
+
         $pairs = $this->uniquePairs($userListIds, $userIds, $relationCount);
         $rows = array_map(fn (array $pair) => [
             'user_list_id' => $pair[0],
@@ -953,16 +1194,76 @@ class SocialModelsSeeder extends Seeder
         $this->insertRows('user_list_subscriptions', $rows);
     }
 
+    private function seedSubscriberOnlyListSubscriptions(?int $listId, array $userIds, $now, int $relationCount): void
+    {
+        if (! $listId || $relationCount <= 0 || $userIds === []) {
+            return;
+        }
+
+        $count = min(count($userIds), max(1, intdiv($relationCount, 5)));
+        $subscriberIds = $this->randomSample($userIds, $count);
+        $rows = array_map(fn (int $userId) => [
+            'user_list_id' => $listId,
+            'user_id' => $userId,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $subscriberIds);
+
+        $this->insertRows('user_list_subscriptions', $rows);
+    }
+
     private function seedMutedTerms(int $relationCount, array $userIds): void
     {
         if ($relationCount <= 0 || $userIds === []) {
             return;
         }
 
-        MutedTerm::factory()
-            ->count($relationCount)
-            ->state(fn () => ['user_id' => $userIds[array_rand($userIds)]])
-            ->create();
+        $patterns = [
+            [
+                'whole_word' => true,
+                'only_non_followed' => true,
+                'mute_timeline' => true,
+                'mute_notifications' => false,
+                'expires_at' => now()->addDays(7),
+            ],
+            [
+                'whole_word' => false,
+                'only_non_followed' => false,
+                'mute_timeline' => false,
+                'mute_notifications' => true,
+                'expires_at' => now()->subDays(2),
+            ],
+            [
+                'whole_word' => true,
+                'only_non_followed' => false,
+                'mute_timeline' => true,
+                'mute_notifications' => true,
+                'expires_at' => now()->addDays(3),
+            ],
+            [
+                'whole_word' => false,
+                'only_non_followed' => true,
+                'mute_timeline' => false,
+                'mute_notifications' => false,
+                'expires_at' => now()->subDays(5),
+            ],
+        ];
+
+        $specialCount = min($relationCount, count($patterns));
+        for ($i = 0; $i < $specialCount; $i++) {
+            MutedTerm::factory()->state(array_merge($patterns[$i], [
+                'user_id' => $userIds[array_rand($userIds)],
+                'term' => fake()->words(fake()->numberBetween(1, 2), true),
+            ]))->create();
+        }
+
+        $remaining = $relationCount - $specialCount;
+        if ($remaining > 0) {
+            MutedTerm::factory()
+                ->count($remaining)
+                ->state(fn () => ['user_id' => $userIds[array_rand($userIds)]])
+                ->create();
+        }
     }
 
     private function seedSpaceParticipants(int $relationCount, Collection $spaces, array $userIds, $now): void
@@ -973,39 +1274,53 @@ class SocialModelsSeeder extends Seeder
 
         $rows = [];
         $used = [];
+        $spaceCount = $spaces->count();
+        $perSpace = max(1, intdiv($relationCount, max(1, $spaceCount)));
+        $maxParticipants = min(count($userIds), max(2, $perSpace + 1));
+        $roles = ['listener', 'speaker', 'cohost'];
 
         foreach ($spaces as $space) {
-            $key = $space->id.'-'.$space->host_user_id;
+            $spaceId = $space->id;
+            $hostId = $space->host_user_id;
+            $key = $spaceId.'-'.$hostId;
             $used[$key] = true;
+
             $rows[] = [
-                'space_id' => $space->id,
-                'user_id' => $space->host_user_id,
+                'space_id' => $spaceId,
+                'user_id' => $hostId,
                 'role' => 'host',
-                'joined_at' => null,
-                'left_at' => null,
+                'joined_at' => $space->started_at,
+                'left_at' => $space->ended_at,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
-        }
 
-        $target = max($relationCount, count($rows));
-        if ($target > count($rows)) {
-            $pairs = $this->uniquePairs(
-                $spaces->pluck('id')->all(),
-                $userIds,
-                $target - count($rows),
-                false,
-                $used
-            );
+            if ($maxParticipants < 2 || count($userIds) < 2) {
+                continue;
+            }
 
-            $roles = ['listener', 'speaker', 'cohost'];
-            foreach ($pairs as $pair) {
+            $desired = min($maxParticipants, fake()->numberBetween(2, $maxParticipants));
+            $available = array_values(array_diff($userIds, [$hostId]));
+            $additional = $this->randomSample($available, min($desired - 1, count($available)));
+
+            foreach ($additional as $userId) {
+                $key = $spaceId.'-'.$userId;
+                if (isset($used[$key])) {
+                    continue;
+                }
+                $used[$key] = true;
+
+                $joinedAt = $space->started_at
+                    ? $space->started_at
+                    : ($space->scheduled_for ? null : (clone $now)->subMinutes(fake()->numberBetween(5, 120)));
+                $leftAt = $space->ended_at;
+
                 $rows[] = [
-                    'space_id' => $pair[0],
-                    'user_id' => $pair[1],
+                    'space_id' => $spaceId,
+                    'user_id' => $userId,
                     'role' => $roles[array_rand($roles)],
-                    'joined_at' => null,
-                    'left_at' => null,
+                    'joined_at' => $joinedAt,
+                    'left_at' => $leftAt,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
@@ -1021,16 +1336,36 @@ class SocialModelsSeeder extends Seeder
             return;
         }
 
-        $pairs = $this->uniquePairs($spaceIds, $userIds, $relationCount);
-        $rows = array_map(fn (array $pair) => [
-            'space_id' => $pair[0],
-            'user_id' => $pair[1],
-            'status' => SpaceSpeakerRequest::STATUS_PENDING,
-            'decided_by' => null,
-            'decided_at' => null,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ], $pairs);
+        $statuses = SpaceSpeakerRequest::statuses();
+        $statusCount = count($statuses);
+        $maxPossible = count($spaceIds) * count($userIds);
+        $target = min($maxPossible, max($relationCount, $statusCount));
+        $perStatus = intdiv($target, $statusCount);
+        $remainder = $target % $statusCount;
+
+        $rows = [];
+        $used = [];
+
+        foreach ($statuses as $index => $status) {
+            $count = $perStatus + ($index < $remainder ? 1 : 0);
+            if ($count <= 0) {
+                continue;
+            }
+
+            $pairs = $this->uniquePairs($spaceIds, $userIds, $count, false, $used);
+            foreach ($pairs as $pair) {
+                $isDecided = in_array($status, [SpaceSpeakerRequest::STATUS_APPROVED, SpaceSpeakerRequest::STATUS_DENIED], true);
+                $rows[] = [
+                    'space_id' => $pair[0],
+                    'user_id' => $pair[1],
+                    'status' => $status,
+                    'decided_by' => $isDecided ? $userIds[array_rand($userIds)] : null,
+                    'decided_at' => $isDecided ? (clone $now)->subMinutes(fake()->numberBetween(5, 1440)) : null,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
 
         $this->insertRows('space_speaker_requests', $rows);
     }
@@ -1064,6 +1399,7 @@ class SocialModelsSeeder extends Seeder
 
         $rows = [];
         $used = [];
+        $sortOrderByMoment = [];
 
         foreach ($momentIds as $momentId) {
             $postId = $this->randomId($postIds);
@@ -1079,19 +1415,22 @@ class SocialModelsSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
+            $sortOrderByMoment[$momentId] = 1;
         }
 
         $target = max($relationCount, count($rows));
         if ($target > count($rows)) {
             $pairs = $this->uniquePairs($momentIds, $postIds, $target - count($rows), false, $used);
-            foreach ($pairs as $index => $pair) {
+            foreach ($pairs as $pair) {
+                $sortOrder = $sortOrderByMoment[$pair[0]] ?? 0;
                 $rows[] = [
                     'moment_id' => $pair[0],
                     'post_id' => $pair[1],
-                    'sort_order' => $index,
+                    'sort_order' => $sortOrder,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
+                $sortOrderByMoment[$pair[0]] = $sortOrder + 1;
             }
         }
 
@@ -1113,6 +1452,7 @@ class SocialModelsSeeder extends Seeder
         }
 
         $reasons = Report::reasons();
+        $statuses = Report::statuses();
         $targets = [
             ['type' => Post::class, 'ids' => $postIds, 'disallowSame' => false],
             ['type' => Message::class, 'ids' => $messageIds, 'disallowSame' => false],
@@ -1128,10 +1468,12 @@ class SocialModelsSeeder extends Seeder
         }
 
         $typeCount = count($targets);
-        $base = intdiv($relationCount, $typeCount);
-        $remainder = $relationCount % $typeCount;
+        $total = max($relationCount, $typeCount, count($statuses));
+        $base = intdiv($total, $typeCount);
+        $remainder = $total % $typeCount;
 
         $rows = [];
+        $statusIndex = 0;
         foreach ($targets as $index => $target) {
             $count = $base + ($index < $remainder ? 1 : 0);
             if ($count <= 0) {
@@ -1146,6 +1488,8 @@ class SocialModelsSeeder extends Seeder
                     $userIds,
                     $count,
                     $reasons,
+                    $statuses,
+                    $statusIndex,
                     $now,
                     $target['disallowSame']
                 )
@@ -1161,6 +1505,8 @@ class SocialModelsSeeder extends Seeder
         array $reporterIds,
         int $count,
         array $reasons,
+        array $statuses,
+        int &$statusIndex,
         $now,
         bool $disallowSameReporter = false
     ): array {
@@ -1170,17 +1516,25 @@ class SocialModelsSeeder extends Seeder
 
         $pairs = $this->uniquePairs($reporterIds, $reportableIds, $count, $disallowSameReporter);
         $rows = [];
+        $requiredDetails = Report::reasonsRequiringDetails();
+        $statusCount = max(1, count($statuses));
         foreach ($pairs as $pair) {
+            $status = $statuses[$statusIndex % $statusCount];
+            $statusIndex++;
+            $reason = $reasons[array_rand($reasons)];
+            $needsDetails = in_array($reason, $requiredDetails, true);
+            $isResolved = in_array($status, [Report::STATUS_RESOLVED, Report::STATUS_DISMISSED], true);
+
             $rows[] = [
                 'reporter_id' => $pair[0],
                 'reportable_type' => $reportableType,
                 'reportable_id' => $pair[1],
-                'reason' => $reasons[array_rand($reasons)],
-                'details' => fake()->optional()->text(140),
-                'status' => Report::STATUS_OPEN,
-                'admin_notes' => null,
-                'resolved_by' => null,
-                'resolved_at' => null,
+                'reason' => $reason,
+                'details' => $needsDetails ? fake()->text(140) : fake()->optional(0.3)->text(140),
+                'status' => $status,
+                'admin_notes' => fake()->optional(0.2)->text(120),
+                'resolved_by' => $isResolved ? $reporterIds[array_rand($reporterIds)] : null,
+                'resolved_at' => $isResolved ? (clone $now)->subMinutes(fake()->numberBetween(10, 10080)) : null,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -1235,6 +1589,59 @@ class SocialModelsSeeder extends Seeder
         }
 
         return $pairs;
+    }
+
+    private function addPair(array &$pairs, array &$used, int $left, int $right): void
+    {
+        if ($left === $right) {
+            return;
+        }
+
+        $key = $left.'-'.$right;
+        if (isset($used[$key])) {
+            return;
+        }
+
+        $used[$key] = true;
+        $pairs[] = [$left, $right];
+    }
+
+    private function allPairs(array $ids): array
+    {
+        $pairs = [];
+        $count = count($ids);
+        for ($i = 0; $i < $count; $i++) {
+            for ($j = 0; $j < $count; $j++) {
+                if ($i === $j) {
+                    continue;
+                }
+                $pairs[] = [$ids[$i], $ids[$j]];
+            }
+        }
+
+        return $pairs;
+    }
+
+    private function randomSamplePairs(array $pairs, int $count): array
+    {
+        if ($count <= 0 || $pairs === []) {
+            return [];
+        }
+
+        $total = count($pairs);
+        if ($count >= $total) {
+            $shuffled = $pairs;
+            shuffle($shuffled);
+
+            return $shuffled;
+        }
+
+        $keys = array_rand($pairs, $count);
+        if (! is_array($keys)) {
+            $keys = [$keys];
+        }
+
+        return array_map(fn (int $key) => $pairs[$key], $keys);
     }
 
     private function uniqueTriples(

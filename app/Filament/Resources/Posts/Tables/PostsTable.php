@@ -58,6 +58,11 @@ class PostsTable
                     ->label('Replies')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('reports_count')
+                    ->counts('reports')
+                    ->label('Reports')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('reply_to_id')
                     ->label('Reply to')
                     ->sortable()
@@ -84,6 +89,9 @@ class PostsTable
                 Filter::make('scheduled')
                     ->label('Scheduled')
                     ->query(fn ($query) => $query->whereNotNull('scheduled_for')),
+                Filter::make('reported')
+                    ->label('Has reports')
+                    ->query(fn ($query) => $query->whereHas('reports')),
                 SelectFilter::make('reply_policy')
                     ->label('Reply policy')
                     ->options(array_combine(Post::replyPolicies(), Post::replyPolicies())),

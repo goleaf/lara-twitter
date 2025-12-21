@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Hashtags\Tables;
 
+use App\Models\Hashtag;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -37,6 +39,11 @@ class HashtagsTable
                     ->query(fn ($query) => $query->whereHas('reports')),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (Hashtag $record): string => route('hashtags.show', ['tag' => $record->tag]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Moments;
 
+use App\Filament\Resources\Moments\Pages\CreateMoment;
 use App\Filament\Resources\Moments\Pages\EditMoment;
 use App\Filament\Resources\Moments\Pages\ListMoments;
 use App\Filament\Resources\Moments\Schemas\MomentForm;
@@ -38,6 +39,7 @@ class MomentResource extends Resource
     {
         return [
             'index' => ListMoments::route('/'),
+            'create' => CreateMoment::route('/create'),
             'edit' => EditMoment::route('/{record}/edit'),
         ];
     }
