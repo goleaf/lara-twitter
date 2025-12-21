@@ -177,6 +177,70 @@ class SocialModelsSeeder extends Seeder
         return $user;
     }
 
+    private function ensureUserCoverage(Collection $users): void
+    {
+        $users = $users->values();
+        if ($users->isEmpty()) {
+            return;
+        }
+
+        $index = 0;
+        foreach (User::dmPolicies() as $policy) {
+            if (! isset($users[$index])) {
+                break;
+            }
+
+            User::query()->whereKey($users[$index]->id)->update([
+                'dm_policy' => $policy,
+                'dm_allow_requests' => $policy !== User::DM_NONE,
+                'dm_read_receipts' => true,
+            ]);
+
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update(['dm_allow_requests' => false]);
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update(['dm_read_receipts' => false]);
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update(['is_premium' => true]);
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update([
+                'is_verified' => true,
+                'email_verified_at' => now(),
+            ]);
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update([
+                'is_verified' => false,
+                'email_verified_at' => null,
+            ]);
+            $index++;
+        }
+
+        if (isset($users[$index])) {
+            User::query()->whereKey($users[$index]->id)->update([
+                'avatar_path' => 'seed-avatars/'.fake()->uuid().'.jpg',
+                'header_path' => 'seed-headers/'.fake()->uuid().'.jpg',
+                'bio' => fake()->text(120),
+                'location' => fake()->city(),
+                'website' => fake()->url(),
+            ]);
+        }
+    }
+
     private function seedHashtags(int $modelCount): Collection
     {
         if ($modelCount <= 0) {
@@ -194,7 +258,10 @@ class SocialModelsSeeder extends Seeder
 
         return Post::factory()
             ->count($modelCount)
-            ->state(fn () => ['user_id' => $userIds[array_rand($userIds)]])
+            ->state(fn () => [
+                'user_id' => $userIds[array_rand($userIds)],
+                'reply_policy' => fake()->randomElement(Post::replyPolicies()),
+            ])
             ->create();
     }
 
