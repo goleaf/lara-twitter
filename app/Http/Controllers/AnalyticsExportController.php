@@ -49,7 +49,7 @@ class AnalyticsExportController
             ->whereIn('analytics_uniques.type', ['post_view', 'post_link_click', 'post_profile_click', 'post_media_view'])
             ->whereBetween('analytics_uniques.day', [$sinceDay, $untilDay])
             ->groupBy('analytics_uniques.entity_id', 'analytics_uniques.type')
-            ->get();
+            ->cursor();
 
         foreach ($analyticsByPost as $row) {
             $counts[$row->type][$row->entity_id] = (int) $row->count;

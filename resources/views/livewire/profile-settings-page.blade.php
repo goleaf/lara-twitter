@@ -105,13 +105,14 @@
                         <div class="mt-4 space-y-4">
                             <nav class="lg:hidden space-y-4" aria-label="Settings sections">
                                 @foreach ($jumpSections as $section => $links)
-                                    <div class="space-y-2">
+                                    <div class="space-y-2" wire:key="jump-section-mobile-{{ md5($section) }}">
                                         <div class="text-xs uppercase tracking-[0.3em] opacity-60">{{ $section }}</div>
                                         <div class="flex flex-wrap gap-2">
                                             @foreach ($links as $link)
                                                 <a
                                                     class="btn btn-xs btn-outline rounded-full focus-ring {{ ($link['danger'] ?? false) ? 'text-error border-error/40 hover:border-error/70 hover:text-error' : '' }}"
                                                     href="#{{ $link['id'] }}"
+                                                    wire:key="jump-link-mobile-{{ $link['id'] }}"
                                                 >
                                                     {{ $link['label'] }}
                                                 </a>
@@ -124,9 +125,9 @@
                             <nav class="hidden lg:block" aria-label="Settings sections">
                                 <ul class="menu menu-sm rounded-box border border-base-200 bg-base-200/40 p-2">
                                     @foreach ($jumpSections as $section => $links)
-                                        <li class="menu-title"><span>{{ $section }}</span></li>
+                                        <li class="menu-title" wire:key="jump-section-desktop-{{ md5($section) }}"><span>{{ $section }}</span></li>
                                         @foreach ($links as $link)
-                                            <li>
+                                            <li wire:key="jump-link-desktop-{{ $link['id'] }}">
                                                 <a
                                                     class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 {{ ($link['danger'] ?? false) ? 'text-error' : '' }}"
                                                     href="#{{ $link['id'] }}"

@@ -170,7 +170,7 @@
                                     @php
                                         $height = $growthMax > 0 ? max(4, (int) round(($value / $growthMax) * 100)) : 0;
                                     @endphp
-                                    <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $growthSeries['days'][$index] }}: {{ $value }}"></div>
+                                    <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $growthSeries['days'][$index] }}: {{ $value }}" wire:key="growth-bar-{{ $growthSeries['days'][$index] ?? $index }}"></div>
                                 @endforeach
                             </div>
                             <div class="mt-2 flex items-center justify-between text-[0.65rem] uppercase tracking-[0.2em] opacity-60">
@@ -311,7 +311,7 @@
                                         @php
                                             $height = $maxImpressions > 0 ? max(4, (int) round(($value / $maxImpressions) * 100)) : 0;
                                         @endphp
-                                        <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}"></div>
+                                        <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}" wire:key="impressions-bar-{{ $daysSeries[$index] ?? $index }}"></div>
                                     @endforeach
                                 </div>
                             </div>
@@ -332,7 +332,7 @@
                                         @php
                                             $height = $maxProfile > 0 ? max(4, (int) round(($value / $maxProfile) * 100)) : 0;
                                         @endphp
-                                        <div class="flex-1 rounded-t bg-secondary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}"></div>
+                                        <div class="flex-1 rounded-t bg-secondary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}" wire:key="profile-bar-{{ $daysSeries[$index] ?? $index }}"></div>
                                     @endforeach
                                 </div>
                             </div>
@@ -387,7 +387,7 @@
                         @php
                             $percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0;
                         @endphp
-                        <div class="h-full {{ $item['color'] }}" style="width: {{ $percent }}%"></div>
+                        <div class="h-full {{ $item['color'] }}" style="width: {{ $percent }}%" wire:key="engagement-bar-{{ md5($item['label']) }}"></div>
                     @endforeach
                 </div>
                 <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
@@ -395,7 +395,7 @@
                         @php
                             $percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0;
                         @endphp
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between" wire:key="engagement-row-{{ md5($item['label']) }}">
                             <div class="flex items-center gap-2">
                                 <span class="h-2 w-2 rounded-full {{ $item['color'] }}"></span>
                                 <span>{{ $item['label'] }}</span>
