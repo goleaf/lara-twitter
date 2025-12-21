@@ -606,7 +606,7 @@
         background-image:
             radial-gradient(1200px 520px at -10% -20%, rgba(var(--hero-sky), 0.18), transparent 60%),
             radial-gradient(900px 420px at 110% -10%, rgba(var(--hero-sun), 0.16), transparent 60%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
     }
 
     .guest-hero::before {
@@ -644,7 +644,7 @@
                 transparent 1px,
                 transparent 18px
             ),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
     }
 
     .welcome-preview {
@@ -755,7 +755,7 @@
                 transparent 1px,
                 transparent 18px
             ),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.97), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.97), rgba(252, 246, 236, 1));
     }
 
     .timeline-pill {
@@ -867,21 +867,21 @@
         background-image:
             radial-gradient(960px 340px at 12% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(720px 300px at 88% 0%, rgba(var(--hero-sun), 0.14), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
     }
 
     .notifications-hero {
         background-image:
             radial-gradient(920px 300px at 0% -18%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(720px 260px at 100% 10%, rgba(var(--hero-sun), 0.14), transparent 65%),
-            linear-gradient(180deg, rgba(var(--hero-paper), 0.96), rgba(251, 246, 239, 1));
+            linear-gradient(180deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
     }
 
     .messages-hero {
         background-image:
             radial-gradient(980px 320px at 6% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(740px 260px at 92% 0%, rgba(var(--hero-sun), 0.16), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
     }
 
     .explore-hero {
@@ -895,7 +895,7 @@
         background-image:
             radial-gradient(920px 320px at 8% -18%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(760px 260px at 92% 8%, rgba(var(--hero-sun), 0.18), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(251, 246, 239, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
     }
 
     .explore-pill {
@@ -1039,7 +1039,7 @@
             background-image:
                 radial-gradient(760px 360px at 10% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
                 radial-gradient(720px 320px at 90% -10%, rgba(var(--hero-sun), 0.18), transparent 62%),
-                linear-gradient(175deg, rgba(var(--hero-paper), 0.98), rgba(251, 246, 239, 1));
+                linear-gradient(175deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
         }
 
         .card,

@@ -37,7 +37,7 @@
                 </a>
                 <div class="min-w-0">
                     <div class="topbar-kicker">{{ config('app.name', 'MiniTwitter') }}</div>
-                    <h1 class="text-xl font-semibold truncate">{{ $title }}</h1>
+                    <h1 class="text-lg sm:text-xl lg:text-2xl font-semibold truncate tracking-tight leading-tight">{{ $title }}</h1>
                 </div>
             </div>
 

@@ -21,17 +21,17 @@ export default {
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0E6F6D',
-                    600: '#0B5957',
+                    DEFAULT: '#0B6B68',
+                    600: '#095A58',
                 },
-                primary: '#0E6F6D',
-                secondary: '#1E2B37',
-                accent: '#F08B3E',
-                neutral: '#4B5B70',
-                'base-100': '#FBF7F0',
-                'base-200': '#F2E6D6',
-                'base-300': '#E5D4C1',
-                'base-content': '#0F172A',
+                primary: '#0B6B68',
+                secondary: '#1B2A38',
+                accent: '#F08B45',
+                neutral: '#495768',
+                'base-100': '#FCF7EF',
+                'base-200': '#F2E4D4',
+                'base-300': '#E6D4BF',
+                'base-content': '#0D1828',
             },
             keyframes: {
                 float: {
@@ -119,22 +119,22 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0E6F6D',
+                    primary: '#0B6B68',
                     'primary-content': '#F8FAFC',
 
-                    secondary: '#1E2B37',
+                    secondary: '#1B2A38',
                     'secondary-content': '#F8FAFC',
 
-                    accent: '#F08B3E',
+                    accent: '#F08B45',
                     'accent-content': '#1F2937',
 
-                    neutral: '#4B5B70',
+                    neutral: '#495768',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FBF7F0',
-                    'base-200': '#F2E6D6',
-                    'base-300': '#E5D4C1',
-                    'base-content': '#0F172A',
+                    'base-100': '#FCF7EF',
+                    'base-200': '#F2E4D4',
+                    'base-300': '#E6D4BF',
+                    'base-content': '#0D1828',
 
                     info: '#2AA7DE',
                     success: '#16A34A',

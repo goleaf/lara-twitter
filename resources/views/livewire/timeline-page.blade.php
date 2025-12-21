@@ -1,10 +1,12 @@
 <div class="space-y-4">
     @auth
-        <div class="tabs tabs-boxed">
+        <div class="tabs tabs-boxed" role="tablist" aria-label="Timeline feed">
             <a
                 class="tab {{ $feed === 'following' ? 'tab-active' : '' }}"
                 href="{{ route('timeline', ['feed' => 'following']) }}"
                 wire:navigate
+                role="tab"
+                aria-selected="{{ $feed === 'following' ? 'true' : 'false' }}"
             >
                 Following
             </a>
@@ -12,6 +14,8 @@
                 class="tab {{ $feed === 'for-you' ? 'tab-active' : '' }}"
                 href="{{ route('timeline', ['feed' => 'for-you']) }}"
                 wire:navigate
+                role="tab"
+                aria-selected="{{ $feed === 'for-you' ? 'true' : 'false' }}"
             >
                 For You
             </a>

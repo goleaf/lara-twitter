@@ -15,6 +15,7 @@
         href="{{ route('timeline') }}"
         wire:navigate
         class="{{ $itemBase }} {{ request()->routeIs('timeline') ? $itemActive : $itemInactive }}"
+        @if (request()->routeIs('timeline')) aria-current="page" @endif
     >
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -26,6 +27,7 @@
         href="{{ route('explore') }}"
         wire:navigate
         class="{{ $itemBase }} {{ request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending') ? $itemActive : $itemInactive }}"
+        @if (request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending')) aria-current="page" @endif
     >
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm3.5 6.5-2 6-6 2 2-6Z" />
@@ -38,6 +40,7 @@
             href="{{ route('notifications') }}"
             wire:navigate
             class="{{ $itemBase }} {{ request()->routeIs('notifications') ? $itemActive : $itemInactive }} relative"
+            @if (request()->routeIs('notifications')) aria-current="page" @endif
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -50,6 +53,7 @@
             href="{{ route('messages.index') }}"
             wire:navigate
             class="{{ $itemBase }} {{ request()->routeIs('messages.*') ? $itemActive : $itemInactive }}"
+            @if (request()->routeIs('messages.*')) aria-current="page" @endif
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a8.5 8.5 0 1 1-2.5-6.01L21 8.5V12Z" />
@@ -61,6 +65,7 @@
             href="{{ route('bookmarks') }}"
             wire:navigate
             class="{{ $itemBase }} {{ request()->routeIs('bookmarks') ? $itemActive : $itemInactive }}"
+            @if (request()->routeIs('bookmarks')) aria-current="page" @endif
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21l-5-3-5 3V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16Z" />
@@ -72,6 +77,7 @@
             href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
             wire:navigate
             class="{{ $itemBase }} {{ request()->routeIs('profile.*') ? $itemActive : $itemInactive }}"
+            @if (request()->routeIs('profile.*')) aria-current="page" @endif
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z" />
