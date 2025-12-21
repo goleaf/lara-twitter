@@ -51,16 +51,17 @@ class SocialModelsSeeder extends Seeder
         $posts = $this->seedPosts($modelCount, $userIds);
         $postIds = $posts->pluck('id')->all();
 
-        $this->applyPostRelations($postIds, $relationCount);
-        $this->seedPinnedPostsForUsers($userIds, $postIds, $relationCount);
+        $postRelations = $this->applyPostRelations($postIds, $relationCount);
+        $this->seedPostVariations($postIds, $postRelations['replyIds'], $postRelations['repostIds'], $modelCount);
+        $this->seedPinnedPostsForUsers($users, $posts, $relationCount);
 
         $userLists = $this->seedUserLists($modelCount, $userIds);
         $userListIds = $userLists->pluck('id')->all();
+        [$emptyListId, $subscriberOnlyListId] = $this->pickSpecialLists($userListIds);
 
         $conversations = $this->seedConversations($modelCount, $userIds);
-        $conversationIds = $conversations->pluck('id')->all();
-
-        $messages = $this->seedMessages($modelCount, $conversationIds, $userIds);
+        $conversationParticipants = $this->seedConversationParticipants($relationCount, $conversations, $userIds, $now);
+        $messages = $this->seedMessages($modelCount, $conversations, $conversationParticipants, $now);
         $messageIds = $messages->pluck('id')->all();
 
         $spaces = $this->seedSpaces($modelCount, $userIds);
@@ -71,8 +72,8 @@ class SocialModelsSeeder extends Seeder
         $momentIds = $moments->pluck('id')->all();
 
         $this->seedFollows($relationCount, $userIds, $now);
-        $this->seedBlocks($relationCount, $userIds, $now);
-        $this->seedMutes($relationCount, $userIds, $now);
+        $blockPairs = $this->seedBlocks($relationCount, $userIds, $now);
+        $this->seedMutes($relationCount, $userIds, $now, $blockPairs);
         $this->seedLikes($relationCount, $userIds, $postIds, $now);
         $this->seedBookmarks($relationCount, $userIds, $postIds, $now);
         $this->seedMentions($relationCount, $postIds, $userIds, $now);
@@ -82,11 +83,11 @@ class SocialModelsSeeder extends Seeder
         $pollOptionMap = $this->seedPostPollOptions($pollIds, $relationCount);
         $this->seedPostPollVotes($relationCount, $pollOptionMap, $userIds, $now);
         $this->seedPostLinkPreviews($relationCount, $postIds);
-        $this->seedConversationParticipants($relationCount, $conversations, $userIds, $now);
         $this->seedMessageAttachments($relationCount, $messageIds);
         $this->seedMessageReactions($relationCount, $messageIds, $userIds, $now);
-        $this->seedUserListMemberships($relationCount, $userListIds, $userIds, $now);
-        $this->seedUserListSubscriptions($relationCount, $userListIds, $userIds, $now);
+        $this->seedUserListMemberships($relationCount, $userListIds, $userIds, $now, [$emptyListId, $subscriberOnlyListId]);
+        $this->seedSubscriberOnlyListSubscriptions($subscriberOnlyListId, $userIds, $now, $relationCount);
+        $this->seedUserListSubscriptions($relationCount, $userListIds, $userIds, $now, [$emptyListId]);
         $this->seedMutedTerms($relationCount, $userIds);
         $this->seedSpaceParticipants($relationCount, $spaces, $userIds, $now);
         $this->seedSpaceSpeakerRequests($relationCount, $spaceIds, $userIds, $now);
