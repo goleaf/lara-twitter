@@ -21,7 +21,7 @@
         ? 'focus-within:ring-2 focus-within:ring-primary/20'
         : 'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20';
 
-    $classes = trim("flex items-center justify-between gap-3 rounded-box border border-base-200/70 bg-base-100/85 {$paddingClasses} hover:bg-base-100 hover:border-base-300/80 shadow-sm transition {$focusClasses}");
+    $classes = trim("flex items-center justify-between gap-3 rounded-box border border-base-200/60 bg-base-100/92 {$paddingClasses} shadow-sm transition hover:bg-base-100/95 hover:border-base-300/70 supports-[backdrop-filter]:bg-base-100/80 supports-[backdrop-filter]:backdrop-blur {$focusClasses}");
 @endphp
 
 @if ($href)

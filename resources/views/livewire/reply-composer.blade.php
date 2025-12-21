@@ -37,6 +37,13 @@
                 </div>
             </div>
 
+            <progress
+                class="progress progress-primary h-1 w-full"
+                value="{{ min($bodyLength, $maxLength) }}"
+                max="{{ $maxLength }}"
+                aria-hidden="true"
+            ></progress>
+
             <div>
                 <textarea
                     wire:model="body"

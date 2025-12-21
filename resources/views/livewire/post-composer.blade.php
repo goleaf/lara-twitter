@@ -12,10 +12,17 @@
     <div class="card-body gap-4">
         <div class="flex items-center justify-between gap-4">
             <div class="font-semibold">Post</div>
-            <div class="text-xs tabular-nums {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}">
+            <div id="post-length-count" class="text-xs tabular-nums {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}">
                 {{ $bodyLength }}/{{ $maxBodyLength }}
             </div>
         </div>
+
+        <progress
+            class="progress progress-primary h-1 w-full"
+            value="{{ min($bodyLength, $maxBodyLength) }}"
+            max="{{ $maxBodyLength }}"
+            aria-hidden="true"
+        ></progress>
 
         <div class="flex items-start gap-3">
             <div class="shrink-0 pt-1">
@@ -47,6 +54,8 @@
                         class="textarea textarea-bordered textarea-sm w-full"
                         rows="3"
                         placeholder="What’s happening?"
+                        aria-describedby="post-length-count"
+                        maxlength="{{ $maxBodyLength }}"
                     ></textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('body')" />
                 </div>

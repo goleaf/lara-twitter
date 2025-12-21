@@ -75,6 +75,21 @@ class CacheFlushObserversTest extends TestCase
         $this->assertCachesPrimed($this->currentUser());
     }
 
+    public function test_block_does_not_flush_when_not_authenticated(): void
+    {
+        $blocker = User::factory()->create();
+        $blocked = User::factory()->create();
+
+        $this->primeCaches($blocker);
+
+        Block::query()->create([
+            'blocker_id' => $blocker->id,
+            'blocked_id' => $blocked->id,
+        ]);
+
+        $this->assertCachesPrimed($blocker);
+    }
+
     public function test_mute_flushes_caches_for_muter_on_save(): void
     {
         $muter = User::factory()->create();
@@ -106,6 +121,21 @@ class CacheFlushObserversTest extends TestCase
         ]);
 
         $this->assertCachesPrimed($this->currentUser());
+    }
+
+    public function test_mute_does_not_flush_when_not_authenticated(): void
+    {
+        $muter = User::factory()->create();
+        $muted = User::factory()->create();
+
+        $this->primeCaches($muter);
+
+        Mute::query()->create([
+            'muter_id' => $muter->id,
+            'muted_id' => $muted->id,
+        ]);
+
+        $this->assertCachesPrimed($muter);
     }
 
     public function test_muted_term_flushes_caches_for_owner_on_save_and_delete(): void
@@ -152,6 +182,25 @@ class CacheFlushObserversTest extends TestCase
         ]);
 
         $this->assertCachesPrimed($this->currentUser());
+    }
+
+    public function test_muted_term_does_not_flush_when_not_authenticated(): void
+    {
+        $owner = User::factory()->create();
+
+        $this->primeCaches($owner);
+
+        MutedTerm::query()->create([
+            'user_id' => $owner->id,
+            'term' => 'spoilers',
+            'whole_word' => true,
+            'only_non_followed' => false,
+            'mute_timeline' => true,
+            'mute_notifications' => true,
+            'expires_at' => null,
+        ]);
+
+        $this->assertCachesPrimed($owner);
     }
 
     private function primeCaches(User $user): void

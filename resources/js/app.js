@@ -169,6 +169,20 @@ function setupLivewireUploadState() {
     document.addEventListener('livewire-upload-cancel', decrement);
 }
 
+function setupSidebarToggles() {
+    document.querySelectorAll('[data-open-sidebar]').forEach((button) => {
+        if (button.dataset.sidebarToggleBound === '1') {
+            return;
+        }
+
+        button.dataset.sidebarToggleBound = '1';
+
+        button.addEventListener('click', () => {
+            window.dispatchEvent(new Event('open-sidebar'));
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', scrollToHash);
 window.addEventListener('hashchange', scrollToHash);
 document.addEventListener('livewire:navigated', scrollToHash);
@@ -176,6 +190,8 @@ document.addEventListener('DOMContentLoaded', setupNavigateProgress);
 document.addEventListener('DOMContentLoaded', setupLivewireNavigateSearchForms);
 document.addEventListener('livewire:navigated', setupLivewireNavigateSearchForms);
 document.addEventListener('DOMContentLoaded', setupLivewireUploadState);
+document.addEventListener('DOMContentLoaded', setupSidebarToggles);
+document.addEventListener('livewire:navigated', setupSidebarToggles);
 
 function setupEcho() {
     const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;

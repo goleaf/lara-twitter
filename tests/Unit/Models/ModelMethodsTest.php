@@ -7,6 +7,7 @@ use App\Models\ConversationParticipant;
 use App\Models\Moment;
 use App\Models\MutedTerm;
 use App\Models\Space;
+use App\Models\SpaceSpeakerRequest;
 use App\Models\User;
 use App\Models\UserList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -105,5 +106,14 @@ class ModelMethodsTest extends TestCase
         $this->assertTrue($active->isActive());
         $this->assertTrue($future->isActive());
         $this->assertFalse($past->isActive());
+    }
+
+    public function test_space_speaker_request_statuses(): void
+    {
+        $statuses = SpaceSpeakerRequest::statuses();
+
+        $this->assertContains(SpaceSpeakerRequest::STATUS_PENDING, $statuses);
+        $this->assertContains(SpaceSpeakerRequest::STATUS_APPROVED, $statuses);
+        $this->assertContains(SpaceSpeakerRequest::STATUS_DENIED, $statuses);
     }
 }

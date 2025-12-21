@@ -51,6 +51,7 @@ class NotificationVisibilityServiceTest extends TestCase
             'term' => 'spoiler',
             'mute_notifications' => true,
             'only_non_followed' => true,
+            'expires_at' => null,
         ]);
 
         $blockedNotification = $this->makeNotification($viewer, [

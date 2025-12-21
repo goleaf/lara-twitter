@@ -38,4 +38,11 @@ class PollDurationRequiredTest extends TestCase
 
         $this->assertTrue($rule->passes('poll_duration', 1440));
     }
+
+    public function test_message_is_static(): void
+    {
+        $rule = new PollDurationRequired();
+
+        $this->assertSame('Poll duration is required when adding a poll.', $rule->message());
+    }
 }

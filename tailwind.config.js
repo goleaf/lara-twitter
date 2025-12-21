@@ -21,17 +21,17 @@ export default {
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0EA5E9',
-                    600: '#0284C7',
+                    DEFAULT: '#0B6D6F',
+                    600: '#095B5D',
                 },
-                primary: '#0EA5E9',
-                secondary: '#0F172A',
-                accent: '#F97316',
-                neutral: '#475569',
-                'base-100': '#FDFBF7',
-                'base-200': '#F6F1E8',
-                'base-300': '#E7DED3',
-                'base-content': '#0F172A',
+                primary: '#0B6D6F',
+                secondary: '#111827',
+                accent: '#F26D4F',
+                neutral: '#455565',
+                'base-100': '#FFF7F1',
+                'base-200': '#F4EDE4',
+                'base-300': '#E4D5C6',
+                'base-content': '#0B111E',
             },
             keyframes: {
                 float: {
@@ -68,8 +68,8 @@ export default {
             },
             boxShadow: {
                 'inner-lg': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.1)',
-                glow: '0 0 20px rgba(14, 165, 233, 0.5)',
-                'glow-sm': '0 0 10px rgba(14, 165, 233, 0.3)',
+                glow: '0 0 20px rgba(11, 107, 107, 0.45)',
+                'glow-sm': '0 0 10px rgba(11, 107, 107, 0.3)',
             },
             gridTemplateColumns: {
                 feed: 'minmax(0, 1fr) 350px',
@@ -103,7 +103,13 @@ export default {
                     '@apply bg-base-100 border-b border-base-300 hover:bg-base-200/50 transition-colors cursor-pointer p-4': {},
                 },
                 '.btn-twitter': {
-                    '@apply btn btn-primary bg-twitter hover:bg-twitter-600 border-none': {},
+                    '@apply btn btn-primary border-none text-primary-content shadow-md hover:shadow-lg transition': {},
+                    backgroundImage:
+                        'linear-gradient(120deg, rgba(var(--hero-sky), 0.95), rgba(var(--hero-sun), 0.88), rgba(var(--hero-sky), 0.95))',
+                    backgroundSize: '200% 100%',
+                },
+                '.btn-twitter:hover': {
+                    backgroundPosition: '100% 0',
                 },
             });
         },
@@ -113,31 +119,31 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0F766E',
+                    primary: '#0B6D6F',
                     'primary-content': '#F8FAFC',
 
                     secondary: '#111827',
                     'secondary-content': '#F8FAFC',
 
-                    accent: '#F59E0B',
+                    accent: '#F26D4F',
                     'accent-content': '#1F2937',
 
-                    neutral: '#475569',
+                    neutral: '#455565',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FDFAF6',
-                    'base-200': '#F4EFE7',
-                    'base-300': '#E5DCCF',
-                    'base-content': '#111827',
+                    'base-100': '#FFF7F1',
+                    'base-200': '#F4EDE4',
+                    'base-300': '#E4D5C6',
+                    'base-content': '#0B111E',
 
-                    info: '#38BDF8',
+                    info: '#22B5E5',
                     success: '#16A34A',
                     warning: '#F59E0B',
                     error: '#EF4444',
 
-                    '--rounded-box': '1rem',
-                    '--rounded-btn': '0.85rem',
-                    '--rounded-badge': '1rem',
+                    '--rounded-box': '1.2rem',
+                    '--rounded-btn': '1.05rem',
+                    '--rounded-badge': '999px',
 
                     '--border-btn': '1px',
                     '--border-input': '1px',

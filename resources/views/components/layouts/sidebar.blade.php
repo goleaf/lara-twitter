@@ -1,13 +1,13 @@
 @props(['mobile' => false])
 
 @php
-    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-full transition-all font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20';
-    $itemActive = 'bg-primary/10 text-primary';
-    $itemInactive = 'hover:bg-base-200';
+    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-2xl transition-all font-medium focus-ring border border-transparent';
+    $itemActive = 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20 border-primary/10';
+    $itemInactive = 'text-base-content/70 hover:bg-base-100/90 hover:text-base-content hover:border-base-200/60';
 @endphp
 
-<nav class="flex flex-col h-full p-4 space-y-2">
-    <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-12 h-12 mb-2 rounded-full hover:bg-base-200 transition-colors" aria-label="Home">
+<nav class="flex flex-col h-full p-4 space-y-2" aria-label="Primary">
+    <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-12 h-12 mb-2 rounded-full hover:bg-base-100/80 transition-colors focus-ring" aria-label="Home">
         <x-brand-mark class="w-8 h-8 text-primary" />
     </a>
 
@@ -86,7 +86,7 @@
                 </svg>
                 <span class="text-lg">More</span>
             </label>
-            <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-64 border border-base-300 mb-2">
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100/95 supports-[backdrop-filter]:bg-base-100/80 backdrop-blur rounded-box w-64 border border-base-300 mb-2">
                 <li><a href="{{ route('profile') }}" wire:navigate>Settings</a></li>
                 <li><a href="{{ route('lists.index') }}" wire:navigate>Lists</a></li>
                 <li><a href="{{ route('mentions') }}" wire:navigate>Mentions</a></li>
@@ -118,7 +118,7 @@
 
         <div class="mt-auto">
             <div class="dropdown dropdown-top dropdown-end w-full">
-                <label tabindex="0" class="flex items-center gap-3 p-3 rounded-full hover:bg-base-200 transition-colors cursor-pointer">
+                <label tabindex="0" class="flex items-center gap-3 p-3 rounded-full hover:bg-base-100/80 transition-colors cursor-pointer focus-ring">
                     <div class="avatar">
                         <div class="w-10 h-10 rounded-full border border-base-200 bg-base-100">
                             @if (auth()->user()->avatar_url)
@@ -138,7 +138,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </label>
-                <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-64 border border-base-300 mb-2">
+                <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100/95 supports-[backdrop-filter]:bg-base-100/80 backdrop-blur rounded-box w-64 border border-base-300 mb-2">
                     <li><a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>My Profile</a></li>
                     <li><a href="{{ route('profile') }}" wire:navigate>Settings</a></li>
                     <div class="divider my-0"></div>

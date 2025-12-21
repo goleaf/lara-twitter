@@ -4,10 +4,10 @@
     use App\Support\PageTitle;
 
     $title = PageTitle::resolve($title);
-    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin px-1.5 py-1.5 rounded-full bg-base-100/75 border border-base-200/80 shadow-sm supports-[backdrop-filter]:bg-base-100/60 supports-[backdrop-filter]:backdrop-blur-sm';
-    $itemBase = 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition whitespace-nowrap focus-ring';
-    $itemActive = 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20';
-    $itemInactive = 'text-base-content/60 hover:bg-base-100 hover:text-base-content';
+    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin snap-x snap-mandatory px-2 py-1.5 rounded-full bg-base-100/90 border border-base-200/60 shadow-md supports-[backdrop-filter]:bg-base-100/75 supports-[backdrop-filter]:backdrop-blur-sm';
+    $itemBase = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-[0.82rem] font-semibold transition whitespace-nowrap focus-ring snap-start';
+    $itemActive = 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20';
+    $itemInactive = 'text-base-content/60 hover:bg-base-100/90 hover:text-base-content';
     $iconClass = 'w-5 h-5';
     $isTimeline = request()->routeIs('timeline');
     $isExplore = request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending');
@@ -17,11 +17,22 @@
     $isProfile = request()->routeIs('profile.*');
 @endphp
 
-<div class="sticky top-0 z-40 border-b border-base-200/70 bg-base-100/80 backdrop-blur-xl supports-[backdrop-filter]:bg-base-100/70 shadow-sm topbar-shell">
-    <div class="max-w-[1320px] mx-auto px-4">
+<div class="sticky top-0 z-40 border-b border-base-200/60 bg-base-100/90 backdrop-blur-xl supports-[backdrop-filter]:bg-base-100/75 shadow-md topbar-shell">
+    <div class="max-w-[1360px] mx-auto px-4 lg:px-6">
         <div class="flex flex-wrap items-center justify-between gap-3 py-3">
-            <div class="flex min-w-0 items-center gap-3">
-                <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-base-200 transition-colors focus-ring" aria-label="Home">
+            <div class="flex min-w-0 items-center gap-2">
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-sm btn-square lg:hidden focus-ring"
+                    data-open-sidebar
+                    aria-label="Open menu"
+                    aria-controls="mobile-sidebar"
+                >
+                    <svg aria-hidden="true" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
+                    </svg>
+                </button>
+                <a href="{{ route('timeline') }}" wire:navigate class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-base-100/80 transition-colors focus-ring" aria-label="Home">
                     <x-brand-mark class="w-7 h-7 text-primary" />
                 </a>
                 <div class="min-w-0">
@@ -31,6 +42,11 @@
             </div>
 
             <div class="flex flex-shrink-0 items-center gap-2">
+                <a href="{{ route('search') }}" wire:navigate class="btn btn-ghost btn-sm btn-square focus-ring" aria-label="Search">
+                    <svg aria-hidden="true" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                    </svg>
+                </a>
                 @auth
                     <a href="{{ route('timeline') }}#composer" wire:navigate class="btn btn-twitter btn-sm gap-2">
                         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -41,7 +57,7 @@
                     </a>
 
                     <div class="dropdown dropdown-bottom dropdown-end">
-                        <label tabindex="0" class="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-base-200 transition-colors cursor-pointer focus-ring">
+                        <label tabindex="0" class="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-base-100/80 transition-colors cursor-pointer focus-ring">
                             <div class="avatar">
                                 <div class="w-8 h-8 rounded-full border border-base-200 bg-base-100">
                                     @if (auth()->user()->avatar_url)
@@ -61,7 +77,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </label>
-                        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-64 border border-base-300 mt-2">
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100/95 supports-[backdrop-filter]:bg-base-100/80 backdrop-blur rounded-box w-64 border border-base-300 mt-2">
                             <li><a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>My Profile</a></li>
                             <li><a href="{{ route('profile') }}" wire:navigate>Settings</a></li>
                             <div class="divider my-0"></div>
@@ -165,7 +181,7 @@
                             </svg>
                             <span>More</span>
                         </label>
-                        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-64 border border-base-300 mt-2">
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100/95 supports-[backdrop-filter]:bg-base-100/80 backdrop-blur rounded-box w-64 border border-base-300 mt-2">
                             <li><a href="{{ route('profile') }}" wire:navigate>Settings</a></li>
                             <li><a href="{{ route('lists.index') }}" wire:navigate>Lists</a></li>
                             <li><a href="{{ route('mentions') }}" wire:navigate>Mentions</a></li>

@@ -1,8 +1,8 @@
 @php($primary = $this->primaryPost())
 @php($replyingTo = $this->replyingToUsername())
 
-<div class="card bg-base-100 card-hover post-card">
-    <div class="card-body p-4">
+<article class="card bg-base-100 card-hover post-card">
+    <div class="card-body p-4 sm:p-5">
         <div class="flex gap-3">
             <a class="shrink-0" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate aria-label="View profile">
                 <div class="avatar">
@@ -55,7 +55,7 @@
                     </div>
                 @endif
 
-                <div class="flex items-center justify-between gap-3">
+                <div class="post-meta">
                     <a class="font-semibold link link-hover truncate" href="{{ route('profile.show', ['user' => $primary->user->username, 'from_post' => $primary->id]) }}" wire:navigate>
                         {{ $primary->user->name }}
                         @if ($primary->user->is_verified)
@@ -65,11 +65,16 @@
                     </a>
 
                     <div class="flex items-center gap-2 shrink-0">
-                        <a class="text-sm opacity-60 link link-hover tabular-nums" href="{{ route('posts.show', $primary) }}" wire:navigate>
+                        <a
+                            class="text-sm opacity-60 link link-hover tabular-nums"
+                            href="{{ route('posts.show', $primary) }}"
+                            wire:navigate
+                            title="{{ $primary->created_at->toDayDateTimeString() }}"
+                        >
                             {{ $primary->created_at->diffForHumans() }}
                         </a>
                         @if ($primary->location)
-                            <span class="text-sm opacity-60">· {{ $primary->location }}</span>
+                            <span class="text-sm opacity-60" title="{{ $primary->location }}">· {{ $primary->location }}</span>
                         @endif
 
                         @auth
@@ -108,7 +113,7 @@
                     </div>
                 </div>
 
-                <div class="prose max-w-none">
+                <div class="prose max-w-none post-body">
                     {!! $this->bodyHtml() !!}
                 </div>
 
@@ -364,7 +369,7 @@
         @php($repostsBadge = $repostsCount ? 'badge-neutral' : 'badge-ghost')
         @php($repliesBadge = ($repliesCount ?? 0) ? 'badge-neutral' : 'badge-ghost')
 
-        <div class="flex flex-wrap items-center gap-1 pt-2">
+        <div class="post-actions" role="group" aria-label="Post actions">
             @auth
                 <button
                     wire:click="toggleReplyComposer"
@@ -557,4 +562,4 @@
             </div>
         </div>
     </div>
-</div>
+</article>

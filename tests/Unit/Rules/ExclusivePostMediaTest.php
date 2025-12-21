@@ -32,6 +32,14 @@ class ExclusivePostMediaTest extends TestCase
         $this->assertTrue($rule->passes('media', [null]));
     }
 
+    public function test_non_array_media_triggers_conflict(): void
+    {
+        $rule = new ExclusivePostMedia('poll_options');
+        $rule->setData(['poll_options' => 'poll']);
+
+        $this->assertFalse($rule->passes('media', 'file'));
+    }
+
     public function test_message_is_static(): void
     {
         $rule = new ExclusivePostMedia('poll_options');
