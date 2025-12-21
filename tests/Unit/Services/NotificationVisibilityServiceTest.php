@@ -140,6 +140,68 @@ class NotificationVisibilityServiceTest extends TestCase
         $this->assertSame(1, $service->visibleUnreadCount($viewer));
     }
 
+    public function test_filter_returns_empty_collection_when_no_items(): void
+    {
+        $viewer = User::factory()->create();
+
+        $service = app(NotificationVisibilityService::class);
+
+        $result = $service->filter($viewer, collect());
+
+        $this->assertCount(0, $result);
+    }
+
+    public function test_filter_allows_items_when_terms_empty(): void
+    {
+        $viewer = User::factory()->create();
+        $actor = User::factory()->create();
+
+        $notification = $this->makeNotification($viewer, [
+            'type' => 'post_liked',
+            'actor_user_id' => $actor->id,
+            'excerpt' => 'hello',
+        ]);
+
+        $service = app(NotificationVisibilityService::class);
+
+        $items = DatabaseNotification::query()
+            ->where('notifiable_id', $viewer->id)
+            ->get();
+
+        $filtered = $service->filter($viewer, $items);
+
+        $this->assertTrue($filtered->contains('id', $notification->id));
+    }
+
+    public function test_filter_allows_items_with_empty_excerpt_even_when_terms_exist(): void
+    {
+        $viewer = User::factory()->create();
+        $actor = User::factory()->create();
+
+        MutedTerm::factory()->create([
+            'user_id' => $viewer->id,
+            'term' => 'spoiler',
+            'mute_notifications' => true,
+            'expires_at' => null,
+        ]);
+
+        $notification = $this->makeNotification($viewer, [
+            'type' => 'post_liked',
+            'actor_user_id' => $actor->id,
+            'excerpt' => '',
+        ]);
+
+        $service = app(NotificationVisibilityService::class);
+
+        $items = DatabaseNotification::query()
+            ->where('notifiable_id', $viewer->id)
+            ->get();
+
+        $filtered = $service->filter($viewer, $items);
+
+        $this->assertTrue($filtered->contains('id', $notification->id));
+    }
+
     private function makeNotification(User $notifiable, array $data): DatabaseNotification
     {
         return DatabaseNotification::query()->create([
