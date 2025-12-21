@@ -41,14 +41,16 @@ jobs:
         npm config set audit false
     - name: Clean dependencies
       run: rm -rf node_modules vendor
-    - name: Remove lock files
-      run: rm -f composer.lock package-lock.json yarn.lock pnpm-lock.yaml npm-shrinkwrap.json
+    - name: Prepare Composer cache directory
+      run: mkdir -p ~/.cache/composer
     - name: Composer cache
       uses: actions/cache@v4
       with:
-        path: ~/.composer/cache
+        path: ~/.cache/composer
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
+    - name: Remove lock files
+      run: rm -f composer.lock package-lock.json yarn.lock pnpm-lock.yaml npm-shrinkwrap.json
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-progress --prefer-dist
     - name: Install Frontend Dependencies
