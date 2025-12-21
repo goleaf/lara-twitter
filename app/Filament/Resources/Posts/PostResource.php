@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 
 class PostResource extends Resource
 {
@@ -42,6 +43,18 @@ class PostResource extends Resource
         return PostsTable::configure($table);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = self::unpublishedPostsCount();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return self::unpublishedPostsCount() > 0 ? 'warning' : 'success';
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -56,5 +69,15 @@ class PostResource extends Resource
             'create' => CreatePost::route('/create'),
             'edit' => EditPost::route('/{record}/edit'),
         ];
+    }
+
+    private static function unpublishedPostsCount(): int
+    {
+        return Cache::remember('admin:nav:posts-unpublished', now()->addSeconds(90), function (): int {
+            return Post::query()
+                ->withoutGlobalScope('published')
+                ->where('is_published', false)
+                ->count();
+        });
     }
 }

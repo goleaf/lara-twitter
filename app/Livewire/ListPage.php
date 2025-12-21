@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ListPage extends Component
 {
     use WithPagination;
@@ -157,6 +159,6 @@ class ListPage extends Component
 
     public function render()
     {
-        return view('livewire.list-page')->layout('layouts.app');
+        return view('livewire.list-page');
     }
 }

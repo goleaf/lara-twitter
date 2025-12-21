@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\Post;
 use App\Services\AnalyticsService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class PostPage extends Component
 {
     use WithPagination;
@@ -16,9 +19,11 @@ class PostPage extends Component
     /** @var array<int, \App\Models\Post> */
     public array $ancestors = [];
 
-    protected $listeners = [
-        'reply-created' => '$refresh',
-    ];
+    #[On('reply-created')]
+    public function refreshReplies(): void
+    {
+        // No-op; Livewire re-renders after handling the event.
+    }
 
     public function mount(Post $post): void
     {
@@ -120,6 +125,6 @@ class PostPage extends Component
 
     public function render()
     {
-        return view('livewire.post-page')->layout('layouts.app');
+        return view('livewire.post-page');
     }
 }

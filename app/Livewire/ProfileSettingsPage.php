@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use Illuminate\View\View;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ProfileSettingsPage extends Component
 {
-    public function render()
+    public function render(): View
     {
-        return view('profile')->layout('layouts.app');
+        return view('livewire.profile-settings-page');
     }
 }

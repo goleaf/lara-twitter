@@ -18,6 +18,7 @@ use App\Filament\Widgets\AdminReportsStatusChart;
 use App\Filament\Widgets\AdminStatsOverview;
 use App\Filament\Widgets\RecentPostsWidget;
 use App\Filament\Widgets\RecentReportsWidget;
+use App\Filament\Widgets\ReportedPostsWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -50,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
                 AdminGrowthChart::class,
                 AdminReportsStatusChart::class,
                 RecentReportsWidget::class,
+                ReportedPostsWidget::class,
                 RecentPostsWidget::class,
                 AccountWidget::class,
                 FilamentInfoWidget::class,

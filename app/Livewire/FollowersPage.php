@@ -8,7 +8,9 @@ use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class FollowersPage extends Component
 {
     use WithPagination;
@@ -84,6 +86,6 @@ class FollowersPage extends Component
 
     public function render()
     {
-        return view('livewire.followers-page')->layout('layouts.app');
+        return view('livewire.followers-page');
     }
 }

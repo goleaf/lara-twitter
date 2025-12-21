@@ -8,7 +8,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ProfileMediaPage extends Component
 {
     use WithPagination;
@@ -42,6 +44,6 @@ class ProfileMediaPage extends Component
 
     public function render()
     {
-        return view('livewire.profile-media-page')->layout('layouts.app');
+        return view('livewire.profile-media-page');
     }
 }

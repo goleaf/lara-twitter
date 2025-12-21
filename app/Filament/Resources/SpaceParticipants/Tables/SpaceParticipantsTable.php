@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\SpaceParticipants\Tables;
 
+use App\Filament\Resources\Spaces\SpaceResource;
+use App\Filament\Resources\Users\UserResource;
+use App\Models\SpaceParticipant;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -47,6 +51,16 @@ class SpaceParticipantsTable
                     ]),
             ])
             ->recordActions([
+                Action::make('view-space')
+                    ->label('Space')
+                    ->icon('heroicon-o-microphone')
+                    ->url(fn (SpaceParticipant $record): string => SpaceResource::getUrl('edit', ['record' => $record->space_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-user')
+                    ->label('User')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (SpaceParticipant $record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

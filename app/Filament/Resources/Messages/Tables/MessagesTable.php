@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Messages\Tables;
 
+use App\Filament\Resources\Conversations\ConversationResource;
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -58,8 +61,21 @@ class MessagesTable
                 Filter::make('reported')
                     ->label('Has reports')
                     ->query(fn ($query) => $query->whereHas('reports')),
+                Filter::make('with_attachments')
+                    ->label('Has attachments')
+                    ->query(fn ($query) => $query->whereHas('attachments')),
             ])
             ->recordActions([
+                Action::make('view-conversation')
+                    ->label('Conversation')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->url(fn ($record): string => ConversationResource::getUrl('edit', ['record' => $record->conversation_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-sender')
+                    ->label('Sender')
+                    ->icon('heroicon-o-user')
+                    ->url(fn ($record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
                 RestoreAction::make(),
                 ForceDeleteAction::make(),

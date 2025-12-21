@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Follows\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Follow;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -34,6 +35,16 @@ class FollowsTable
                     ->relationship('followed', 'username'),
             ])
             ->recordActions([
+                Action::make('view-follower')
+                    ->label('Follower')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Follow $record): string => UserResource::getUrl('edit', ['record' => $record->follower_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-followed')
+                    ->label('Followed')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Follow $record): string => UserResource::getUrl('edit', ['record' => $record->followed_id]))
+                    ->openUrlInNewTab(),
                 Action::make('delete')
                     ->label('Delete')
                     ->icon('heroicon-o-trash')

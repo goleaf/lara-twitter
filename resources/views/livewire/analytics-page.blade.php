@@ -1,4 +1,6 @@
-@php($s = $this->summary)
+@php
+    $s = $this->summary;
+@endphp
 
 <div class="max-w-6xl mx-auto space-y-4">
     <div class="card bg-base-100 border">
@@ -165,7 +167,9 @@
                         <div class="mt-4 rounded-box border border-base-200 bg-base-200/40 px-2 py-3">
                             <div class="flex items-end gap-0.5 h-24">
                                 @foreach ($growthValues as $index => $value)
-                                    @php($height = $growthMax > 0 ? max(4, (int) round(($value / $growthMax) * 100)) : 0)
+                                    @php
+                                        $height = $growthMax > 0 ? max(4, (int) round(($value / $growthMax) * 100)) : 0;
+                                    @endphp
                                     <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $growthSeries['days'][$index] }}: {{ $value }}"></div>
                                 @endforeach
                             </div>
@@ -213,7 +217,9 @@
                     <div class="font-semibold">Top follower locations</div>
                     <div class="space-y-3 pt-4">
                         @forelse ($topLocations as $row)
-                            @php($percent = $maxLocationFollowers > 0 ? (int) round(($row->followers / $maxLocationFollowers) * 100) : 0)
+                            @php
+                                $percent = $maxLocationFollowers > 0 ? (int) round(($row->followers / $maxLocationFollowers) * 100) : 0;
+                            @endphp
                             <div class="space-y-1" wire:key="follower-location-{{ md5($row->location) }}">
                                 <div class="flex items-center justify-between text-sm">
                                     <div class="truncate">{{ $row->location }}</div>
@@ -302,7 +308,9 @@
                             <div class="mt-2 rounded-box border border-base-200 bg-base-200/40 px-2 py-3">
                                 <div class="flex items-end gap-0.5 h-24">
                                     @foreach ($impressionsSeries as $index => $value)
-                                        @php($height = $maxImpressions > 0 ? max(4, (int) round(($value / $maxImpressions) * 100)) : 0)
+                                        @php
+                                            $height = $maxImpressions > 0 ? max(4, (int) round(($value / $maxImpressions) * 100)) : 0;
+                                        @endphp
                                         <div class="flex-1 rounded-t bg-primary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}"></div>
                                     @endforeach
                                 </div>
@@ -321,7 +329,9 @@
                             <div class="mt-2 rounded-box border border-base-200 bg-base-200/40 px-2 py-3">
                                 <div class="flex items-end gap-0.5 h-24">
                                     @foreach ($profileSeries as $index => $value)
-                                        @php($height = $maxProfile > 0 ? max(4, (int) round(($value / $maxProfile) * 100)) : 0)
+                                        @php
+                                            $height = $maxProfile > 0 ? max(4, (int) round(($value / $maxProfile) * 100)) : 0;
+                                        @endphp
                                         <div class="flex-1 rounded-t bg-secondary/60" style="height: {{ $height }}%" title="{{ $daysSeries[$index] ?? '' }}: {{ $value }}"></div>
                                     @endforeach
                                 </div>
@@ -374,13 +384,17 @@
                 <div class="text-xs opacity-60">Share of total engagements ({{ $s['engagements'] }})</div>
                 <div class="mt-4 h-2 rounded-full bg-base-200 overflow-hidden">
                     @foreach ($engagementMix as $item)
-                        @php($percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0)
+                        @php
+                            $percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0;
+                        @endphp
                         <div class="h-full {{ $item['color'] }}" style="width: {{ $percent }}%"></div>
                     @endforeach
                 </div>
                 <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
                     @foreach ($engagementMix as $item)
-                        @php($percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0)
+                        @php
+                            $percent = $engagementTotal > 0 ? ($item['value'] / $engagementTotal) * 100 : 0;
+                        @endphp
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="h-2 w-2 rounded-full {{ $item['color'] }}"></span>
@@ -527,8 +541,10 @@
             <div class="card-body">
                 <div class="font-semibold">Top posts ({{ $s['days'] }} days)</div>
                 <div class="space-y-2 pt-2">
-                    @php($topPosts = $this->topPosts)
-                    @php($maxTopImpressions = $topPosts->max('analytics_impressions') ?? 0)
+                    @php
+                        $topPosts = $this->topPosts;
+                        $maxTopImpressions = $topPosts->max('analytics_impressions') ?? 0;
+                    @endphp
                     @forelse ($topPosts as $post)
                         <x-list-row href="{{ route('posts.show', $post) }}" wire:navigate class="items-start" wire:key="top-post-{{ $post->id }}">
                             <div class="min-w-0">

@@ -6,7 +6,9 @@ use App\Http\Requests\Spaces\StoreSpaceRequest;
 use App\Models\Space;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class SpacesPage extends Component
 {
     public string $title = '';
@@ -69,6 +71,6 @@ class SpacesPage extends Component
 
     public function render()
     {
-        return view('livewire.spaces-page')->layout('layouts.app');
+        return view('livewire.spaces-page');
     }
 }

@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class AnalyticsPage extends Component
 {
     #[Url]
@@ -673,6 +675,6 @@ class AnalyticsPage extends Component
 
     public function render()
     {
-        return view('livewire.analytics-page')->layout('layouts.app');
+        return view('livewire.analytics-page');
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Post;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
@@ -13,6 +15,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class PostsTable
 {
@@ -92,11 +95,28 @@ class PostsTable
                 Filter::make('reported')
                     ->label('Has reports')
                     ->query(fn ($query) => $query->whereHas('reports')),
+                Filter::make('has_images')
+                    ->label('Has images')
+                    ->query(fn ($query) => $query->whereHas('images')),
+                Filter::make('has_link_preview')
+                    ->label('Has link preview')
+                    ->query(fn ($query) => $query->whereHas('linkPreview')),
+                Filter::make('has_poll')
+                    ->label('Has poll')
+                    ->query(fn ($query) => $query->whereHas('poll')),
+                Filter::make('is_reply')
+                    ->label('Is reply')
+                    ->query(fn ($query) => $query->whereNotNull('reply_to_id')),
                 SelectFilter::make('reply_policy')
                     ->label('Reply policy')
                     ->options(array_combine(Post::replyPolicies(), Post::replyPolicies())),
             ])
             ->recordActions([
+                Action::make('view-author')
+                    ->label('Author')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Post $record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')
@@ -113,6 +133,28 @@ class PostsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('publish')
+                        ->label('Publish')
+                        ->icon('heroicon-o-lock-open')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            Post::query()
+                                ->withoutGlobalScope('published')
+                                ->whereKey($records->modelKeys())
+                                ->update(['is_published' => true]);
+                        }),
+                    BulkAction::make('unpublish')
+                        ->label('Unpublish')
+                        ->icon('heroicon-o-lock-closed')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            Post::query()
+                                ->withoutGlobalScope('published')
+                                ->whereKey($records->modelKeys())
+                                ->update(['is_published' => false]);
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ])

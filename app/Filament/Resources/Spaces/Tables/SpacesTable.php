@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Spaces\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Space;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -73,6 +74,25 @@ class SpacesTable
                     ->label('Recording'),
             ])
             ->recordActions([
+                Action::make('view-host')
+                    ->label('Host')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Space $record): string => UserResource::getUrl('edit', ['record' => $record->host_user_id]))
+                    ->openUrlInNewTab(),
+                Action::make('start-space')
+                    ->label('Start now')
+                    ->icon('heroicon-o-play-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (Space $record): bool => ! $record->started_at && ! $record->ended_at)
+                    ->action(fn (Space $record): bool => $record->update(['started_at' => now()])),
+                Action::make('end-space')
+                    ->label('End space')
+                    ->icon('heroicon-o-stop-circle')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn (Space $record): bool => (bool) $record->started_at && ! $record->ended_at)
+                    ->action(fn (Space $record): bool => $record->update(['ended_at' => now()])),
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')

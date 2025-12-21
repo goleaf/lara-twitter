@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Livewire\ProfileSettingsPage;
+use Livewire\Livewire;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
 
@@ -25,6 +27,16 @@ class ProfileTest extends TestCase
             ->assertSeeVolt('profile.update-profile-information-form')
             ->assertSeeVolt('profile.update-password-form')
             ->assertSeeVolt('profile.delete-user-form');
+    }
+
+    public function test_profile_settings_page_uses_livewire_view(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(ProfileSettingsPage::class)
+            ->assertViewIs('livewire.profile-settings-page');
     }
 
     public function test_profile_information_can_be_updated(): void

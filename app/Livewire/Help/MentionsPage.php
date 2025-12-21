@@ -3,11 +3,13 @@
 namespace App\Livewire\Help;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class MentionsPage extends Component
 {
     public function render()
     {
-        return view('help.mentions')->layout('layouts.app');
+        return view('help.mentions');
     }
 }

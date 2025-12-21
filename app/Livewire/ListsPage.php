@@ -6,7 +6,9 @@ use App\Http\Requests\Lists\StoreListRequest;
 use App\Models\UserList;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ListsPage extends Component
 {
     public string $name = '';
@@ -69,6 +71,6 @@ class ListsPage extends Component
 
     public function render()
     {
-        return view('livewire.lists-page')->layout('layouts.app');
+        return view('livewire.lists-page');
     }
 }

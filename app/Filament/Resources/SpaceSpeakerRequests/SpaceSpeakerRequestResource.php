@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 
 class SpaceSpeakerRequestResource extends Resource
 {
@@ -41,6 +42,18 @@ class SpaceSpeakerRequestResource extends Resource
         return SpaceSpeakerRequestsTable::configure($table);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = self::pendingRequestsCount();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return self::pendingRequestsCount() > 0 ? 'warning' : 'success';
+    }
+
     public static function getPages(): array
     {
         return [
@@ -48,5 +61,14 @@ class SpaceSpeakerRequestResource extends Resource
             'create' => CreateSpaceSpeakerRequest::route('/create'),
             'edit' => EditSpaceSpeakerRequest::route('/{record}/edit'),
         ];
+    }
+
+    private static function pendingRequestsCount(): int
+    {
+        return Cache::remember('admin:nav:speaker-requests-pending', now()->addSeconds(90), function (): int {
+            return SpaceSpeakerRequest::query()
+                ->where('status', SpaceSpeakerRequest::STATUS_PENDING)
+                ->count();
+        });
     }
 }

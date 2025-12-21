@@ -19,7 +19,9 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ConversationPage extends Component
 {
     use WithFileUploads;
@@ -543,7 +545,7 @@ class ConversationPage extends Component
     {
         $this->conversation->loadMissing(['participants.user']);
 
-        return view('livewire.conversation-page')->layout('layouts.app');
+        return view('livewire.conversation-page');
     }
 
     private function storeAttachment(UploadedFile $file, string $directory, string $disk): ?string

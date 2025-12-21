@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class SpacePage extends Component
 {
     public Space $space;
@@ -390,6 +392,6 @@ class SpacePage extends Component
 
     public function render()
     {
-        return view('livewire.space-page')->layout('layouts.app');
+        return view('livewire.space-page');
     }
 }

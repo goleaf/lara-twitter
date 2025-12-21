@@ -49,6 +49,25 @@ class RecentReportsWidget extends TableWidget
                 Action::make('review')
                     ->label('Review')
                     ->icon('heroicon-o-eye')
+                    ->visible(fn (Report $record): bool => $record->status === Report::STATUS_OPEN)
+                    ->action(fn (Report $record): bool => $record->update(['status' => Report::STATUS_REVIEWING])),
+                Action::make('resolve')
+                    ->label('Resolve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (Report $record): bool => $record->status !== Report::STATUS_RESOLVED)
+                    ->action(fn (Report $record): bool => $record->update(['status' => Report::STATUS_RESOLVED])),
+                Action::make('dismiss')
+                    ->label('Dismiss')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (Report $record): bool => $record->status !== Report::STATUS_DISMISSED)
+                    ->action(fn (Report $record): bool => $record->update(['status' => Report::STATUS_DISMISSED])),
+                Action::make('open')
+                    ->label('Open')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(fn (Report $record): string => ReportResource::getUrl('edit', ['record' => $record])),
             ])
             ->paginated([5, 10, 20])

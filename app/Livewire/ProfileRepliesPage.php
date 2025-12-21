@@ -8,7 +8,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ProfileRepliesPage extends Component
 {
     use WithPagination;
@@ -46,6 +48,6 @@ class ProfileRepliesPage extends Component
 
     public function render()
     {
-        return view('livewire.profile-replies-page')->layout('layouts.app');
+        return view('livewire.profile-replies-page');
     }
 }

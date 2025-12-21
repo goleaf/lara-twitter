@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\MessageReactions\Tables;
 
+use App\Filament\Resources\Messages\MessageResource;
+use App\Filament\Resources\Users\UserResource;
+use App\Models\MessageReaction;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -39,6 +43,16 @@ class MessageReactionsTable
                     ->relationship('user', 'username'),
             ])
             ->recordActions([
+                Action::make('view-message')
+                    ->label('Message')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->url(fn (MessageReaction $record): string => MessageResource::getUrl('edit', ['record' => $record->message_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-user')
+                    ->label('User')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (MessageReaction $record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

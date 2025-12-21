@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ReportsPage extends Component
 {
     use WithPagination;
@@ -52,6 +54,6 @@ class ReportsPage extends Component
     {
         return view('livewire.reports-page', [
             'statuses' => Report::statuses(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

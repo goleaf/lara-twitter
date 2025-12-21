@@ -2,10 +2,12 @@
 
 namespace Tests\Unit\Http\Requests;
 
+use App\Http\Requests\Analytics\ExportAnalyticsRequest;
 use App\Http\Requests\Auth\ConfirmPasswordRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Links\LinkRedirectRequest;
 use App\Http\Requests\Lists\AddListMemberRequest;
 use App\Http\Requests\Lists\StoreListRequest;
 use App\Http\Requests\Lists\UpdateListRequest;
@@ -135,6 +137,8 @@ class FormRequestRulesTest extends TestCase
             [UpdatePinnedPostRequest::class, [], null],
             [UpdateProfileInformationRequest::class, [], $user],
             [UpdateTimelineSettingsRequest::class, [], null],
+            [ExportAnalyticsRequest::class, [], null],
+            [LinkRedirectRequest::class, [], null],
             [StoreReportRequest::class, ['reason' => Report::REASON_VIOLENCE], null],
             [SearchRequest::class, [], null],
             [DecideSpeakerRequestRequest::class, [], null],

@@ -6,7 +6,9 @@ use App\Services\TrendingService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class TrendingPage extends Component
 {
     #[Url]
@@ -62,6 +64,6 @@ class TrendingPage extends Component
 
     public function render()
     {
-        return view('livewire.trending-page')->layout('layouts.app');
+        return view('livewire.trending-page');
     }
 }

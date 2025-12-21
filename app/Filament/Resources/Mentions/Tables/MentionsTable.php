@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\Mentions\Tables;
 
+use App\Filament\Resources\Posts\PostResource;
+use App\Filament\Resources\Users\UserResource;
+use App\Models\Mention;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -39,6 +43,16 @@ class MentionsTable
                     ->relationship('mentionedUser', 'username'),
             ])
             ->recordActions([
+                Action::make('view-post')
+                    ->label('Post')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn (Mention $record): string => PostResource::getUrl('edit', ['record' => $record->post_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-mentioned')
+                    ->label('Mentioned')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Mention $record): string => UserResource::getUrl('edit', ['record' => $record->mentioned_user_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

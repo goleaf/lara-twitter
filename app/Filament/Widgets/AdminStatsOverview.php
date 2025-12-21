@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\Space;
+use App\Models\SpaceSpeakerRequest;
 use App\Models\User;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget;
@@ -32,6 +33,10 @@ class AdminStatsOverview extends StatsOverviewWidget
                 ->whereNull('ended_at')
                 ->count();
 
+            $pendingSpeakerRequests = SpaceSpeakerRequest::query()
+                ->where('status', SpaceSpeakerRequest::STATUS_PENDING)
+                ->count();
+
             $messagesToday = Message::query()->where('created_at', '>=', now()->subDay())->count();
 
             return [
@@ -55,6 +60,11 @@ class AdminStatsOverview extends StatsOverviewWidget
                     ->descriptionIcon(Heroicon::OutlinedMicrophone)
                     ->icon(Heroicon::OutlinedMicrophone)
                     ->color('info'),
+                Stat::make('Speaker Requests', number_format($pendingSpeakerRequests))
+                    ->description('Pending approvals')
+                    ->descriptionIcon(Heroicon::OutlinedHandRaised)
+                    ->icon(Heroicon::OutlinedHandRaised)
+                    ->color($pendingSpeakerRequests > 0 ? 'warning' : 'success'),
                 Stat::make('Messages (24h)', number_format($messagesToday))
                     ->description('Direct messages in the last day')
                     ->descriptionIcon(Heroicon::OutlinedChatBubbleLeftEllipsis)

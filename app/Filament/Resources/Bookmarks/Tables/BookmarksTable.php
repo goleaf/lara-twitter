@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Bookmarks\Tables;
 
+use App\Filament\Resources\Posts\PostResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Bookmark;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -38,6 +40,16 @@ class BookmarksTable
                     ->relationship('post', 'id', fn ($query) => $query->withoutGlobalScope('published')),
             ])
             ->recordActions([
+                Action::make('view-user')
+                    ->label('User')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Bookmark $record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-post')
+                    ->label('Post')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn (Bookmark $record): string => PostResource::getUrl('edit', ['record' => $record->post_id]))
+                    ->openUrlInNewTab(),
                 Action::make('delete')
                     ->label('Delete')
                     ->icon('heroicon-o-trash')

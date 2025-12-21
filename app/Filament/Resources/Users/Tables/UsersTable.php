@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Tables;
 
 use App\Models\User;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class UsersTable
 {
@@ -101,10 +103,117 @@ class UsersTable
                     ->icon('heroicon-o-eye')
                     ->url(fn (User $record): string => route('profile.show', ['user' => $record->username]))
                     ->openUrlInNewTab(),
+                Action::make('verify-email')
+                    ->label('Verify email')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->visible(fn (User $record): bool => ! $record->email_verified_at)
+                    ->action(function (User $record): bool {
+                        $record->forceFill(['email_verified_at' => now()]);
+
+                        return $record->save();
+                    }),
+                Action::make('clear-email-verification')
+                    ->label('Clear email')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (User $record): bool => (bool) $record->email_verified_at)
+                    ->action(function (User $record): bool {
+                        $record->forceFill(['email_verified_at' => null]);
+
+                        return $record->save();
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('mark-verified')
+                        ->label('Mark verified')
+                        ->icon('heroicon-o-check-badge')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['is_verified' => true])),
+                    BulkAction::make('mark-unverified')
+                        ->label('Remove verified')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['is_verified' => false])),
+                    BulkAction::make('mark-premium')
+                        ->label('Mark premium')
+                        ->icon('heroicon-o-star')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['is_premium' => true])),
+                    BulkAction::make('remove-premium')
+                        ->label('Remove premium')
+                        ->icon('heroicon-o-star')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['is_premium' => false])),
+                    BulkAction::make('enable-analytics')
+                        ->label('Enable analytics')
+                        ->icon('heroicon-o-chart-bar')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['analytics_enabled' => true])),
+                    BulkAction::make('disable-analytics')
+                        ->label('Disable analytics')
+                        ->icon('heroicon-o-chart-bar')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['analytics_enabled' => false])),
+                    BulkAction::make('grant-admin')
+                        ->label('Grant admin')
+                        ->icon('heroicon-o-shield-check')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['is_admin' => true])),
+                    BulkAction::make('revoke-admin')
+                        ->label('Revoke admin')
+                        ->icon('heroicon-o-shield-exclamation')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->where('id', '!=', auth()->id())
+                            ->update(['is_admin' => false])),
+                    BulkAction::make('verify-email')
+                        ->label('Verify email')
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): int {
+                            $timestamp = now();
+
+                            return User::query()
+                                ->whereKey($records->modelKeys())
+                                ->whereNull('email_verified_at')
+                                ->update(['email_verified_at' => $timestamp]);
+                        }),
+                    BulkAction::make('clear-email-verification')
+                        ->label('Clear email')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records): int => User::query()
+                            ->whereKey($records->modelKeys())
+                            ->update(['email_verified_at' => null])),
                     DeleteBulkAction::make(),
                 ]),
             ])

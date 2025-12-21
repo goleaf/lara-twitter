@@ -7,7 +7,9 @@ use App\Services\FollowService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class FollowingPage extends Component
 {
     use WithPagination;
@@ -69,6 +71,6 @@ class FollowingPage extends Component
 
     public function render()
     {
-        return view('livewire.following-page')->layout('layouts.app');
+        return view('livewire.following-page');
     }
 }

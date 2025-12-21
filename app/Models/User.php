@@ -56,6 +56,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'username',
         'email',
+        'email_verified_at',
         'password',
         'avatar_path',
         'header_path',
@@ -67,6 +68,7 @@ class User extends Authenticatable implements FilamentUser
         'is_admin',
         'is_premium',
         'is_verified',
+        'analytics_enabled',
         'dm_policy',
         'dm_allow_requests',
         'dm_read_receipts',
@@ -176,15 +178,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($panel->getId() === 'app') {
-            return true;
-        }
-
-        if ($panel->getId() !== 'admin') {
-            return false;
-        }
-
-        return (bool) $this->is_admin;
+        return $panel->getId() === 'admin' && (bool) $this->is_admin;
     }
 
     public function getRouteKeyName(): string

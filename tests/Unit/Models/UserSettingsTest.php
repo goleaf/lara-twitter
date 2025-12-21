@@ -70,14 +70,13 @@ class UserSettingsTest extends TestCase
         $user = User::factory()->create(['is_admin' => false]);
         $admin = User::factory()->create(['is_admin' => true]);
 
-        $appPanel = Panel::make()->id('app');
         $adminPanel = Panel::make()->id('admin');
         $otherPanel = Panel::make()->id('other');
 
-        $this->assertTrue($user->canAccessPanel($appPanel));
         $this->assertFalse($user->canAccessPanel($adminPanel));
         $this->assertFalse($user->canAccessPanel($otherPanel));
         $this->assertTrue($admin->canAccessPanel($adminPanel));
+        $this->assertFalse($admin->canAccessPanel($otherPanel));
     }
 
     public function test_avatar_and_header_urls(): void

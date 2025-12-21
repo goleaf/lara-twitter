@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Mutes\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use App\Models\Mute;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -34,6 +35,16 @@ class MutesTable
                     ->relationship('muted', 'username'),
             ])
             ->recordActions([
+                Action::make('view-muter')
+                    ->label('Muter')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Mute $record): string => UserResource::getUrl('edit', ['record' => $record->muter_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-muted')
+                    ->label('Muted')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (Mute $record): string => UserResource::getUrl('edit', ['record' => $record->muted_id]))
+                    ->openUrlInNewTab(),
                 Action::make('delete')
                     ->label('Delete')
                     ->icon('heroicon-o-trash')

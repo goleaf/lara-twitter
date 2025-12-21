@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class PostCard extends Component
@@ -35,10 +36,6 @@ class PostCard extends Component
     public string $quote_body = '';
 
     public ?string $replyError = null;
-
-    protected $listeners = [
-        'reply-created.{primaryId}' => 'handleReplyCreated',
-    ];
 
     public function mount(Post $post): void
     {
@@ -298,6 +295,7 @@ class PostCard extends Component
         return $query->get()->reverse()->values();
     }
 
+    #[On('reply-created.{primaryId}')]
     public function handleReplyCreated(): void
     {
         if ($this->isReplying) {

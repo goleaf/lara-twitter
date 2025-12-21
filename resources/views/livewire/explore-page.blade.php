@@ -331,6 +331,77 @@
         <div class="space-y-4">
             <div class="card card-hover bg-base-100 border">
                 <div class="card-body">
+                    <div class="font-semibold">Discover people</div>
+
+                    @guest
+                        <div class="text-sm opacity-70 pt-2">
+                            Sign in to see personalized recommendations.
+                        </div>
+                    @endguest
+
+                    @auth
+                        <div class="space-y-2 pt-2">
+                            @forelse ($this->recommendedUsers as $user)
+                                @php($mutualCount = (int) ($user->getAttribute('mutual_count') ?? 0))
+                                @php($interestPostsCount = (int) ($user->getAttribute('interest_posts_count') ?? 0))
+
+                                <x-list-row wire:key="explore-recommended-{{ $user->id }}">
+                                    <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
+                                        <div class="avatar shrink-0">
+                                            <div class="w-9 rounded-full border border-base-200 bg-base-100">
+                                                @if ($user->avatar_url)
+                                                    <img src="{{ $user->avatar_url }}" alt="" loading="lazy" decoding="async" />
+                                                @else
+                                                    <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
+                                                        {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <div class="font-semibold truncate">
+                                                {{ $user->name }}
+                                                @if ($user->is_verified)
+                                                    <x-verified-icon class="ms-1 align-middle" />
+                                                @endif
+                                            </div>
+                                            <div class="text-xs opacity-60 truncate">
+                                                &#64;{{ $user->username }}
+                                                ·
+                                                @if ($mutualCount)
+                                                    {{ $mutualCount }} mutual
+                                                @elseif ($interestPostsCount)
+                                                    {{ $interestPostsCount }} posts in your interests
+                                                @else
+                                                    {{ $user->followers_count ?? 0 }} followers
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-xs"
+                                        wire:click="toggleFollow({{ $user->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="toggleFollow({{ $user->id }})"
+                                    >
+                                        Follow
+                                    </button>
+                                </x-list-row>
+                            @empty
+                                <x-empty-state>
+                                    No recommendations yet.
+                                </x-empty-state>
+                            @endforelse
+                        </div>
+                    @endauth
+                </div>
+            </div>
+
+            <div class="card card-hover bg-base-100 border">
+                <div class="card-body">
                     <div class="font-semibold">Tips</div>
                     <div class="text-sm opacity-70 pt-2">
                         Use the search bar above to find accounts, hashtags, and posts.

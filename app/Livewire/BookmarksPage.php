@@ -6,16 +6,21 @@ use App\Models\Bookmark;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class BookmarksPage extends Component
 {
     use WithPagination;
 
-    protected $listeners = [
-        'bookmark-toggled' => '$refresh',
-    ];
+    #[On('bookmark-toggled')]
+    public function refreshBookmarks(): void
+    {
+        // No-op; Livewire re-renders after handling the event.
+    }
 
     public function mount(): void
     {
@@ -112,6 +117,6 @@ class BookmarksPage extends Component
 
     public function render()
     {
-        return view('livewire.bookmarks-page')->layout('layouts.app');
+        return view('livewire.bookmarks-page');
     }
 }

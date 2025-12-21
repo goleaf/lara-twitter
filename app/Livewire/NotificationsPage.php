@@ -11,7 +11,9 @@ use App\Services\NotificationVisibilityService;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class NotificationsPage extends Component
 {
     use WithPagination;
@@ -163,6 +165,6 @@ class NotificationsPage extends Component
 
         return view('livewire.notifications-page', [
             'actorUsers' => $actorUsers,
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\ConversationParticipants\Tables;
 
+use App\Filament\Resources\Conversations\ConversationResource;
+use App\Filament\Resources\Users\UserResource;
+use App\Models\ConversationParticipant;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -51,6 +55,16 @@ class ConversationParticipantsTable
                     ->label('Pinned'),
             ])
             ->recordActions([
+                Action::make('view-conversation')
+                    ->label('Conversation')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->url(fn (ConversationParticipant $record): string => ConversationResource::getUrl('edit', ['record' => $record->conversation_id]))
+                    ->openUrlInNewTab(),
+                Action::make('view-user')
+                    ->label('User')
+                    ->icon('heroicon-o-user')
+                    ->url(fn (ConversationParticipant $record): string => UserResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

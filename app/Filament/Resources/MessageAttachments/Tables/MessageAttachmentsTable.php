@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\MessageAttachments\Tables;
 
+use App\Filament\Resources\Messages\MessageResource;
+use App\Models\MessageAttachment;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -39,6 +42,11 @@ class MessageAttachmentsTable
                     ->relationship('message', 'id'),
             ])
             ->recordActions([
+                Action::make('view-message')
+                    ->label('Message')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->url(fn (MessageAttachment $record): string => MessageResource::getUrl('edit', ['record' => $record->message_id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

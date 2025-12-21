@@ -11,7 +11,9 @@ use App\Services\DirectMessageService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class NewConversationPage extends Component
 {
     public string $title = '';
@@ -182,6 +184,6 @@ class NewConversationPage extends Component
 
     public function render()
     {
-        return view('livewire.new-conversation-page')->layout('layouts.app');
+        return view('livewire.new-conversation-page');
     }
 }

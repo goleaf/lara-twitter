@@ -1578,7 +1578,7 @@ class SocialModelsSeeder extends Seeder
         array $rightIds,
         int $count,
         bool $disallowSame = false,
-        array $used = []
+        array &$used = []
     ): array {
         $leftCount = count($leftIds);
         $rightCount = count($rightIds);

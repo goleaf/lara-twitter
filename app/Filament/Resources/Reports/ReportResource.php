@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 
 class ReportResource extends Resource
 {
@@ -41,6 +42,18 @@ class ReportResource extends Resource
         return ReportsTable::configure($table);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = self::openReportsCount();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return self::openReportsCount() > 0 ? 'warning' : 'success';
+    }
+
     public static function getPages(): array
     {
         return [
@@ -48,5 +61,14 @@ class ReportResource extends Resource
             'create' => CreateReport::route('/create'),
             'edit' => EditReport::route('/{record}/edit'),
         ];
+    }
+
+    private static function openReportsCount(): int
+    {
+        return Cache::remember('admin:nav:reports-open', now()->addSeconds(90), function (): int {
+            return Report::query()
+                ->where('status', Report::STATUS_OPEN)
+                ->count();
+        });
     }
 }

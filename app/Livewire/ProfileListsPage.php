@@ -7,7 +7,9 @@ use App\Models\UserList;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ProfileListsPage extends Component
 {
     use WithPagination;
@@ -36,6 +38,6 @@ class ProfileListsPage extends Component
 
     public function render()
     {
-        return view('livewire.profile-lists-page')->layout('layouts.app');
+        return view('livewire.profile-lists-page');
     }
 }
