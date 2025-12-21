@@ -265,28 +265,59 @@ class SocialModelsSeeder extends Seeder
             ->create();
     }
 
-    private function applyPostRelations(array $postIds, int $relationCount): void
+    private function applyPostRelations(array $postIds, int $relationCount): array
     {
         $postCount = count($postIds);
-        if ($postCount < 2 || $relationCount <= 0) {
-            return;
+        if ($postCount < 2) {
+            return ['replyIds' => [], 'repostIds' => []];
         }
 
-        $replyTargets = $this->randomSample($postIds, min($relationCount, $postCount));
+        $replyCount = min($postCount, max(1, intdiv($postCount, 5)));
+        $repostCount = min($postCount - $replyCount, max(1, intdiv($postCount, 6)));
+        if ($relationCount > 0) {
+            $replyCount = min($replyCount, $relationCount);
+            $repostCount = min($repostCount, max(0, $relationCount - $replyCount));
+        }
+
+        if ($postCount > 1) {
+            $maxRelated = $postCount - 1;
+            if ($replyCount + $repostCount > $maxRelated) {
+                $repostCount = max(0, $maxRelated - $replyCount);
+            }
+        }
+
+        $shuffled = $postIds;
+        shuffle($shuffled);
+        $replyTargets = array_slice($shuffled, 0, $replyCount);
+        $repostTargets = array_slice($shuffled, $replyCount, $repostCount);
+
         foreach ($replyTargets as $postId) {
             $replyTo = $this->randomOtherId($postIds, $postId);
             if ($replyTo) {
-                Post::query()->whereKey($postId)->update(['reply_to_id' => $replyTo]);
+                Post::query()->withoutGlobalScope('published')->whereKey($postId)->update([
+                    'reply_to_id' => $replyTo,
+                    'repost_of_id' => null,
+                    'is_reply_like' => false,
+                ]);
             }
         }
 
-        $repostTargets = $this->randomSample($postIds, min($relationCount, $postCount));
         foreach ($repostTargets as $postId) {
             $repostOf = $this->randomOtherId($postIds, $postId);
             if ($repostOf) {
-                Post::query()->whereKey($postId)->update(['repost_of_id' => $repostOf]);
+                Post::query()->withoutGlobalScope('published')->whereKey($postId)->update([
+                    'repost_of_id' => $repostOf,
+                    'reply_to_id' => null,
+                    'is_reply_like' => false,
+                    'body' => fake()->boolean(50) ? '' : fake()->sentence(fake()->numberBetween(6, 16)),
+                ]);
             }
         }
+
+        return [
+            'replyIds' => $replyTargets,
+            'repostIds' => $repostTargets,
+        ];
     }
 
     private function seedPinnedPostsForUsers(array $userIds, array $postIds, int $relationCount): void
