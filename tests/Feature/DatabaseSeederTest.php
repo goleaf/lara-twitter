@@ -37,13 +37,13 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('message_attachments', 3);
         $this->assertDatabaseCount('message_reactions', 3);
         $this->assertDatabaseCount('user_list_user', 3);
-        $this->assertDatabaseCount('user_list_subscriptions', 3);
+        $this->assertDatabaseCount('user_list_subscriptions', 4);
         $this->assertDatabaseCount('muted_terms', 3);
-        $this->assertDatabaseCount('space_participants', 3);
+        $this->assertDatabaseCount('space_participants', 6);
         $this->assertDatabaseCount('space_speaker_requests', 3);
         $this->assertDatabaseCount('space_reactions', 3);
         $this->assertDatabaseCount('moment_items', 3);
-        $this->assertDatabaseCount('reports', 3);
+        $this->assertDatabaseCount('reports', 6);
     }
 
     protected function beforeRefreshingDatabase()

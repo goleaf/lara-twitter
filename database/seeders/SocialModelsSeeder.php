@@ -1461,6 +1461,20 @@ class SocialModelsSeeder extends Seeder
             ['type' => UserList::class, 'ids' => $userListIds, 'disallowSame' => false],
             ['type' => User::class, 'ids' => $userIds, 'disallowSame' => true],
         ];
+        $disallowedReportersByType = [
+            Post::class => $this->disallowedReportersMap(
+                Post::query()->whereIn('id', $postIds)->pluck('user_id', 'id')->all()
+            ),
+            Message::class => $this->disallowedReportersMap(
+                Message::query()->whereIn('id', $messageIds)->pluck('user_id', 'id')->all()
+            ),
+            Space::class => $this->disallowedReportersMap(
+                Space::query()->whereIn('id', $spaceIds)->pluck('host_user_id', 'id')->all()
+            ),
+            UserList::class => $this->disallowedReportersMap(
+                UserList::query()->whereIn('id', $userListIds)->pluck('owner_id', 'id')->all()
+            ),
+        ];
 
         $targets = array_values(array_filter($targets, fn (array $target) => $target['ids'] !== []));
         if ($targets === []) {
@@ -1491,7 +1505,8 @@ class SocialModelsSeeder extends Seeder
                     $statuses,
                     $statusIndex,
                     $now,
-                    $target['disallowSame']
+                    $target['disallowSame'],
+                    $disallowedReportersByType[$target['type']] ?? null
                 )
             );
         }
@@ -1508,13 +1523,16 @@ class SocialModelsSeeder extends Seeder
         array $statuses,
         int &$statusIndex,
         $now,
-        bool $disallowSameReporter = false
+        bool $disallowSameReporter = false,
+        ?array $disallowedReportersByReportable = null
     ): array {
         if ($count <= 0 || $reportableIds === [] || $reporterIds === []) {
             return [];
         }
 
-        $pairs = $this->uniquePairs($reporterIds, $reportableIds, $count, $disallowSameReporter);
+        $pairs = $disallowedReportersByReportable === null
+            ? $this->uniquePairs($reporterIds, $reportableIds, $count, $disallowSameReporter)
+            : $this->uniquePairsExcluding($reporterIds, $reportableIds, $count, $disallowedReportersByReportable);
         $rows = [];
         $requiredDetails = Report::reasonsRequiringDetails();
         $statusCount = max(1, count($statuses));
@@ -1541,6 +1559,18 @@ class SocialModelsSeeder extends Seeder
         }
 
         return $rows;
+    }
+
+    private function disallowedReportersMap(array $ownerById): array
+    {
+        $map = [];
+        foreach ($ownerById as $id => $ownerId) {
+            if ($ownerId) {
+                $map[$id] = [$ownerId];
+            }
+        }
+
+        return $map;
     }
 
     private function uniquePairs(
@@ -1586,6 +1616,67 @@ class SocialModelsSeeder extends Seeder
 
             $used[$key] = true;
             $pairs[] = [$left, $right];
+        }
+
+        return $pairs;
+    }
+
+    private function uniquePairsExcluding(
+        array $leftIds,
+        array $rightIds,
+        int $count,
+        array $disallowedByRight
+    ): array {
+        $leftCount = count($leftIds);
+        $rightCount = count($rightIds);
+        if ($count <= 0 || $leftCount === 0 || $rightCount === 0) {
+            return [];
+        }
+
+        $eligibleByRight = [];
+        $max = 0;
+        foreach ($rightIds as $rightId) {
+            $disallowed = $disallowedByRight[$rightId] ?? [];
+            $eligible = $disallowed === [] ? $leftIds : array_values(array_diff($leftIds, $disallowed));
+            if ($eligible === []) {
+                continue;
+            }
+            $eligibleByRight[$rightId] = $eligible;
+            $max += count($eligible);
+        }
+
+        $rightIds = array_keys($eligibleByRight);
+        if ($rightIds === []) {
+            return [];
+        }
+
+        $target = min($count, $max);
+        if ($target <= 0) {
+            return [];
+        }
+
+        $pairs = [];
+        $used = [];
+        $attempts = 0;
+        $attemptLimit = $target * 20;
+
+        while (count($pairs) < $target && $attempts < $attemptLimit) {
+            $right = $rightIds[array_rand($rightIds)];
+            $eligible = $eligibleByRight[$right];
+            if ($eligible === []) {
+                $attempts++;
+                continue;
+            }
+            $left = $eligible[array_rand($eligible)];
+            $key = $left.'-'.$right;
+            if (isset($used[$key])) {
+                $attempts++;
+                continue;
+            }
+
+            $used[$key] = true;
+            $pairs[] = [$left, $right];
+            $attempts++;
         }
 
         return $pairs;

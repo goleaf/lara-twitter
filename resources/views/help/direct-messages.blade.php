@@ -1,10 +1,7 @@
-@extends('layouts.app')
-
-@section('header')
+<x-slot:header>
     <div class="text-xl font-semibold">Direct Messages</div>
-@endsection
+</x-slot:header>
 
-@section('content')
     <div class="max-w-2xl mx-auto space-y-4">
         <div class="card bg-base-100 border">
             <div class="card-body">
@@ -73,4 +70,3 @@
             </div>
         </div>
     </div>
-@endsection

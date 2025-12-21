@@ -237,6 +237,105 @@ class AnalyticsPage extends Component
             ->get();
     }
 
+    public function getFollowerGrowthSeriesProperty(): array
+    {
+        $days = $this->rangeDays();
+        $daysSeries = $this->daySeries($days);
+        $series = array_fill(0, count($daysSeries), 0);
+        $dayIndex = array_flip($daysSeries);
+
+        foreach ($this->followerGrowth as $row) {
+            $index = $dayIndex[$row->day] ?? null;
+            if ($index === null) {
+                continue;
+            }
+
+            $series[$index] = (int) $row->followers;
+        }
+
+        return [
+            'days' => $daysSeries,
+            'values' => $series,
+        ];
+    }
+
+    public function getOverviewSeriesProperty(): array
+    {
+        $days = $this->rangeDays();
+        $daysSeries = $this->daySeries($days);
+        $count = count($daysSeries);
+
+        $series = [
+            'days' => $daysSeries,
+            'impressions' => array_fill(0, $count, 0),
+            'link_clicks' => array_fill(0, $count, 0),
+            'profile_clicks' => array_fill(0, $count, 0),
+            'media_views' => array_fill(0, $count, 0),
+            'profile_visits' => array_fill(0, $count, 0),
+        ];
+
+        if ($count === 0) {
+            return $series;
+        }
+
+        [$sinceDay, $untilDay] = $this->dayRange($days);
+        $dayIndex = array_flip($daysSeries);
+
+        $postIds = $this->userPostIds();
+        if (! empty($postIds)) {
+            $rows = DB::table('analytics_uniques')
+                ->select('day', 'type', DB::raw('count(*) as count'))
+                ->whereIn('type', ['post_view', 'post_link_click', 'post_profile_click', 'post_media_view'])
+                ->whereIn('entity_id', $postIds)
+                ->whereBetween('day', [$sinceDay, $untilDay])
+                ->groupBy('day', 'type')
+                ->get();
+
+            foreach ($rows as $row) {
+                $index = $dayIndex[$row->day] ?? null;
+                if ($index === null) {
+                    continue;
+                }
+
+                $countForDay = (int) $row->count;
+
+                switch ($row->type) {
+                    case 'post_view':
+                        $series['impressions'][$index] = $countForDay;
+                        break;
+                    case 'post_link_click':
+                        $series['link_clicks'][$index] = $countForDay;
+                        break;
+                    case 'post_profile_click':
+                        $series['profile_clicks'][$index] = $countForDay;
+                        break;
+                    case 'post_media_view':
+                        $series['media_views'][$index] = $countForDay;
+                        break;
+                }
+            }
+        }
+
+        $profileRows = DB::table('analytics_uniques')
+            ->select('day', DB::raw('count(*) as count'))
+            ->where('type', 'profile_view')
+            ->where('entity_id', Auth::id())
+            ->whereBetween('day', [$sinceDay, $untilDay])
+            ->groupBy('day')
+            ->get();
+
+        foreach ($profileRows as $row) {
+            $index = $dayIndex[$row->day] ?? null;
+            if ($index === null) {
+                continue;
+            }
+
+            $series['profile_visits'][$index] = (int) $row->count;
+        }
+
+        return $series;
+    }
+
     public function getTopFollowerLocationsProperty(): Collection
     {
         $userId = Auth::id();
@@ -283,6 +382,25 @@ class AnalyticsPage extends Component
         $sinceDay = now()->subDays($days - 1)->toDateString();
 
         return [$sinceDay, $untilDay];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function daySeries(int $days): array
+    {
+        if ($days <= 0) {
+            return [];
+        }
+
+        $start = now()->subDays($days - 1)->startOfDay();
+        $series = [];
+
+        for ($i = 0; $i < $days; $i++) {
+            $series[] = $start->copy()->addDays($i)->toDateString();
+        }
+
+        return $series;
     }
 
     /**

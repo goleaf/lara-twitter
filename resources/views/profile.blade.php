@@ -1,15 +1,36 @@
-@extends('layouts.app')
+@php
+    $user = auth()->user();
+    $jumpSections = [
+        'Account' => [
+            ['id' => 'profile-information', 'label' => 'Profile information'],
+            ['id' => 'password', 'label' => 'Password'],
+            ['id' => 'pinned-post', 'label' => 'Pinned post'],
+        ],
+        'Preferences' => [
+            ['id' => 'notifications', 'label' => 'Notifications'],
+            ['id' => 'timeline', 'label' => 'Timeline'],
+            ['id' => 'direct-messages', 'label' => 'Direct messages'],
+            ['id' => 'interests', 'label' => 'Interests'],
+            ['id' => 'analytics', 'label' => 'Analytics'],
+        ],
+        'Safety' => [
+            ['id' => 'muted-terms', 'label' => 'Muted terms'],
+            ['id' => 'muted-users', 'label' => 'Muted users'],
+            ['id' => 'blocked-users', 'label' => 'Blocked users'],
+        ],
+        'Danger zone' => [
+            ['id' => 'delete-account', 'label' => 'Delete account', 'danger' => true],
+        ],
+    ];
+@endphp
 
-@php($user = auth()->user())
-
-@section('header')
+<x-slot:header>
     <div>
         <h2 class="text-xl font-semibold leading-tight">Settings</h2>
         <p class="mt-1 text-sm opacity-70">Manage your account, security, and preferences.</p>
     </div>
-@endsection
+</x-slot:header>
 
-@section('content')
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         <aside class="lg:col-span-4">
             <div class="space-y-6 lg:sticky lg:top-24">
@@ -81,53 +102,43 @@
                             <div class="text-xs uppercase tracking-[0.3em] opacity-60">Settings</div>
                         </div>
 
-                        <nav class="mt-4" aria-label="Settings sections">
-                            <ul class="menu menu-sm rounded-box border border-base-200 bg-base-200/40 p-2">
-                                <li class="menu-title"><span>Account</span></li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#profile-information">Profile information</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#password">Password</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#pinned-post">Pinned post</a>
-                                </li>
+                        <div class="mt-4 space-y-4">
+                            <nav class="lg:hidden space-y-4" aria-label="Settings sections">
+                                @foreach ($jumpSections as $section => $links)
+                                    <div class="space-y-2">
+                                        <div class="text-xs uppercase tracking-[0.3em] opacity-60">{{ $section }}</div>
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach ($links as $link)
+                                                <a
+                                                    class="btn btn-xs btn-outline rounded-full focus-ring {{ ($link['danger'] ?? false) ? 'text-error border-error/40 hover:border-error/70 hover:text-error' : '' }}"
+                                                    href="#{{ $link['id'] }}"
+                                                >
+                                                    {{ $link['label'] }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </nav>
 
-                                <li class="menu-title"><span>Preferences</span></li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#notifications">Notifications</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#timeline">Timeline</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#direct-messages">Direct messages</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#interests">Interests</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#analytics">Analytics</a>
-                                </li>
-
-                                <li class="menu-title"><span>Safety</span></li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#muted-terms">Muted terms</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#muted-users">Muted users</a>
-                                </li>
-                                <li>
-                                    <a class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#blocked-users">Blocked users</a>
-                                </li>
-
-                                <li class="menu-title"><span>Danger zone</span></li>
-                                <li>
-                                    <a class="text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20" href="#delete-account">Delete account</a>
-                                </li>
-                            </ul>
-                        </nav>
+                            <nav class="hidden lg:block" aria-label="Settings sections">
+                                <ul class="menu menu-sm rounded-box border border-base-200 bg-base-200/40 p-2">
+                                    @foreach ($jumpSections as $section => $links)
+                                        <li class="menu-title"><span>{{ $section }}</span></li>
+                                        @foreach ($links as $link)
+                                            <li>
+                                                <a
+                                                    class="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 {{ ($link['danger'] ?? false) ? 'text-error' : '' }}"
+                                                    href="#{{ $link['id'] }}"
+                                                >
+                                                    {{ $link['label'] }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    @endforeach
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -227,4 +238,3 @@
             </div>
         </div>
     </div>
-@endsection

@@ -1,10 +1,7 @@
-@extends('layouts.app')
-
-@section('header')
+<x-slot:header>
     <div class="text-xl font-semibold">About</div>
-@endsection
+</x-slot:header>
 
-@section('content')
     <div class="max-w-3xl mx-auto space-y-4">
         <div class="card bg-base-100 border hero-card legal-hero">
             <div class="hero-edge" aria-hidden="true"></div>
@@ -53,4 +50,3 @@
             </div>
         </div>
     </div>
-@endsection

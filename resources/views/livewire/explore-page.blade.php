@@ -331,69 +331,6 @@
         <div class="space-y-4">
             <div class="card card-hover bg-base-100 border">
                 <div class="card-body">
-                    <div class="font-semibold">Discover people</div>
-                    <div class="space-y-2 pt-2">
-                        @forelse ($this->recommendedUsers as $u)
-                            @php($isFollowing = $this->isFollowing($u->id))
-                            <x-list-row wire:key="discover-user-{{ $u->id }}">
-                                <a class="flex items-center gap-3 min-w-0 focus:outline-none" href="{{ route('profile.show', ['user' => $u]) }}" wire:navigate>
-                                    <div class="avatar shrink-0">
-                                        <div class="w-9 rounded-full border border-base-200 bg-base-100">
-                                            @if ($u->avatar_url)
-                                                <img src="{{ $u->avatar_url }}" alt="" loading="lazy" decoding="async" />
-                                            @else
-                                                <div class="bg-base-200 grid place-items-center h-full w-full text-xs font-semibold">
-                                                    {{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="min-w-0">
-                                        <div class="font-semibold truncate">
-                                            {{ $u->name }}
-                                            @if ($u->is_verified)
-                                                <x-verified-icon class="ms-1 align-middle" />
-                                            @endif
-                                        </div>
-                                        <div class="text-xs opacity-60 truncate">&#64;{{ $u->username }}</div>
-                                        @if (($u->mutual_count ?? 0) > 0)
-                                            <div class="text-xs opacity-60 truncate">
-                                                {{ $u->mutual_count }} mutual follow{{ $u->mutual_count === 1 ? '' : 's' }}
-                                            </div>
-                                        @elseif (($u->interest_posts_count ?? 0) > 0)
-                                            <div class="text-xs opacity-60 truncate">Based on your interests</div>
-                                        @elseif (! is_null($u->followers_count ?? null))
-                                            <div class="text-xs opacity-60 truncate">
-                                                {{ $u->followers_count }} follower{{ $u->followers_count === 1 ? '' : 's' }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                </a>
-
-                                @auth
-                                    <button
-                                        type="button"
-                                        class="btn btn-xs {{ $isFollowing ? 'btn-outline' : 'btn-primary' }}"
-                                        wire:click="toggleFollow({{ $u->id }})"
-                                        wire:loading.attr="disabled"
-                                        wire:target="toggleFollow({{ $u->id }})"
-                                    >
-                                        {{ $isFollowing ? 'Following' : 'Follow' }}
-                                    </button>
-                                @endauth
-                            </x-list-row>
-                        @empty
-                            <x-empty-state>
-                                No recommendations yet.
-                            </x-empty-state>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-hover bg-base-100 border">
-                <div class="card-body">
                     <div class="font-semibold">Tips</div>
                     <div class="text-sm opacity-70 pt-2">
                         Use the search bar above to find accounts, hashtags, and posts.
