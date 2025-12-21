@@ -4,10 +4,10 @@
     use App\Support\PageTitle;
 
     $title = PageTitle::resolve($title);
-    $menuShell = 'flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-thin snap-x snap-mandatory px-2 py-1.5 rounded-full bg-base-100/90 border border-base-200/60 shadow-md supports-[backdrop-filter]:bg-base-100/75 supports-[backdrop-filter]:backdrop-blur-sm';
-    $itemBase = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-[0.82rem] font-semibold transition whitespace-nowrap focus-ring snap-start';
-    $itemActive = 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20';
-    $itemInactive = 'text-base-content/60 hover:bg-base-100/90 hover:text-base-content';
+    $menuShell = 'nav-shell lg:flex-wrap lg:overflow-visible';
+    $itemBase = 'nav-item';
+    $itemActive = 'nav-item-active';
+    $itemInactive = 'nav-item-inactive';
     $iconClass = 'w-5 h-5';
     $isTimeline = request()->routeIs('timeline');
     $isExplore = request()->routeIs('explore') || request()->routeIs('search') || request()->routeIs('trending');
@@ -17,7 +17,7 @@
     $isProfile = request()->routeIs('profile.*');
 @endphp
 
-<div class="sticky top-0 z-40 border-b border-base-200/60 bg-base-100/90 backdrop-blur-xl supports-[backdrop-filter]:bg-base-100/75 shadow-md topbar-shell">
+<div class="sticky top-0 z-40 border-b border-base-200/70 bg-base-100/90 backdrop-blur-xl supports-[backdrop-filter]:bg-base-100/75 topbar-shell">
     <div class="max-w-[1360px] mx-auto px-4 lg:px-6">
         <div class="flex flex-wrap items-center justify-between gap-3 py-3">
             <div class="flex min-w-0 items-center gap-2">
@@ -37,12 +37,40 @@
                 </a>
                 <div class="min-w-0">
                     <div class="topbar-kicker">{{ config('app.name', 'MiniTwitter') }}</div>
-                    <h1 class="text-lg font-semibold truncate">{{ $title }}</h1>
+                    <h1 class="text-xl font-semibold truncate">{{ $title }}</h1>
                 </div>
             </div>
 
             <div class="flex flex-shrink-0 items-center gap-2">
-                <a href="{{ route('search') }}" wire:navigate class="btn btn-ghost btn-sm btn-square focus-ring" aria-label="Search">
+                <form
+                    action="{{ route('search') }}"
+                    method="GET"
+                    data-livewire-navigate-search
+                    class="hidden xl:flex items-center"
+                    aria-label="Search"
+                >
+                    <label class="input input-bordered input-sm w-64 flex items-center gap-2 bg-base-100/70 search-input rounded-full">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
+                        </svg>
+                        <span class="sr-only">Search</span>
+                        <input
+                            type="search"
+                            name="q"
+                            class="grow"
+                            placeholder="Search posts, people, hashtags"
+                            value="{{ request('q') }}"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            inputmode="search"
+                            enterkeyhint="search"
+                            spellcheck="false"
+                            aria-label="Search"
+                        />
+                    </label>
+                </form>
+
+                <a href="{{ route('search') }}" wire:navigate class="btn btn-ghost btn-sm btn-square focus-ring xl:hidden" aria-label="Search">
                     <svg aria-hidden="true" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 10.5 18.5a7.5 7.5 0 0 0 6.15-3.85Z" />
                     </svg>

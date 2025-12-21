@@ -7,12 +7,23 @@
 
 @php($pollHasInput = count(array_filter($poll_options, static fn (mixed $v): bool => is_string($v) && trim($v) !== '')) > 0)
 @php($pollOpen = $pollHasInput || $poll_duration || $errors->has('poll_options') || $errors->has('poll_options.*') || $errors->has('poll_duration'))
+@php($optionsOpen = ($reply_policy ?? null) && $reply_policy !== 'everyone')
+@php($optionsOpen = $optionsOpen || $scheduled_for || $location || $errors->has('reply_policy') || $errors->has('scheduled_for') || $errors->has('location'))
 
 <div class="card bg-base-100 border">
     <div class="card-body gap-4">
         <div class="flex items-center justify-between gap-4">
-            <div class="font-semibold">Post</div>
-            <div id="post-length-count" class="text-xs tabular-nums {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}">
+            <div class="space-y-1">
+                <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/60">Compose</div>
+                <div class="font-semibold">Post</div>
+            </div>
+            <div
+                id="post-length-count"
+                class="text-xs tabular-nums {{ $bodyLength > $maxBodyLength ? 'text-error' : 'opacity-70' }}"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
                 {{ $bodyLength }}/{{ $maxBodyLength }}
             </div>
         </div>
@@ -56,38 +67,43 @@
                         placeholder="What’s happening?"
                         aria-describedby="post-length-count"
                         maxlength="{{ $maxBodyLength }}"
+                        autocapitalize="sentences"
+                        spellcheck="true"
                     ></textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('body')" />
                 </div>
 
-                <div class="rounded-box border border-base-200 bg-base-200/40 p-3 space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="space-y-1">
-                            <label class="text-sm opacity-70">Who can reply?</label>
-                            <select wire:model="reply_policy" class="select select-bordered select-sm w-full">
-                                <option value="everyone">Everyone</option>
-                                <option value="following">Only people you follow</option>
-                                <option value="mentioned">Only people you mention</option>
-                                <option value="none">No one</option>
-                            </select>
-                            <x-input-error :messages="$errors->get('reply_policy')" />
+                <details class="collapse collapse-arrow bg-base-200/50 border border-base-200" @if ($optionsOpen) open @endif>
+                    <summary class="collapse-title font-semibold">Post options</summary>
+                    <div class="collapse-content space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-sm opacity-70">Who can reply?</label>
+                                <select wire:model="reply_policy" class="select select-bordered select-sm w-full">
+                                    <option value="everyone">Everyone</option>
+                                    <option value="following">Only people you follow</option>
+                                    <option value="mentioned">Only people you mention</option>
+                                    <option value="none">No one</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('reply_policy')" />
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-sm opacity-70">Schedule (optional)</label>
+                                <input wire:model="scheduled_for" type="datetime-local" class="input input-bordered input-sm w-full" />
+                                <x-input-error :messages="$errors->get('scheduled_for')" />
+                            </div>
+
+                            <div class="space-y-1 sm:col-span-2">
+                                <label class="text-sm opacity-70">Location (optional)</label>
+                                <input wire:model="location" type="text" class="input input-bordered input-sm w-full" placeholder="e.g. Prague" />
+                                <x-input-error :messages="$errors->get('location')" />
+                            </div>
                         </div>
 
-                        <div class="space-y-1">
-                            <label class="text-sm opacity-70">Schedule (optional)</label>
-                            <input wire:model="scheduled_for" type="datetime-local" class="input input-bordered input-sm w-full" />
-                            <x-input-error :messages="$errors->get('scheduled_for')" />
-                        </div>
-
-                        <div class="space-y-1 sm:col-span-2">
-                            <label class="text-sm opacity-70">Location (optional)</label>
-                            <input wire:model="location" type="text" class="input input-bordered input-sm w-full" placeholder="e.g. Prague" />
-                            <x-input-error :messages="$errors->get('location')" />
-                        </div>
+                        <div class="text-xs opacity-70">Scheduled posts won’t appear until they’re published.</div>
                     </div>
-
-                    <div class="text-xs opacity-70">Scheduled posts won’t appear until they’re published.</div>
-                </div>
+                </details>
 
                 <div class="rounded-box border border-base-200 bg-base-200/40 p-3 space-y-2">
                     <div class="flex flex-col sm:flex-row sm:items-end gap-3">

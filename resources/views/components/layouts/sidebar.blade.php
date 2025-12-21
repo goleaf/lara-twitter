@@ -1,9 +1,9 @@
 @props(['mobile' => false])
 
 @php
-    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-2xl transition-all font-medium focus-ring border border-transparent';
-    $itemActive = 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20 border-primary/10';
-    $itemInactive = 'text-base-content/70 hover:bg-base-100/90 hover:text-base-content hover:border-base-200/60';
+    $itemBase = 'flex items-center gap-4 px-4 py-3 rounded-2xl transition-all font-semibold focus-ring border border-base-200/50 bg-base-100/70 supports-[backdrop-filter]:bg-base-100/60 supports-[backdrop-filter]:backdrop-blur';
+    $itemActive = 'bg-primary/15 text-primary shadow-sm ring-1 ring-primary/25 border-primary/25';
+    $itemInactive = 'text-base-content/70 hover:bg-base-100/90 hover:text-base-content hover:border-base-300/80 hover:shadow-sm';
 @endphp
 
 <nav class="flex flex-col h-full p-4 space-y-2" aria-label="Primary">
@@ -118,7 +118,7 @@
 
         <div class="mt-auto">
             <div class="dropdown dropdown-top dropdown-end w-full">
-                <label tabindex="0" class="flex items-center gap-3 p-3 rounded-full hover:bg-base-100/80 transition-colors cursor-pointer focus-ring">
+                <label tabindex="0" class="flex items-center gap-3 p-3 rounded-full border border-base-200/70 bg-base-100/70 hover:bg-base-100/90 transition-colors cursor-pointer focus-ring">
                     <div class="avatar">
                         <div class="w-10 h-10 rounded-full border border-base-200 bg-base-100">
                             @if (auth()->user()->avatar_url)

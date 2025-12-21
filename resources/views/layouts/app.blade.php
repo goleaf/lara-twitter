@@ -3,11 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="theme-color" content="#FFF8F2">
+        <meta name="theme-color" content="#FBF7F0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Sora:wght@400;500;600;700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Sora:wght@400;500;600;700&display=swap">
 
         @php
             use App\Support\PageTitle;
@@ -65,17 +66,17 @@
             @unless ($isTest)
                 <div class="hidden xl:block w-[350px] flex-shrink-0">
                     <div class="sticky top-28 pt-2 px-4 space-y-4">
-                        <livewire:search.global-search />
+                        <livewire:search.global-search lazy />
 
-                        <livewire:widgets.trending-topics-widget />
+                        <livewire:widgets.trending-topics-widget lazy />
 
-                        <livewire:widgets.who-to-follow-widget />
+                        <livewire:widgets.who-to-follow-widget lazy />
                     </div>
                 </div>
             @endunless
         </div>
 
-        <footer class="mt-8 border-t border-base-200/60 bg-base-100/85 backdrop-blur">
+        <footer class="mt-8 border-t border-base-200/70 bg-base-100/90 backdrop-blur">
             <div class="max-w-[1360px] mx-auto px-4 lg:px-6 pt-4 pb-20 lg:pb-8">
                 <div class="flex flex-col gap-2 text-xs text-base-content/60 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex flex-wrap gap-x-3 gap-y-1">

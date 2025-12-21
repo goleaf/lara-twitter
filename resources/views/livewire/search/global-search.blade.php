@@ -13,7 +13,7 @@
     </label>
 
     @if ($query !== '')
-        <div class="mt-2">
+        <div class="mt-2" role="status" aria-live="polite">
             @if ($this->results && $this->results->count())
                 <div class="card bg-base-100 border border-base-200 shadow-sm">
                     <div class="card-body p-3 space-y-2">

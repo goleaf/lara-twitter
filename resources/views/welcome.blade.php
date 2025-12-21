@@ -4,7 +4,7 @@
     <div class="space-y-1">
         <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/60">Welcome</div>
         <div class="text-xl font-semibold">Meet {{ config('app.name', 'MiniTwitter') }}</div>
-        <div class="text-sm opacity-70">A tiny Twitter-style app built with Laravel 12, Livewire v3, Tailwind, and daisyUI.</div>
+        <div class="text-sm opacity-70">A focused, light-only social layer built with Laravel 12, Livewire v3, Tailwind, and daisyUI.</div>
     </div>
 @endsection
 
@@ -21,23 +21,23 @@
                                 <div class="text-[0.6rem] uppercase tracking-[0.4em] text-base-content/60">
                                     {{ config('app.name', 'MiniTwitter') }}
                                 </div>
-                                <div class="text-sm font-semibold text-base-content/70">A calm social layer</div>
+                                <div class="text-sm font-semibold text-base-content/70">A calmer social workspace</div>
                             </div>
                         </div>
 
                         <div class="space-y-3 max-w-xl">
                             <div class="text-4xl sm:text-5xl font-semibold leading-tight">
-                                Build a calm, focused feed for the conversations that matter.
+                                Shape a focused feed that stays readable and intentional.
                             </div>
                             <p class="text-sm opacity-70">
-                                Post short updates, curate who you follow, and explore trends without the noise. Built with Laravel 12,
+                                Post short updates, follow the voices you trust, and explore trends without the noise. Built with Laravel 12,
                                 Livewire v3, Tailwind, and daisyUI for a fast, light-only UI.
                             </p>
                         </div>
 
                         <div class="flex flex-wrap gap-2">
-                            <span class="guest-hero-chip">Real-time posts</span>
-                            <span class="guest-hero-chip">Curated trends</span>
+                            <span class="guest-hero-chip">Signal-first ranking</span>
+                            <span class="guest-hero-chip">Quiet notifications</span>
                             <span class="guest-hero-chip">Spaces + DMs</span>
                             <span class="guest-hero-chip">Media + polls</span>
                         </div>
@@ -64,17 +64,17 @@
 
                         <div class="grid gap-3 sm:grid-cols-3">
                             <div class="welcome-stat">
-                                <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/50">Signal</div>
-                                <div class="text-sm font-semibold">Noise-aware ranking</div>
-                                <div class="text-xs opacity-60 pt-1">Engagement plus recency, tuned for calm.</div>
+                                <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/50">Clarity</div>
+                                <div class="text-sm font-semibold">Signal over noise</div>
+                                <div class="text-xs opacity-60 pt-1">Engagement plus recency, tuned for focus.</div>
                             </div>
                             <div class="welcome-stat">
                                 <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/50">Control</div>
-                                <div class="text-sm font-semibold">Timeline you shape</div>
+                                <div class="text-sm font-semibold">Timeline you tune</div>
                                 <div class="text-xs opacity-60 pt-1">Mute, block, and filter with precision.</div>
                             </div>
                             <div class="welcome-stat">
-                                <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/50">Focus</div>
+                                <div class="text-[0.6rem] uppercase tracking-[0.35em] text-base-content/50">Calm</div>
                                 <div class="text-sm font-semibold">Light-only clarity</div>
                                 <div class="text-xs opacity-60 pt-1">Readable, fast, and distraction-free.</div>
                             </div>
@@ -90,8 +90,8 @@
                                 </div>
                                 <div class="flex flex-wrap gap-2 pt-3">
                                     <span class="badge badge-outline badge-sm">#laravel</span>
-                                    <span class="badge badge-outline badge-sm">#design</span>
                                     <span class="badge badge-outline badge-sm">#product</span>
+                                    <span class="badge badge-outline badge-sm">#ships</span>
                                 </div>
                             </div>
 

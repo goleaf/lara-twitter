@@ -50,6 +50,10 @@
                         type="search"
                         placeholder="Search posts, users, lists, #hashtags, @mentions, or URLs…"
                         wire:model.live.debounce.350ms="q"
+                        autocapitalize="off"
+                        inputmode="search"
+                        enterkeyhint="search"
+                        spellcheck="false"
                     />
                 </label>
 

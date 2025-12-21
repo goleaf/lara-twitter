@@ -16,22 +16,22 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
+                sans: ['Sora', ...defaultTheme.fontFamily.sans],
                 display: ['Fraunces', ...defaultTheme.fontFamily.serif],
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0B6D6F',
-                    600: '#095B5D',
+                    DEFAULT: '#0E6F6D',
+                    600: '#0B5957',
                 },
-                primary: '#0B6D6F',
-                secondary: '#111827',
-                accent: '#F26D4F',
-                neutral: '#455565',
-                'base-100': '#FFF7F1',
-                'base-200': '#F4EDE4',
-                'base-300': '#E4D5C6',
-                'base-content': '#0B111E',
+                primary: '#0E6F6D',
+                secondary: '#1E2B37',
+                accent: '#F08B3E',
+                neutral: '#4B5B70',
+                'base-100': '#FBF7F0',
+                'base-200': '#F2E6D6',
+                'base-300': '#E5D4C1',
+                'base-content': '#0F172A',
             },
             keyframes: {
                 float: {
@@ -105,7 +105,7 @@ export default {
                 '.btn-twitter': {
                     '@apply btn btn-primary border-none text-primary-content shadow-md hover:shadow-lg transition': {},
                     backgroundImage:
-                        'linear-gradient(120deg, rgba(var(--hero-sky), 0.95), rgba(var(--hero-sun), 0.88), rgba(var(--hero-sky), 0.95))',
+                        'linear-gradient(120deg, rgba(var(--hero-sky), 0.95), rgba(var(--hero-sun), 0.9), rgba(var(--hero-sky), 0.95))',
                     backgroundSize: '200% 100%',
                 },
                 '.btn-twitter:hover': {
@@ -119,24 +119,24 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0B6D6F',
+                    primary: '#0E6F6D',
                     'primary-content': '#F8FAFC',
 
-                    secondary: '#111827',
+                    secondary: '#1E2B37',
                     'secondary-content': '#F8FAFC',
 
-                    accent: '#F26D4F',
+                    accent: '#F08B3E',
                     'accent-content': '#1F2937',
 
-                    neutral: '#455565',
+                    neutral: '#4B5B70',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FFF7F1',
-                    'base-200': '#F4EDE4',
-                    'base-300': '#E4D5C6',
-                    'base-content': '#0B111E',
+                    'base-100': '#FBF7F0',
+                    'base-200': '#F2E6D6',
+                    'base-300': '#E5D4C1',
+                    'base-content': '#0F172A',
 
-                    info: '#22B5E5',
+                    info: '#2AA7DE',
                     success: '#16A34A',
                     warning: '#F59E0B',
                     error: '#EF4444',

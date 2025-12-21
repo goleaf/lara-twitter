@@ -1,4 +1,4 @@
-<nav class="btm-nav btm-nav-sm mobile-nav bg-base-100/92 supports-[backdrop-filter]:bg-base-100/75 backdrop-blur border border-base-200/70 lg:hidden z-40 mx-3 mb-3 rounded-2xl shadow-lg" aria-label="Primary">
+<nav class="btm-nav btm-nav-sm mobile-nav bg-base-100/90 supports-[backdrop-filter]:bg-base-100/75 backdrop-blur border border-base-200/80 lg:hidden z-40 mx-3 mb-3 rounded-3xl shadow-lg" aria-label="Primary">
     <a
         href="{{ route('timeline') }}"
         wire:navigate
