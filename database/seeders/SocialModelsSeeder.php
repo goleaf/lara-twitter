@@ -405,10 +405,39 @@ class SocialModelsSeeder extends Seeder
             return collect();
         }
 
-        return UserList::factory()
+        $userLists = UserList::factory()
             ->count($modelCount)
-            ->state(fn () => ['owner_id' => $userIds[array_rand($userIds)]])
+            ->state(fn () => [
+                'owner_id' => $userIds[array_rand($userIds)],
+                'is_private' => fake()->boolean(25),
+            ])
             ->create();
+
+        if ($userLists->isNotEmpty()) {
+            UserList::query()->whereKey($userLists->first()->id)->update(['is_private' => true]);
+        }
+
+        if ($userLists->count() > 1) {
+            UserList::query()->whereKey($userLists->get(1)->id)->update(['is_private' => false]);
+        }
+
+        return $userLists;
+    }
+
+    private function pickSpecialLists(array $userListIds): array
+    {
+        $emptyListId = null;
+        $subscriberOnlyListId = null;
+
+        if (count($userListIds) >= 2) {
+            $selected = $this->randomSample($userListIds, 2);
+            $emptyListId = $selected[0] ?? null;
+            $subscriberOnlyListId = $selected[1] ?? null;
+        } elseif (count($userListIds) === 1) {
+            $emptyListId = $userListIds[0];
+        }
+
+        return [$emptyListId, $subscriberOnlyListId];
     }
 
     private function seedConversations(int $modelCount, array $userIds): Collection
@@ -417,10 +446,30 @@ class SocialModelsSeeder extends Seeder
             return collect();
         }
 
-        return Conversation::factory()
-            ->count($modelCount)
-            ->state(fn () => ['created_by_user_id' => $userIds[array_rand($userIds)]])
+        $groupCount = min($modelCount, max(1, intdiv($modelCount, 5)));
+        $dmCount = max($modelCount - $groupCount, 0);
+
+        $directMessages = $dmCount > 0
+            ? Conversation::factory()
+                ->count($dmCount)
+                ->state(fn () => [
+                    'created_by_user_id' => $userIds[array_rand($userIds)],
+                    'is_group' => false,
+                    'title' => null,
+                ])
+                ->create()
+            : collect();
+
+        $groups = Conversation::factory()
+            ->count($groupCount)
+            ->state(fn () => [
+                'created_by_user_id' => $userIds[array_rand($userIds)],
+                'is_group' => true,
+                'title' => fake()->sentence(fake()->numberBetween(2, 5)),
+            ])
             ->create();
+
+        return $directMessages->merge($groups);
     }
 
     private function seedMessages(int $modelCount, array $conversationIds, array $userIds): Collection
