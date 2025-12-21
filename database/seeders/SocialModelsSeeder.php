@@ -52,7 +52,7 @@ class SocialModelsSeeder extends Seeder
         $postIds = $posts->pluck('id')->all();
 
         $postRelations = $this->applyPostRelations($postIds, $relationCount);
-        $this->seedPostVariations($postIds, $postRelations['replyIds'], $postRelations['repostIds'], $modelCount);
+        $this->seedPostVariations($postIds, $postRelations['replyIds'], $postRelations['repostIds']);
         $this->seedPinnedPostsForUsers($users, $posts, $relationCount);
 
         $userLists = $this->seedUserLists($modelCount, $userIds);
@@ -320,16 +320,81 @@ class SocialModelsSeeder extends Seeder
         ];
     }
 
-    private function seedPinnedPostsForUsers(array $userIds, array $postIds, int $relationCount): void
+    private function seedPostVariations(array $postIds, array $replyIds, array $repostIds): void
     {
-        if ($relationCount <= 0 || $userIds === [] || $postIds === []) {
+        $postCount = count($postIds);
+        if ($postCount === 0) {
             return;
         }
 
+        $originalIds = array_values(array_diff($postIds, $replyIds, $repostIds));
+        if ($originalIds === []) {
+            $originalIds = $postIds;
+        }
+
+        $replyLikeCount = min(count($originalIds), max(1, intdiv($postCount, 10)));
+        $replyLikeIds = $this->randomSample($originalIds, $replyLikeCount);
+        if ($replyLikeIds !== []) {
+            Post::query()->withoutGlobalScope('published')->whereIn('id', $replyLikeIds)->update([
+                'is_reply_like' => true,
+            ]);
+        }
+
+        $locationCount = min($postCount, max(1, intdiv($postCount, 6)));
+        foreach ($this->randomSample($postIds, $locationCount) as $postId) {
+            Post::query()->withoutGlobalScope('published')->whereKey($postId)->update([
+                'location' => fake()->city(),
+            ]);
+        }
+
+        $videoPool = $originalIds !== [] ? $originalIds : $postIds;
+        $videoCount = min(count($videoPool), max(1, intdiv($postCount, 12)));
+        foreach ($this->randomSample($videoPool, $videoCount) as $postId) {
+            Post::query()->withoutGlobalScope('published')->whereKey($postId)->update([
+                'video_path' => 'seed-videos/'.fake()->uuid().'.mp4',
+                'video_mime_type' => 'video/mp4',
+            ]);
+        }
+
+        $maxUnpublished = $postCount > 1 ? $postCount - 1 : $postCount;
+        $scheduledCount = min($maxUnpublished, max(1, intdiv($postCount, 8)));
+        $unpublishedCount = min($maxUnpublished - $scheduledCount, max(0, intdiv($postCount, 12)));
+
+        $scheduledIds = $this->randomSample($postIds, $scheduledCount);
+        if ($scheduledIds !== []) {
+            Post::query()->withoutGlobalScope('published')->whereIn('id', $scheduledIds)->update([
+                'is_published' => false,
+                'scheduled_for' => now()->addHours(fake()->numberBetween(1, 72)),
+            ]);
+        }
+
+        $remaining = array_values(array_diff($postIds, $scheduledIds));
+        $unpublishedIds = $this->randomSample($remaining, $unpublishedCount);
+        if ($unpublishedIds !== []) {
+            Post::query()->withoutGlobalScope('published')->whereIn('id', $unpublishedIds)->update([
+                'is_published' => false,
+                'scheduled_for' => null,
+            ]);
+        }
+    }
+
+    private function seedPinnedPostsForUsers(Collection $users, Collection $posts, int $relationCount): void
+    {
+        if ($relationCount <= 0 || $users->isEmpty() || $posts->isEmpty()) {
+            return;
+        }
+
+        $userIds = $users->pluck('id')->all();
+        $postsByUser = $posts->groupBy('user_id');
         $targets = $this->randomSample($userIds, min($relationCount, count($userIds)));
         foreach ($targets as $userId) {
+            $userPosts = $postsByUser->get($userId);
+            if (! $userPosts || $userPosts->isEmpty()) {
+                continue;
+            }
+
             User::query()->whereKey($userId)->update([
-                'pinned_post_id' => $this->randomId($postIds),
+                'pinned_post_id' => $userPosts->random()->id,
             ]);
         }
     }
