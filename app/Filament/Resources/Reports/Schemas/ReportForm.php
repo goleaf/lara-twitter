@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Reports\Schemas;
 
 use App\Models\Report;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;

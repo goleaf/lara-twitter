@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SpaceSpeakerRequests\Schemas;
 
 use App\Models\SpaceSpeakerRequest;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
