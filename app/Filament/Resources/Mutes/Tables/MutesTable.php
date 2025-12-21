@@ -49,6 +49,7 @@ class MutesTable
                         $record->muted?->flushCachedRelations();
                     }),
             ])
+            ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');
     }
 }
