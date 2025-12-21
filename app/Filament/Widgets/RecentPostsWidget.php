@@ -4,7 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;

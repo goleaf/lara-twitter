@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Blocks\Tables;
 
 use App\Models\Block;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;

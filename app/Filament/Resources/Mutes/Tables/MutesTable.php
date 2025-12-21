@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Mutes\Tables;
 
 use App\Models\Mute;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
