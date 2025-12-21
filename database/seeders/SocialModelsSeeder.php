@@ -472,19 +472,37 @@ class SocialModelsSeeder extends Seeder
         return $directMessages->merge($groups);
     }
 
-    private function seedMessages(int $modelCount, array $conversationIds, array $userIds): Collection
+    private function seedMessages(int $modelCount, Collection $conversations, array $participantMap, $now): Collection
     {
-        if ($modelCount <= 0 || $conversationIds === [] || $userIds === []) {
+        if ($modelCount <= 0 || $conversations->isEmpty() || $participantMap === []) {
             return collect();
         }
 
-        return Message::factory()
-            ->count($modelCount)
-            ->state(fn () => [
-                'conversation_id' => $conversationIds[array_rand($conversationIds)],
-                'user_id' => $userIds[array_rand($userIds)],
-            ])
-            ->create();
+        $conversationIds = $conversations->pluck('id')->all();
+        $perConversation = max(1, intdiv($modelCount, max(1, count($conversationIds))));
+        $extra = $modelCount - ($perConversation * count($conversationIds));
+
+        $messages = collect();
+        foreach ($conversationIds as $index => $conversationId) {
+            $count = $perConversation + ($index < $extra ? 1 : 0);
+            $participantIds = $participantMap[$conversationId] ?? [];
+            if ($participantIds === []) {
+                continue;
+            }
+
+            $participantCount = count($participantIds);
+            for ($i = 0; $i < $count; $i++) {
+                $userId = $participantIds[$i % $participantCount];
+                $messages->push(Message::factory()->state([
+                    'conversation_id' => $conversationId,
+                    'user_id' => $userId,
+                    'created_at' => (clone $now)->subMinutes(fake()->numberBetween(1, 1440)),
+                    'updated_at' => $now,
+                ])->create());
+            }
+        }
+
+        return $messages;
     }
 
     private function seedSpaces(int $modelCount, array $userIds): Collection
@@ -493,10 +511,61 @@ class SocialModelsSeeder extends Seeder
             return collect();
         }
 
-        return Space::factory()
-            ->count($modelCount)
-            ->state(fn () => ['host_user_id' => $userIds[array_rand($userIds)]])
-            ->create();
+        $scheduledCount = min($modelCount, max(1, intdiv($modelCount, 4)));
+        $remaining = $modelCount - $scheduledCount;
+        $liveCount = min($remaining, max(1, intdiv($modelCount, 4)));
+        $remaining -= $liveCount;
+        $endedCount = min($remaining, max(1, intdiv($modelCount, 4)));
+        $remaining -= $endedCount;
+
+        $scheduled = $scheduledCount > 0
+            ? Space::factory()
+                ->count($scheduledCount)
+                ->scheduled()
+                ->state(fn () => [
+                    'host_user_id' => $userIds[array_rand($userIds)],
+                    'recording_enabled' => fake()->boolean(30),
+                ])
+                ->create()
+            : collect();
+
+        $live = $liveCount > 0
+            ? Space::factory()
+                ->count($liveCount)
+                ->live()
+                ->state(fn () => [
+                    'host_user_id' => $userIds[array_rand($userIds)],
+                    'recording_enabled' => fake()->boolean(40),
+                ])
+                ->create()
+            : collect();
+
+        $ended = $endedCount > 0
+            ? Space::factory()
+                ->count($endedCount)
+                ->ended()
+                ->state(fn () => [
+                    'host_user_id' => $userIds[array_rand($userIds)],
+                    'recording_enabled' => fake()->boolean(50),
+                    'recording_available_until' => fake()->optional(0.6)->dateTimeBetween('now', '+7 days'),
+                ])
+                ->create()
+            : collect();
+
+        $otherSpaces = $remaining > 0
+            ? Space::factory()
+                ->count($remaining)
+                ->state(fn () => [
+                    'host_user_id' => $userIds[array_rand($userIds)],
+                    'recording_enabled' => fake()->boolean(20),
+                ])
+                ->create()
+            : collect();
+
+        return $scheduled
+            ->merge($live)
+            ->merge($ended)
+            ->merge($otherSpaces);
     }
 
     private function seedPinnedPostsForSpaces(array $spaceIds, array $postIds, int $relationCount): void
@@ -519,10 +588,19 @@ class SocialModelsSeeder extends Seeder
             return collect();
         }
 
-        return Moment::factory()
+        $moments = Moment::factory()
             ->count($modelCount)
-            ->state(fn () => ['owner_id' => $userIds[array_rand($userIds)]])
+            ->state(fn () => [
+                'owner_id' => $userIds[array_rand($userIds)],
+                'is_public' => fake()->boolean(70),
+            ])
             ->create();
+
+        if ($moments->isNotEmpty()) {
+            Moment::query()->whereKey($moments->first()->id)->update(['is_public' => false]);
+        }
+
+        return $moments;
     }
 
     private function seedFollows(int $relationCount, array $userIds, $now): void
