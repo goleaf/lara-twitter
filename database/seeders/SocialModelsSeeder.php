@@ -739,49 +739,85 @@ class SocialModelsSeeder extends Seeder
         }
     }
 
-    private function seedConversationParticipants(int $relationCount, Collection $conversations, array $userIds, $now): void
+    private function seedConversationParticipants(int $relationCount, Collection $conversations, array $userIds, $now): array
     {
         if ($conversations->isEmpty() || $userIds === []) {
-            return;
+            return [];
         }
 
         $rows = [];
         $used = [];
+        $participantMap = [];
+        $ensureRequest = false;
+        $ensurePinned = false;
+        $ensureReadAt = false;
+
+        $conversationCount = $conversations->count();
+        $perConversation = max(1, intdiv($relationCount, max(1, $conversationCount)));
+        $maxGroupSize = min(count($userIds), max(3, $perConversation + 2));
 
         foreach ($conversations as $conversation) {
-            $key = $conversation->id.'-'.$conversation->created_by_user_id;
-            $used[$key] = true;
-            $rows[] = [
-                'conversation_id' => $conversation->id,
-                'user_id' => $conversation->created_by_user_id,
-                'last_read_at' => null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-        }
+            $creatorId = $conversation->created_by_user_id;
+            $participantIds = [$creatorId];
+            $available = array_values(array_diff($userIds, [$creatorId]));
 
-        $target = max($relationCount, count($rows));
-        if ($target > count($rows)) {
-            $pairs = $this->uniquePairs(
-                $conversations->pluck('id')->all(),
-                $userIds,
-                $target - count($rows),
-                false,
-                $used
-            );
+            if ($conversation->is_group) {
+                $desired = min(count($userIds), fake()->numberBetween(3, max(3, $maxGroupSize)));
+            } else {
+                $desired = min(2, count($userIds));
+            }
 
-            foreach ($pairs as $pair) {
+            $additionalNeeded = max(0, $desired - count($participantIds));
+            if ($additionalNeeded > 0 && $available !== []) {
+                $participantIds = array_merge(
+                    $participantIds,
+                    $this->randomSample($available, min($additionalNeeded, count($available)))
+                );
+            }
+
+            foreach ($participantIds as $userId) {
+                $key = $conversation->id.'-'.$userId;
+                if (isset($used[$key])) {
+                    continue;
+                }
+
+                $used[$key] = true;
+                $isRequest = ! $ensureRequest ? true : fake()->boolean(10);
+                $isPinned = ! $ensurePinned ? true : fake()->boolean(15);
+                $lastReadAt = ! $ensureReadAt
+                    ? (clone $now)->subMinutes(fake()->numberBetween(1, 240))
+                    : (fake()->boolean(60) ? (clone $now)->subMinutes(fake()->numberBetween(1, 720)) : null);
+
+                if ($isRequest) {
+                    $ensureRequest = true;
+                }
+
+                if ($isPinned) {
+                    $ensurePinned = true;
+                }
+
+                if ($lastReadAt) {
+                    $ensureReadAt = true;
+                }
+
                 $rows[] = [
-                    'conversation_id' => $pair[0],
-                    'user_id' => $pair[1],
-                    'last_read_at' => null,
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $userId,
+                    'last_read_at' => $lastReadAt,
+                    'is_request' => $isRequest,
+                    'is_pinned' => $isPinned,
+                    'role' => $conversation->is_group && $userId === $creatorId ? 'admin' : 'member',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
             }
+
+            $participantMap[$conversation->id] = $participantIds;
         }
 
         $this->insertRows('conversation_participants', $rows);
+
+        return $participantMap;
     }
 
     private function seedMessageAttachments(int $relationCount, array $messageIds): void
