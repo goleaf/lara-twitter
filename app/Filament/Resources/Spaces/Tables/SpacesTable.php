@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Spaces\Tables;
 
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Space;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class SpacesTable
 {
@@ -102,6 +104,34 @@ class SpacesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('start-now')
+                        ->label('Start now')
+                        ->icon('heroicon-o-play-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            $timestamp = now();
+
+                            Space::query()
+                                ->whereKey($records->modelKeys())
+                                ->whereNull('started_at')
+                                ->whereNull('ended_at')
+                                ->update(['started_at' => $timestamp]);
+                        }),
+                    BulkAction::make('end-now')
+                        ->label('End now')
+                        ->icon('heroicon-o-stop-circle')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            $timestamp = now();
+
+                            Space::query()
+                                ->whereKey($records->modelKeys())
+                                ->whereNotNull('started_at')
+                                ->whereNull('ended_at')
+                                ->update(['ended_at' => $timestamp]);
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ])

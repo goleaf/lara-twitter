@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use DialloIbrahima\SmartCache\HasSmartCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SpaceParticipant extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSmartCache;
 
     protected $fillable = [
         'space_id',

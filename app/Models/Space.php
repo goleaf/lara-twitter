@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DialloIbrahima\SmartCache\HasSmartCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Space extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSmartCache;
 
     public const MAX_SPEAKERS = 13; // includes host/co-hosts
     public const DEFAULT_MIN_FOLLOWERS_TO_HOST = 0;

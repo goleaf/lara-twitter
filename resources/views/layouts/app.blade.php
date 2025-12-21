@@ -26,7 +26,6 @@
         </script>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @filamentStyles
         @livewireStyles
     </head>
     <body class="antialiased min-h-screen bg-base-100 text-base-content bg-ambient">
@@ -43,23 +42,15 @@
         <div class="app-shell min-h-screen lg:flex">
             <div class="flex-1 min-w-0 xl:border-r xl:border-base-300">
                 <main id="main-content" tabindex="-1" class="min-h-screen px-4 pt-8 pb-24 lg:px-6 lg:pt-10 lg:pb-10 space-y-6 page-reveal focus:outline-none">
-                    @if (isset($header) || $__env->hasSection('header'))
+                    @if (isset($header))
                         <div class="glass-panel">
                             <div class="card-body py-4">
-                                @isset($header)
-                                    {{ $header }}
-                                @else
-                                    @yield('header')
-                                @endisset
+                                {{ $header }}
                             </div>
                         </div>
                     @endif
 
-                    @isset($slot)
-                        {{ $slot }}
-                    @else
-                        @yield('content')
-                    @endisset
+                    {{ $slot ?? '' }}
                 </main>
             </div>
 
@@ -100,7 +91,6 @@
 
         <div id="modal-container"></div>
 
-        @filamentScripts
         @livewireScripts
     </body>
 </html>

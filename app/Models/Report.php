@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DialloIbrahima\SmartCache\HasSmartCache;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Report extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSmartCache;
 
     public const STATUS_OPEN = 'open';
 

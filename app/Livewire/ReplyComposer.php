@@ -84,10 +84,11 @@ class ReplyComposer extends Component
         [$images, $video] = $this->splitMedia($validated['media'] ?? []);
 
         foreach ($images as $index => $image) {
-            $path = $imageService->optimizeAndUpload($image, "posts/{$reply->id}", $disk);
+            $result = $imageService->optimizeAndUpload($image, "posts/{$reply->id}", $disk);
 
             $reply->images()->create([
-                'path' => $path,
+                'path' => $result['path'],
+                'thumbnail_path' => $result['thumbnail_path'],
                 'sort_order' => $index,
             ]);
         }

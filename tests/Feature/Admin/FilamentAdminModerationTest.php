@@ -3,11 +3,13 @@
 namespace Tests\Feature\Admin;
 
 use App\Filament\Resources\Reports\Pages\ListReports;
+use App\Models\Hashtag;
 use App\Models\Message;
 use App\Models\Post;
 use App\Models\Report;
 use App\Models\Space;
 use App\Models\User;
+use App\Models\UserList;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -79,6 +81,48 @@ class FilamentAdminModerationTest extends TestCase
             ->callTableAction('resolve-end-space', $report);
 
         $this->assertNotNull($space->fresh()->ended_at);
+        $this->assertSame(Report::STATUS_RESOLVED, $report->fresh()->status);
+        $this->assertSame($admin->id, $report->fresh()->resolved_by);
+    }
+
+    public function test_admin_can_resolve_and_delete_reported_hashtag(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $hashtag = Hashtag::factory()->create();
+        $report = Report::factory()->create([
+            'reportable_type' => Hashtag::class,
+            'reportable_id' => $hashtag->id,
+            'status' => Report::STATUS_OPEN,
+        ]);
+
+        $this->actingAs($admin);
+        Filament::setCurrentPanel('admin');
+
+        Livewire::test(ListReports::class)
+            ->callTableAction('resolve-delete-hashtag', $report);
+
+        $this->assertDatabaseMissing('hashtags', ['id' => $hashtag->id]);
+        $this->assertSame(Report::STATUS_RESOLVED, $report->fresh()->status);
+        $this->assertSame($admin->id, $report->fresh()->resolved_by);
+    }
+
+    public function test_admin_can_resolve_and_delete_reported_list(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $list = UserList::factory()->create();
+        $report = Report::factory()->create([
+            'reportable_type' => UserList::class,
+            'reportable_id' => $list->id,
+            'status' => Report::STATUS_OPEN,
+        ]);
+
+        $this->actingAs($admin);
+        Filament::setCurrentPanel('admin');
+
+        Livewire::test(ListReports::class)
+            ->callTableAction('resolve-delete-list', $report);
+
+        $this->assertDatabaseMissing('user_lists', ['id' => $list->id]);
         $this->assertSame(Report::STATUS_RESOLVED, $report->fresh()->status);
         $this->assertSame($admin->id, $report->fresh()->resolved_by);
     }

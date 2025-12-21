@@ -20,6 +20,14 @@ class RecentPostsWidget extends TableWidget
             ->query(
                 Post::query()
                     ->withoutGlobalScope('published')
+                    ->select([
+                        'posts.id',
+                        'posts.user_id',
+                        'posts.body',
+                        'posts.is_published',
+                        'posts.scheduled_for',
+                        'posts.created_at',
+                    ])
                     ->with('user')
                     ->latest('created_at')
             )

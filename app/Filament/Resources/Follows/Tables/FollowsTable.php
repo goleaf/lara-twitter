@@ -5,9 +5,12 @@ namespace App\Filament\Resources\Follows\Tables;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Follow;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class FollowsTable
 {
@@ -59,6 +62,26 @@ class FollowsTable
                         $record->follower?->flushCachedRelations();
                         $record->followed?->flushCachedRelations();
                     }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('delete')
+                        ->label('Delete')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            $records->each(function (Follow $record): void {
+                                Follow::query()
+                                    ->where('follower_id', $record->follower_id)
+                                    ->where('followed_id', $record->followed_id)
+                                    ->delete();
+
+                                $record->follower?->flushCachedRelations();
+                                $record->followed?->flushCachedRelations();
+                            });
+                        }),
+                ]),
             ])
             ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');

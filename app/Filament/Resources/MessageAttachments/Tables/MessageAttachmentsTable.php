@@ -6,11 +6,13 @@ use App\Filament\Resources\Messages\MessageResource;
 use App\Models\MessageAttachment;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 
 class MessageAttachmentsTable
 {
@@ -47,7 +49,14 @@ class MessageAttachmentsTable
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->url(fn (MessageAttachment $record): string => MessageResource::getUrl('edit', ['record' => $record->message_id]))
                     ->openUrlInNewTab(),
+                Action::make('open-file')
+                    ->label('File')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (MessageAttachment $record): string => Storage::disk(config('filesystems.media_disk', 'public'))->url($record->path))
+                    ->visible(fn (MessageAttachment $record): bool => filled($record->path))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

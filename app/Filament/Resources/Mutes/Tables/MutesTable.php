@@ -5,9 +5,12 @@ namespace App\Filament\Resources\Mutes\Tables;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Mute;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class MutesTable
 {
@@ -59,6 +62,26 @@ class MutesTable
                         $record->muter?->flushCachedRelations();
                         $record->muted?->flushCachedRelations();
                     }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('delete')
+                        ->label('Delete')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            $records->each(function (Mute $record): void {
+                                Mute::query()
+                                    ->where('muter_id', $record->muter_id)
+                                    ->where('muted_id', $record->muted_id)
+                                    ->delete();
+
+                                $record->muter?->flushCachedRelations();
+                                $record->muted?->flushCachedRelations();
+                            });
+                        }),
+                ]),
             ])
             ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');

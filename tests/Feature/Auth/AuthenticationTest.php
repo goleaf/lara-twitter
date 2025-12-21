@@ -72,12 +72,9 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $component = Volt::test('layout.navigation');
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
 
-        $component->call('logout');
-
-        $component
-            ->assertHasNoErrors()
+        $this->post(route('logout'))
             ->assertRedirect('/');
 
         $this->assertGuest();

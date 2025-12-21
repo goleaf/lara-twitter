@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8cda29df8e54a5a43b0ad9a7dd7b0a4",
+    "content-hash": "cc8e193ca5ab16f30ce709eaa2f5c54b",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -756,6 +756,78 @@
                 "source": "https://github.com/dflydev/dflydev-dot-access-data/tree/v3.0.3"
             },
             "time": "2024-07-08T12:26:09+00:00"
+        },
+        {
+            "name": "dialloibrahima/smart-cache",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ibra379/smart-cache.git",
+                "reference": "6331860cc63bc374a3feb60eb89e63cfdf853650"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ibra379/smart-cache/zipball/6331860cc63bc374a3feb60eb89e63cfdf853650",
+                "reference": "6331860cc63bc374a3feb60eb89e63cfdf853650",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^10.0||^11.0||^12.0",
+                "illuminate/contracts": "^10.0||^11.0||^12.0",
+                "illuminate/support": "^10.0||^11.0||^12.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.8",
+                "orchestra/testbench": "^10.0.0||^9.0.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-arch": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "spatie/laravel-ray": "^1.35"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "DialloIbrahima\\SmartCache\\SmartCacheServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DialloIbrahima\\SmartCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ibrahima Diallo",
+                    "email": "idiallo379@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Smart caching utilities for Laravel applications",
+            "homepage": "https://github.com/ibra379/smart-cache",
+            "keywords": [
+                "cache",
+                "dialloibrahima",
+                "laravel",
+                "smart-cache"
+            ],
+            "support": {
+                "issues": "https://github.com/ibra379/smart-cache/issues",
+                "source": "https://github.com/ibra379/smart-cache/tree/v2.0.1"
+            },
+            "time": "2025-12-12T14:43:32+00:00"
         },
         {
             "name": "doctrine/inflector",

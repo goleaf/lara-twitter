@@ -1,3 +1,12 @@
+<?php
+
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
+
+new #[Layout('layouts.app')] class extends Component
+{
+}; ?>
+
 <x-slot:header>
     <div class="text-xl font-semibold">Terms</div>
 </x-slot:header>

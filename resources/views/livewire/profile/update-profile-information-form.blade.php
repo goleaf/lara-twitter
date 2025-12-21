@@ -53,14 +53,14 @@ new class extends Component
         $imageService = app(ImageService::class);
 
         if (! empty($validated['avatar'])) {
-            $path = $imageService->optimizeAndUpload($validated['avatar'], "avatars/{$user->id}", 'public');
-            $validated['avatar_path'] = $path;
+            $result = $imageService->optimizeAndUpload($validated['avatar'], "avatars/{$user->id}", 'public');
+            $validated['avatar_path'] = $result['path'];
             unset($validated['avatar']);
         }
 
         if (! empty($validated['header'])) {
-            $path = $imageService->optimizeAndUpload($validated['header'], "headers/{$user->id}", 'public');
-            $validated['header_path'] = $path;
+            $result = $imageService->optimizeAndUpload($validated['header'], "headers/{$user->id}", 'public');
+            $validated['header_path'] = $result['path'];
             unset($validated['header']);
         }
 

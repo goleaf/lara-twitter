@@ -6,23 +6,11 @@ use App\Livewire\AnalyticsPage;
 use App\Livewire\BookmarksPage;
 use App\Livewire\ConversationPage;
 use App\Livewire\NewConversationPage;
+use App\Livewire\NewConversationRedirect;
 use App\Livewire\ExplorePage;
 use App\Livewire\FollowersPage;
 use App\Livewire\FollowingPage;
 use App\Livewire\HashtagPage;
-use App\Livewire\Help\BlockingPage as HelpBlockingPage;
-use App\Livewire\Help\DirectMessagesPage as HelpDirectMessagesPage;
-use App\Livewire\Help\HashtagsPage as HelpHashtagsPage;
-use App\Livewire\Help\IndexPage as HelpIndexPage;
-use App\Livewire\Help\LikesPage as HelpLikesPage;
-use App\Livewire\Help\MentionsPage as HelpMentionsPage;
-use App\Livewire\Help\MutePage as HelpMutePage;
-use App\Livewire\Help\ProfilePage as HelpProfilePage;
-use App\Livewire\Help\RepliesPage as HelpRepliesPage;
-use App\Livewire\Legal\AboutPage as LegalAboutPage;
-use App\Livewire\Legal\CookiesPage as LegalCookiesPage;
-use App\Livewire\Legal\PrivacyPage as LegalPrivacyPage;
-use App\Livewire\Legal\TermsPage as LegalTermsPage;
 use App\Livewire\ListPage;
 use App\Livewire\ListsPage;
 use App\Livewire\MentionsPage;
@@ -45,26 +33,26 @@ use App\Livewire\SpacePage;
 use App\Livewire\SpacesPage;
 use App\Livewire\TimelinePage;
 use App\Livewire\TrendingPage;
-use App\Services\DirectMessageService;
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::get('/', TimelinePage::class)->name('timeline');
 
 Route::redirect('dashboard', '/')->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('help', HelpIndexPage::class)->name('help.index');
-Route::get('help/likes', HelpLikesPage::class)->name('help.likes');
-Route::get('help/mentions', HelpMentionsPage::class)->name('help.mentions');
-Route::get('help/hashtags', HelpHashtagsPage::class)->name('help.hashtags');
-Route::get('help/profile', HelpProfilePage::class)->name('help.profile');
-Route::get('help/direct-messages', HelpDirectMessagesPage::class)->name('help.direct-messages');
-Route::get('help/mute', HelpMutePage::class)->name('help.mute');
-Route::get('help/replies', HelpRepliesPage::class)->name('help.replies');
-Route::get('help/blocking', HelpBlockingPage::class)->name('help.blocking');
-Route::get('terms', LegalTermsPage::class)->name('terms');
-Route::get('privacy', LegalPrivacyPage::class)->name('privacy');
-Route::get('cookies', LegalCookiesPage::class)->name('cookies');
-Route::get('about', LegalAboutPage::class)->name('about');
+Volt::route('help', 'pages.help.index')->name('help.index');
+Volt::route('help/likes', 'pages.help.likes')->name('help.likes');
+Volt::route('help/mentions', 'pages.help.mentions')->name('help.mentions');
+Volt::route('help/hashtags', 'pages.help.hashtags')->name('help.hashtags');
+Volt::route('help/profile', 'pages.help.profile')->name('help.profile');
+Volt::route('help/direct-messages', 'pages.help.direct-messages')->name('help.direct-messages');
+Volt::route('help/mute', 'pages.help.mute')->name('help.mute');
+Volt::route('help/replies', 'pages.help.replies')->name('help.replies');
+Volt::route('help/blocking', 'pages.help.blocking')->name('help.blocking');
+Volt::route('terms', 'pages.legal.terms')->name('terms');
+Volt::route('privacy', 'pages.legal.privacy')->name('privacy');
+Volt::route('cookies', 'pages.legal.cookies')->name('cookies');
+Volt::route('about', 'pages.legal.about')->name('about');
 
 Route::get('/@{user}', ProfilePage::class)->name('profile.show');
 Route::get('/@{user}/likes', ProfileLikesPage::class)->name('profile.likes');
@@ -103,16 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::get('messages', MessagesPage::class)->name('messages.index');
     Route::get('messages/new', NewConversationPage::class)->name('messages.compose');
     Route::get('messages/{conversation}', ConversationPage::class)->name('messages.show')->whereNumber('conversation');
-
-    Route::get('messages/new/{user}', function (\App\Models\User $user, DirectMessageService $service) {
-        try {
-            $conversation = $service->findOrCreate(auth()->user(), $user);
-        } catch (\Throwable) {
-            abort(403);
-        }
-
-        return redirect()->route('messages.show', $conversation);
-    })->name('messages.new');
+    Route::get('messages/new/{user}', NewConversationRedirect::class)->name('messages.new');
 
     Route::get('lists', ListsPage::class)->name('lists.index');
 });

@@ -28,6 +28,7 @@ class PostPollResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
+            ->with(['post' => fn ($query) => $query->withoutGlobalScope('published')->with('user')])
             ->withCount(['options', 'votes']);
     }
 

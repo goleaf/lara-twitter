@@ -153,6 +153,42 @@ class ReportsTable
                         $space->update(['ended_at' => now()]);
                         $record->update(['status' => Report::STATUS_RESOLVED]);
                     }),
+                Action::make('resolve-delete-hashtag')
+                    ->label('Resolve & delete hashtag')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (Report $record): bool => $record->reportable instanceof Hashtag)
+                    ->action(function (Report $record): void {
+                        $record->loadMissing('reportable');
+
+                        $hashtag = $record->reportable;
+
+                        if (! $hashtag instanceof Hashtag) {
+                            return;
+                        }
+
+                        $hashtag->delete();
+                        $record->update(['status' => Report::STATUS_RESOLVED]);
+                    }),
+                Action::make('resolve-delete-list')
+                    ->label('Resolve & delete list')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (Report $record): bool => $record->reportable instanceof UserList)
+                    ->action(function (Report $record): void {
+                        $record->loadMissing('reportable');
+
+                        $list = $record->reportable;
+
+                        if (! $list instanceof UserList) {
+                            return;
+                        }
+
+                        $list->delete();
+                        $record->update(['status' => Report::STATUS_RESOLVED]);
+                    }),
                 Action::make('review')
                     ->label('Review')
                     ->icon('heroicon-o-eye')

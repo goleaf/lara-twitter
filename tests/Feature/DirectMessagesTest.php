@@ -25,11 +25,12 @@ class DirectMessagesTest extends TestCase
         $alice = User::factory()->create(['username' => 'alice']);
         $bob = User::factory()->create(['username' => 'bob']);
 
-        $this->actingAs($alice)
-            ->get(route('messages.new', ['user' => $bob]))
-            ->assertRedirect();
+        $response = $this->actingAs($alice)
+            ->get(route('messages.new', ['user' => $bob]));
 
         $conversation = Conversation::query()->firstOrFail();
+
+        $response->assertRedirect(route('messages.show', $conversation));
 
         Livewire::actingAs($alice)
             ->test(\App\Livewire\ConversationPage::class, ['conversation' => $conversation])
@@ -81,4 +82,3 @@ class DirectMessagesTest extends TestCase
         $this->actingAs($mallory)->get(route('messages.show', $conversation))->assertForbidden();
     }
 }
-

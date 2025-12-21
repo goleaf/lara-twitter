@@ -18,6 +18,14 @@ class RecentReportsWidget extends TableWidget
         return $table
             ->query(
                 Report::query()
+                    ->select([
+                        'reports.id',
+                        'reports.reporter_id',
+                        'reports.status',
+                        'reports.reason',
+                        'reports.reportable_type',
+                        'reports.created_at',
+                    ])
                     ->with(['reporter'])
                     ->whereIn('status', [Report::STATUS_OPEN, Report::STATUS_REVIEWING])
                     ->latest()

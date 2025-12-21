@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use DialloIbrahima\SmartCache\HasSmartCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SpaceSpeakerRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSmartCache;
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';

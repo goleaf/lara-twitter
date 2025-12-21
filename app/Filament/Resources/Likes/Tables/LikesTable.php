@@ -6,9 +6,12 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Like;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class LikesTable
 {
@@ -61,6 +64,23 @@ class LikesTable
                             ->where('post_id', $record->post_id)
                             ->delete();
                     }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('delete')
+                        ->label('Delete')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            $records->each(function (Like $record): void {
+                                Like::query()
+                                    ->where('user_id', $record->user_id)
+                                    ->where('post_id', $record->post_id)
+                                    ->delete();
+                            });
+                        }),
+                ]),
             ])
             ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');

@@ -30,7 +30,8 @@ class PostResource extends Resource
     {
         return parent::getEloquentQuery()
             ->withoutGlobalScope('published')
-            ->with('user');
+            ->with('user')
+            ->withCount('reports');
     }
 
     public static function form(Schema $schema): Schema

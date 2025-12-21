@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Posts\Tables;
 
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Post;
+use App\Models\Report;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteBulkAction;
@@ -129,6 +130,13 @@ class PostsTable
                     ->color(fn (Post $record): string => $record->is_published ? 'warning' : 'success')
                     ->requiresConfirmation()
                     ->action(fn (Post $record) => $record->update(['is_published' => ! $record->is_published])),
+                Action::make('clear-reports')
+                    ->label('Clear reports')
+                    ->icon('heroicon-o-archive-box-x-mark')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (Post $record): bool => (int) $record->reports_count > 0)
+                    ->action(fn (Post $record): int => $record->reports()->delete()),
                 EditAction::make(),
             ])
             ->toolbarActions([
@@ -154,6 +162,17 @@ class PostsTable
                                 ->withoutGlobalScope('published')
                                 ->whereKey($records->modelKeys())
                                 ->update(['is_published' => false]);
+                        }),
+                    BulkAction::make('clear-reports')
+                        ->label('Clear reports')
+                        ->icon('heroicon-o-archive-box-x-mark')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            Report::query()
+                                ->where('reportable_type', Post::class)
+                                ->whereIn('reportable_id', $records->modelKeys())
+                                ->delete();
                         }),
                     DeleteBulkAction::make(),
                 ]),
