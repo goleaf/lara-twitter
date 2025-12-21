@@ -147,6 +147,19 @@ class UserSettingsTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_quiet_hours_invalid_time_format_returns_false(): void
+    {
+        $user = User::factory()->make();
+
+        $user->notification_settings = [
+            'quiet_hours_enabled' => true,
+            'quiet_hours_start' => 'invalid',
+            'quiet_hours_end' => '07:00',
+        ];
+
+        $this->assertFalse($user->isInNotificationQuietHours());
+    }
+
     public function test_should_send_notification_email_requires_verified_and_not_quiet(): void
     {
         Carbon::setTestNow('2025-01-01 09:00:00');
@@ -165,6 +178,23 @@ class UserSettingsTest extends TestCase
         $this->assertFalse($user->shouldSendNotificationEmail());
 
         Carbon::setTestNow();
+    }
+
+    public function test_following_ids_uses_cache(): void
+    {
+        $follower = User::factory()->create();
+        $followed = User::factory()->create();
+
+        Follow::factory()->create([
+            'follower_id' => $follower->id,
+            'followed_id' => $followed->id,
+        ]);
+
+        $first = $follower->followingIds();
+        $second = $follower->followingIds();
+
+        $this->assertSame($first, $second);
+        $this->assertTrue($second->contains($followed->id));
     }
 
     public function test_allows_notification_from_respects_blocks_mutes_and_filters(): void
@@ -218,5 +248,21 @@ class UserSettingsTest extends TestCase
         ]);
 
         $this->assertTrue($viewer->allowsNotificationFrom($actor));
+    }
+
+    public function test_quality_filter_blocks_without_avatar_or_verified_email(): void
+    {
+        $viewer = User::factory()->create([
+            'notification_settings' => [
+                'quality_filter' => true,
+            ],
+        ]);
+
+        $actor = User::factory()->create([
+            'avatar_path' => null,
+            'email_verified_at' => null,
+        ]);
+
+        $this->assertFalse($viewer->allowsNotificationFrom($actor));
     }
 }

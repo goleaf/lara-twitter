@@ -14,6 +14,7 @@ use App\Models\MessageReaction;
 use App\Models\Moment;
 use App\Models\MomentItem;
 use App\Models\MutedTerm;
+use App\Models\PostImage;
 use App\Models\PostLinkPreview;
 use App\Models\PostPoll;
 use App\Models\PostPollOption;
@@ -22,10 +23,12 @@ use App\Models\Space;
 use App\Models\SpaceParticipant;
 use App\Models\SpaceReaction;
 use App\Models\SpaceSpeakerRequest;
+use App\Models\User;
 use App\Models\UserList;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Tests\TestCase;
@@ -40,6 +43,8 @@ class ModelRelationsTest extends TestCase
             [new Like(), ['user' => BelongsTo::class, 'post' => BelongsTo::class]],
             [new Hashtag(), ['posts' => BelongsToMany::class, 'reports' => MorphMany::class]],
             [new MomentItem(), ['moment' => BelongsTo::class, 'post' => BelongsTo::class]],
+            [new MutedTerm(), ['user' => BelongsTo::class]],
+            [new PostImage(), ['post' => BelongsTo::class]],
             [new PostLinkPreview(), ['post' => BelongsTo::class]],
             [new PostPoll(), ['post' => BelongsTo::class, 'options' => HasMany::class, 'votes' => HasMany::class]],
             [new PostPollOption(), ['poll' => BelongsTo::class, 'votes' => HasMany::class]],
@@ -55,6 +60,15 @@ class ModelRelationsTest extends TestCase
             [new Space(), ['host' => BelongsTo::class, 'pinnedPost' => BelongsTo::class, 'participants' => HasMany::class, 'reactions' => HasMany::class, 'speakerRequests' => HasMany::class, 'reports' => MorphMany::class]],
             [new UserList(), ['owner' => BelongsTo::class, 'members' => BelongsToMany::class, 'subscribers' => BelongsToMany::class, 'reports' => MorphMany::class]],
             [new Moment(), ['owner' => BelongsTo::class, 'items' => HasMany::class, 'firstItem' => HasOne::class]],
+            [new User(), [
+                'likes' => HasMany::class,
+                'conversationParticipants' => HasMany::class,
+                'conversations' => HasManyThrough::class,
+                'messages' => HasMany::class,
+                'bookmarks' => HasMany::class,
+                'spacesHosted' => HasMany::class,
+                'spaceParticipants' => HasMany::class,
+            ]],
         ];
 
         foreach ($cases as [$model, $relations]) {
