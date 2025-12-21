@@ -109,7 +109,28 @@ class SocialModelsSeeder extends Seeder
 
         $admin = $this->seedAdminUser();
 
-        $users = User::factory(max($modelCount - 1, 0))->create();
+        $remaining = max($modelCount - 1, 0);
+        if ($remaining <= 0) {
+            return collect([$admin]);
+        }
+
+        $users = User::factory()
+            ->count($remaining)
+            ->state(fn () => [
+                'email_verified_at' => fake()->boolean(85) ? now() : null,
+                'is_verified' => fake()->boolean(20),
+                'is_premium' => fake()->boolean(15),
+                'dm_policy' => fake()->randomElement(User::dmPolicies()),
+                'dm_allow_requests' => fake()->boolean(80),
+                'dm_read_receipts' => fake()->boolean(75),
+                'avatar_path' => fake()->optional(0.35)->passthrough('seed-avatars/'.fake()->uuid().'.jpg'),
+                'header_path' => fake()->optional(0.25)->passthrough('seed-headers/'.fake()->uuid().'.jpg'),
+                'location' => fake()->optional(0.35)->city(),
+                'website' => fake()->optional(0.35)->url(),
+            ])
+            ->create();
+
+        $this->ensureUserCoverage($users);
 
         return $users->prepend($admin);
     }
@@ -136,6 +157,12 @@ class SocialModelsSeeder extends Seeder
                 'email' => $email,
                 'password' => Hash::make('admin'),
                 'is_admin' => true,
+                'is_verified' => true,
+                'is_premium' => true,
+                'dm_policy' => User::DM_EVERYONE,
+                'dm_allow_requests' => true,
+                'dm_read_receipts' => true,
+                'email_verified_at' => now(),
                 'bio' => 'Admin account (Filament access).',
             ]);
         }
@@ -143,6 +170,8 @@ class SocialModelsSeeder extends Seeder
         $user->forceFill([
             'password' => Hash::make('admin'),
             'is_admin' => true,
+            'is_verified' => true,
+            'is_premium' => true,
         ])->save();
 
         return $user;
