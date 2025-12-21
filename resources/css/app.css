@@ -26,29 +26,29 @@
 
     :root,
     html[data-theme='light'] {
-        --hero-sky: 10 88 96;
-        --hero-sun: 244 146 84;
-        --hero-ink: 9 20 33;
-        --hero-paper: 252 246 236;
+        --hero-sky: 9 92 108;
+        --hero-sun: 246 138 72;
+        --hero-ink: 8 18 30;
+        --hero-paper: 253 246 238;
         --surface-glow: 255 255 255;
-        --surface-card: 255 252 247;
-        --surface-muted: 242 231 220;
-        --surface-border: 224 208 190;
-        --surface-ember: 255 235 214;
+        --surface-card: 255 251 246;
+        --surface-muted: 241 229 218;
+        --surface-border: 222 204 187;
+        --surface-ember: 255 233 211;
         --surface-sheen: 255 255 255;
-        --shadow-ink: 10 16 27;
-        --color-primary: #0b6b68;
+        --shadow-ink: 8 14 24;
+        --color-primary: #0a5f6b;
         --color-primary-content: #f8fafc;
-        --color-secondary: #1b2a38;
+        --color-secondary: #182836;
         --color-secondary-content: #f8fafc;
-        --color-accent: #f08b45;
+        --color-accent: #f07d3a;
         --color-accent-content: #1f2937;
-        --color-neutral: #495768;
+        --color-neutral: #445568;
         --color-neutral-content: #ffffff;
-        --color-base-100: #fcf7ef;
-        --color-base-200: #f2e4d4;
-        --color-base-300: #e6d4bf;
-        --color-base-content: #0d1828;
+        --color-base-100: #fdf6ee;
+        --color-base-200: #f1e2d2;
+        --color-base-300: #e3cfba;
+        --color-base-content: #0c1726;
         --color-info: #2aa7de;
         --color-info-content: #0b1220;
         --color-success: #16a34a;
@@ -123,7 +123,7 @@
             radial-gradient(1200px 520px at -12% -30%, rgba(var(--hero-sky), 0.22), transparent 60%),
             radial-gradient(1000px 560px at 110% -18%, rgba(var(--hero-sun), 0.22), transparent 60%),
             radial-gradient(720px 420px at 12% 120%, rgba(var(--hero-sky), 0.12), transparent 70%),
-            linear-gradient(165deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1)),
+            linear-gradient(165deg, rgba(var(--hero-paper), 0.98), rgba(253, 246, 238, 1)),
             repeating-linear-gradient(
                 140deg,
                 rgba(var(--hero-ink), 0.03),
@@ -606,7 +606,7 @@
         background-image:
             radial-gradient(1200px 520px at -10% -20%, rgba(var(--hero-sky), 0.18), transparent 60%),
             radial-gradient(900px 420px at 110% -10%, rgba(var(--hero-sun), 0.16), transparent 60%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(253, 246, 238, 1));
     }
 
     .guest-hero::before {
@@ -644,7 +644,7 @@
                 transparent 1px,
                 transparent 18px
             ),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(253, 246, 238, 1));
     }
 
     .welcome-preview {
@@ -755,7 +755,7 @@
                 transparent 1px,
                 transparent 18px
             ),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.97), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.97), rgba(253, 246, 238, 1));
     }
 
     .timeline-pill {
@@ -776,6 +776,17 @@
 
     .timeline-pill:focus-visible {
         @apply outline-none ring-2 ring-primary/20;
+    }
+
+    .timeline-chip {
+        @apply inline-flex items-center gap-2 rounded-full border border-base-200/70 bg-base-100/85 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em];
+        box-shadow: 0 12px 28px -22px rgba(var(--shadow-ink), 0.4);
+        color: rgb(var(--hero-ink) / 0.6);
+        background-image: linear-gradient(180deg, rgba(var(--surface-card), 0.94), rgba(var(--surface-glow), 1));
+    }
+
+    .timeline-chip strong {
+        color: var(--color-base-content);
     }
 
     .space-pill {
@@ -867,21 +878,21 @@
         background-image:
             radial-gradient(960px 340px at 12% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(720px 300px at 88% 0%, rgba(var(--hero-sun), 0.14), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.98), rgba(253, 246, 238, 1));
     }
 
     .notifications-hero {
         background-image:
             radial-gradient(920px 300px at 0% -18%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(720px 260px at 100% 10%, rgba(var(--hero-sun), 0.14), transparent 65%),
-            linear-gradient(180deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
+            linear-gradient(180deg, rgba(var(--hero-paper), 0.96), rgba(253, 246, 238, 1));
     }
 
     .messages-hero {
         background-image:
             radial-gradient(980px 320px at 6% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(740px 260px at 92% 0%, rgba(var(--hero-sun), 0.16), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(253, 246, 238, 1));
     }
 
     .explore-hero {
@@ -895,7 +906,7 @@
         background-image:
             radial-gradient(920px 320px at 8% -18%, rgba(var(--hero-sky), 0.2), transparent 60%),
             radial-gradient(760px 260px at 92% 8%, rgba(var(--hero-sun), 0.18), transparent 65%),
-            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(252, 246, 236, 1));
+            linear-gradient(160deg, rgba(var(--hero-paper), 0.96), rgba(253, 246, 238, 1));
     }
 
     .explore-pill {
@@ -1039,7 +1050,7 @@
             background-image:
                 radial-gradient(760px 360px at 10% -20%, rgba(var(--hero-sky), 0.2), transparent 60%),
                 radial-gradient(720px 320px at 90% -10%, rgba(var(--hero-sun), 0.18), transparent 62%),
-                linear-gradient(175deg, rgba(var(--hero-paper), 0.98), rgba(252, 246, 236, 1));
+                linear-gradient(175deg, rgba(var(--hero-paper), 0.98), rgba(253, 246, 238, 1));
         }
 
         .card,

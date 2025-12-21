@@ -21,17 +21,17 @@ export default {
             },
             colors: {
                 twitter: {
-                    DEFAULT: '#0B6B68',
-                    600: '#095A58',
+                    DEFAULT: '#0A5F6B',
+                    600: '#084D57',
                 },
-                primary: '#0B6B68',
-                secondary: '#1B2A38',
-                accent: '#F08B45',
-                neutral: '#495768',
-                'base-100': '#FCF7EF',
-                'base-200': '#F2E4D4',
-                'base-300': '#E6D4BF',
-                'base-content': '#0D1828',
+                primary: '#0A5F6B',
+                secondary: '#182836',
+                accent: '#F07D3A',
+                neutral: '#445568',
+                'base-100': '#FDF6EE',
+                'base-200': '#F1E2D2',
+                'base-300': '#E3CFBA',
+                'base-content': '#0C1726',
             },
             keyframes: {
                 float: {
@@ -68,8 +68,8 @@ export default {
             },
             boxShadow: {
                 'inner-lg': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.1)',
-                glow: '0 0 20px rgba(11, 107, 107, 0.45)',
-                'glow-sm': '0 0 10px rgba(11, 107, 107, 0.3)',
+                glow: '0 0 20px rgba(10, 95, 107, 0.45)',
+                'glow-sm': '0 0 10px rgba(10, 95, 107, 0.3)',
             },
             gridTemplateColumns: {
                 feed: 'minmax(0, 1fr) 350px',
@@ -119,22 +119,22 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0B6B68',
+                    primary: '#0A5F6B',
                     'primary-content': '#F8FAFC',
 
-                    secondary: '#1B2A38',
+                    secondary: '#182836',
                     'secondary-content': '#F8FAFC',
 
-                    accent: '#F08B45',
+                    accent: '#F07D3A',
                     'accent-content': '#1F2937',
 
-                    neutral: '#495768',
+                    neutral: '#445568',
                     'neutral-content': '#FFFFFF',
 
-                    'base-100': '#FCF7EF',
-                    'base-200': '#F2E4D4',
-                    'base-300': '#E6D4BF',
-                    'base-content': '#0D1828',
+                    'base-100': '#FDF6EE',
+                    'base-200': '#F1E2D2',
+                    'base-300': '#E3CFBA',
+                    'base-content': '#0C1726',
 
                     info: '#2AA7DE',
                     success: '#16A34A',

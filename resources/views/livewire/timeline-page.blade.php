@@ -52,12 +52,12 @@
                             @endif
                         </p>
                         @php($filters = $this->timelineFilters)
-                        <div class="flex flex-wrap gap-2 text-xs">
-                            <span class="badge badge-sm {{ $filters['replies'] ? 'badge-outline' : 'badge-ghost' }}">
-                                Replies {{ $filters['replies'] ? 'shown' : 'hidden' }}
+                        <div class="flex flex-wrap gap-2">
+                            <span class="timeline-chip">
+                                Replies <strong>{{ $filters['replies'] ? 'shown' : 'hidden' }}</strong>
                             </span>
-                            <span class="badge badge-sm {{ $filters['retweets'] ? 'badge-outline' : 'badge-ghost' }}">
-                                Reposts {{ $filters['retweets'] ? 'shown' : 'hidden' }}
+                            <span class="timeline-chip">
+                                Reposts <strong>{{ $filters['retweets'] ? 'shown' : 'hidden' }}</strong>
                             </span>
                         </div>
                     </div>
