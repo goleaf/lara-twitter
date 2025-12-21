@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Blocks\Tables;
 
-use Filament\Actions\DeleteAction;
+use App\Models\Block;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -33,7 +34,20 @@ class BlocksTable
                     ->relationship('blocked', 'username'),
             ])
             ->recordActions([
-                DeleteAction::make(),
+                Action::make('delete')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function (Block $record): void {
+                        Block::query()
+                            ->where('blocker_id', $record->blocker_id)
+                            ->where('blocked_id', $record->blocked_id)
+                            ->delete();
+
+                        $record->blocker?->flushCachedRelations();
+                        $record->blocked?->flushCachedRelations();
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
