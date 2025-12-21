@@ -46,4 +46,30 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function verified(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_verified' => true,
+            'email_verified_at' => $attributes['email_verified_at'] ?? now(),
+        ]);
+    }
+
+    public function premium(): static
+    {
+        return $this->state(fn () => [
+            'is_premium' => true,
+        ]);
+    }
+
+    public function withProfile(): static
+    {
+        return $this->state(fn () => [
+            'avatar_path' => 'seed-avatars/'.fake()->uuid().'.jpg',
+            'header_path' => 'seed-headers/'.fake()->uuid().'.jpg',
+            'bio' => fake()->text(120),
+            'location' => fake()->city(),
+            'website' => fake()->url(),
+        ]);
+    }
 }

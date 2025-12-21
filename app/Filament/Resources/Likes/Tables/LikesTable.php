@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Likes\Tables;
 
-use Filament\Actions\DeleteAction;
+use App\Models\Like;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -37,7 +38,17 @@ class LikesTable
                     ->relationship('post', 'id', fn ($query) => $query->withoutGlobalScope('published')),
             ])
             ->recordActions([
-                DeleteAction::make(),
+                Action::make('delete')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function (Like $record): void {
+                        Like::query()
+                            ->where('user_id', $record->user_id)
+                            ->where('post_id', $record->post_id)
+                            ->delete();
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
