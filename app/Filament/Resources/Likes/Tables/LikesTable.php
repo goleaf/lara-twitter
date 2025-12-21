@@ -50,6 +50,7 @@ class LikesTable
                             ->delete();
                     }),
             ])
+            ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');
     }
 }

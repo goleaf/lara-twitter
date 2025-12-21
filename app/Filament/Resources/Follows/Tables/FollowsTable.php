@@ -49,6 +49,7 @@ class FollowsTable
                         $record->followed?->flushCachedRelations();
                     }),
             ])
+            ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');
     }
 }

@@ -49,6 +49,7 @@ class BlocksTable
                         $record->blocked?->flushCachedRelations();
                     }),
             ])
+            ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');
     }
 }

@@ -50,6 +50,7 @@ class BookmarksTable
                             ->delete();
                     }),
             ])
+            ->defaultKeySort(false)
             ->defaultSort('created_at', 'desc');
     }
 }
