@@ -16,7 +16,8 @@ class FollowTest extends TestCase
 
         $this->assertInstanceOf(Follow::class, $follow);
         $this->assertDatabaseHas('follows', [
-            'id' => $follow->id,
+            'follower_id' => $follow->follower_id,
+            'followed_id' => $follow->followed_id,
         ]);
     }
 

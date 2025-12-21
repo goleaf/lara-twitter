@@ -16,7 +16,8 @@ class LikeTest extends TestCase
 
         $this->assertInstanceOf(Like::class, $like);
         $this->assertDatabaseHas('likes', [
-            'id' => $like->id,
+            'user_id' => $like->user_id,
+            'post_id' => $like->post_id,
         ]);
     }
 

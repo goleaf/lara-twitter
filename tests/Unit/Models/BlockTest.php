@@ -16,7 +16,8 @@ class BlockTest extends TestCase
 
         $this->assertInstanceOf(Block::class, $block);
         $this->assertDatabaseHas('blocks', [
-            'id' => $block->id,
+            'blocker_id' => $block->blocker_id,
+            'blocked_id' => $block->blocked_id,
         ]);
     }
 

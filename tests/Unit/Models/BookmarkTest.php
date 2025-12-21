@@ -16,7 +16,8 @@ class BookmarkTest extends TestCase
 
         $this->assertInstanceOf(Bookmark::class, $bookmark);
         $this->assertDatabaseHas('bookmarks', [
-            'id' => $bookmark->id,
+            'user_id' => $bookmark->user_id,
+            'post_id' => $bookmark->post_id,
         ]);
     }
 

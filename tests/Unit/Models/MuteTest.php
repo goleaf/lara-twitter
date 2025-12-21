@@ -16,7 +16,8 @@ class MuteTest extends TestCase
 
         $this->assertInstanceOf(Mute::class, $mute);
         $this->assertDatabaseHas('mutes', [
-            'id' => $mute->id,
+            'muter_id' => $mute->muter_id,
+            'muted_id' => $mute->muted_id,
         ]);
     }
 
